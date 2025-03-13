@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skate Legion Sale Tracker</title>
+    <!-- Load React -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <!-- Load Tailwind -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Basic styles */
+        body {
+            background-color: #0f0f0f;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        
+        /* Neon green color */
+        .neon-color {
+            color: #c5ff33;
+        }
+        
+        /* Header style */
+        .header {
+            background: linear-gradient(90deg, #880000 0%, #bb0000 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        /* Card style */
+        .card {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        /* Stats box */
+        .stats-box {
+            background-color: #222;
+            border-left: 4px solid #c5ff33;
+            padding: 16px;
+            margin-bottom: 10px;
+        }
+        
+        /* Table styles */
+        .table-header {
+            background-color: #333;
+        }
+        
+        .table-row:nth-child(odd) {
+            background-color: #222;
+        }
+        
+        .table-row:nth-child(even) {
+            background-color: #282828;
+        }
+        
+        .table-row:hover {
+            background-color: #333;
+        }
+        
+        /* Button style */
+        .green-button {
+            background-color: #c5ff33;
+            color: #000;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .green-button:disabled {
+            background-color: #444;
+            color: #888;
+            cursor: not-allowed;
+        }
+        
+        /* Top rank badge */
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background-color: #c5ff33;
+            color: black;
+            font-weight: bold;
+            border-radius: 50%;
+        }
+        
+        /* Responsive table */
+        @media (max-width: 768px) {
+            .address-cell {
+                max-width: 150px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+        
+        /* Note box */
+        .note-box {
+            background-color: rgba(197, 255, 51, 0.1);
+            border-left: 3px solid #c5ff33;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Root div where React will render -->
+    <div id="app">Loading...</div>
+    
+    <!-- React app script -->
+    <script type="text/babel">
+        // Main app component
+        function LegionTracker() {
+            // State hooks
+            const [deposits, setDeposits] = React.useState([]);
+            const [totalInvestment, setTotalInvestment] = React.useState(0);
+            const [loading, setLoading] = React.useState(true);
+            const [error, setError] = React.useState(null);
+            const [sortOrder, setSortOrder] = React.useState('desc');
+            const [currentPage, setCurrentPage] = React.useState(1);
+            const [stats, setStats] = React.useState({
+                average: 0,
+                median: 0,
+                highest: 0,
+                lowest: 0
+            });
+            
+            // Constants
+            const depositsPerPage = 10;
+            
+            // Fetch data on component mount
+            React.useEffect(() => {
+                fetchData();
+            }, []);
+            
+            // Function to fetch data from API
+            const fetchData = async () => {
+                try {
+                    console.log("Fetching data...");
+                    setLoading(true);
+                    
+                    // Fetch total investment
+                    const totalRes = await fetch('/api/total-investment');
+                    if (!totalRes.ok) {
+                        throw new Error('Failed to fetch total investment');
+                    }
+                    const totalData = await totalRes.json();
+                    console.log("Total investment:", totalData);
+                    setTotalInvestment(totalData.total);
+                    
+                    // Fetch deposits
+                    const depositsRes = await fetch('/api/deposits');
+                    if (!depositsRes.ok) {
+                        throw new Error('Failed to fetch deposits');
+                    }
+                    const depositsData = await depositsRes.json();
+                    console.log("Deposits:", depositsData);
+                    setDeposits(depositsData.deposits);
+                    
+                    // Calculate statistics
+                    if (depositsData.deposits.length > 0) {
+                        const amounts = depositsData.deposits.map(d => d.amount);
+                        const sortedAmounts = [...amounts].sort((a, b) => a - b);
+                        
+                        setStats({
+                            average: amounts.reduce((a, b) => a + b, 0) / amounts.length,
+                            median: sortedAmounts.length % 2 === 0 
+                                ? (sortedAmounts[sortedAmounts.length/2 - 1] + sortedAmounts[sortedAmounts.length/2]) / 2 
+                                : sortedAmounts[Math.floor(sortedAmounts.length/2)],
+                            highest: Math.max(...amounts),
+                            lowest: Math.min(...amounts)
+                        });
+                    }
+                    
+                    setLoading(false);
+                } catch (err) {
+                    console.error("Error fetching data:", err);
+                    setError(err.message);
+                    setLoading(false);
+                }
+            };
+            
+            // Function to format currency
+            const formatAmount = (amount) => {
+                return amount.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            };
+            
+            // Sort deposits based on current sort order
+            const sortedDeposits = [...deposits].sort((a, b) => {
+                return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
+            });
+            
+            // Toggle sort order
+            const toggleSortOrder = () => {
+                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
+            };
+            
+            // Pagination calculations
+            const indexOfLastDeposit = currentPage * depositsPerPage;
+            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
+            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
+            const totalPages = Math.ceil(deposits.length / depositsPerPage);
+            
+            // Show loading state
+            if (loading) {
+                return (
+                    <div className="flex items-center justify-center h-screen">
+                        <div className="text-center p-8 card max-w-md">
+                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
+                            <p className="mb-6">Loading Skate Sale Data...</p>
+                            <div className="note-box">
+                                <p className="text-sm text-gray-300">
+                                    Note: This dashboard displays only the total amount successfully invested, 
+                                    not the amount being requested on the Legion website.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            
+            // Show error state
+            if (error) {
+                return (
+                    <div className="container mx-auto px-4 py-8">
+                        <div className="card p-8 text-center">
+                            <h2 className="text-xl text-red-500 mb-4">Error</h2>
+                            <p>{error}</p>
+                            <button 
+                                onClick={fetchData} 
+                                className="green-button mt-4"
+                            >
+                                Retry
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+            
+            // Main component render
+            return (
+                <div className="container mx-auto px-4 py-8">
+                    {/* Header */}
+                    <div className="header flex items-center justify-between">
+                        <div>
+                            <h1 className="text-4xl font-bold">Skate</h1>
+                            <p className="text-gray-300">Legion Sale Tracker</p>
+                        </div>
+                        <div className="text-right">
+                            <img src="/static/cover.png" alt="Legion Logo" className="h-16 inline-block" />
+                        </div>
+                    </div>
+                    
+                    {/* Note about data */}
+                    <div className="note-box mb-6">
+                        <p className="text-sm">
+                            <span className="font-bold neon-color">Note:</span> This dashboard shows only the total amount successfully invested, not the amount being requested on the Legion website.
+                        </p>
+                    </div>
+                    
+                    {/* Two column layout */}
+                    <div className="flex flex-col md:flex-row gap-6">
+                        {/* Left column - Stats */}
+                        <div className="md:w-1/3">
+                            {/* Total investment */}
+                            <div className="card">
+                                <div className="p-6 text-center">
+                                    <h2 className="text-xl mb-2">Total USDC Invested</h2>
+                                    <p className="text-4xl font-bold neon-color">${formatAmount(totalInvestment)}</p>
+                                    <p className="text-gray-400 text-sm mt-2">{deposits.length} unique addresses</p>
+                                </div>
+                            </div>
+                            
+                            {/* Stats boxes */}
+                            <h3 className="text-xl font-bold mt-6 mb-4">Investment Stats</h3>
+                            
+                            <div className="stats-box">
+                                <p className="text-gray-400 text-sm">Average</p>
+                                <p className="text-xl font-bold neon-color">${formatAmount(stats.average)}</p>
+                            </div>
+                            
+                            <div className="stats-box">
+                                <p className="text-gray-400 text-sm">Median</p>
+                                <p className="text-xl font-bold neon-color">${formatAmount(stats.median)}</p>
+                            </div>
+                            
+                            <div className="stats-box">
+                                <p className="text-gray-400 text-sm">Highest</p>
+                                <p className="text-xl font-bold neon-color">${formatAmount(stats.highest)}</p>
+                            </div>
+                            
+                            <div className="stats-box">
+                                <p className="text-gray-400 text-sm">Lowest</p>
+                                <p className="text-xl font-bold neon-color">${formatAmount(stats.lowest)}</p>
+                            </div>
+                        </div>
+                        
+                        {/* Right column - Leaderboard */}
+                        <div className="md:w-2/3">
+                            <div className="card">
+                                <div className="p-4 border-b border-gray-800">
+                                    <h2 className="text-xl font-bold">Top Investors</h2>
+                                    <p className="text-gray-400 text-sm">Ranked by investment amount</p>
+                                </div>
+                                
+                                <div className="overflow-x-auto">
+                                    <table className="w-full">
+                                        <thead className="table-header">
+                                            <tr>
+                                                <th className="p-3 text-left">Rank</th>
+                                                <th className="p-3 text-left">Address</th>
+                                                <th className="p-3 text-right cursor-pointer" onClick={toggleSortOrder}>
+                                                    Amount {sortOrder === 'desc' ? '↓' : '↑'}
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {currentDeposits.map((deposit, index) => (
+                                                <tr key={deposit.address} className="table-row">
+                                                    <td className="p-3">
+                                                        {indexOfFirstDeposit + index + 1 <= 3 ? (
+                                                            <span className="rank-badge">{indexOfFirstDeposit + index + 1}</span>
+                                                        ) : (
+                                                            <span>#{indexOfFirstDeposit + index + 1}</span>
+                                                        )}
+                                                    </td>
+                                                    <td className="p-3 address-cell">
+                                                        <a
+                                                            href={`https://debank.com/profile/${deposit.address}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="hover:underline"
+                                                            title={deposit.address}
+                                                        >
+                                                            {deposit.address}
+                                                        </a>
+                                                    </td>
+                                                    <td className="p-3 text-right font-mono">
+                                                        <span className={indexOfFirstDeposit + index + 1 <= 3 ? "neon-color" : ""}>
+                                                            ${formatAmount(deposit.amount)}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                {/* Pagination */}
+                                {totalPages > 1 && (
+                                    <div className="p-4 flex justify-center items-center space-x-2">
+                                        <button
+                                            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                                            disabled={currentPage === 1}
+                                            className={currentPage === 1 ? "green-button opacity-50 cursor-not-allowed" : "green-button"}
+                                        >
+                                            Previous
+                                        </button>
+                                        
+                                        <span className="px-3 py-1 bg-gray-800 rounded">
+                                            {currentPage} of {totalPages}
+                                        </span>
+                                        
+                                        <button
+                                            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                                            disabled={currentPage === totalPages}
+                                            className={currentPage === totalPages ? "green-button opacity-50 cursor-not-allowed" : "green-button"}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="text-center text-gray-500 text-sm mt-6">
+                        Last updated: {new Date().toLocaleString()}
+                    </div>
+                </div>
+            );
+        }
+        
+        // Render the app to the Skate Legion Sale Tracker
+
+
+        ReactDOM.render(<LegionTracker />, document.getElementById('app'));
+    </script>
+</body>
+</html>
