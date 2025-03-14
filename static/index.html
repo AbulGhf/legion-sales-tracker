@@ -3,401 +3,1512 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skate Legion Sale Tracker</title>
-    <!-- Load React -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
-    <!-- Load Tailwind -->
+    <title>Legion Sale Trackers</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <style>
-        /* Basic styles */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        
+        /* Modern background gradient for the entire page */
         body {
-            background-color: #0f0f0f;
+            background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
             color: white;
-            font-family: Arial, sans-serif;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        /* Update header with gradient */
+        .main-header {
+            background: linear-gradient(90deg, #13131f 0%, #1f1f2c 100%);
+            border-bottom: 1px solid #FF5722;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            padding: 0.75rem 0;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Logo image styling */
+        .header-logo-image {
+            height: 50px;
+            margin-right: 1rem;
+        }
+
+        .header-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #e0e0e0;
+            text-shadow: 0 0 15px rgba(255, 87, 34, 0.4);
+        }
+
+        /* New container layout styles */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+            background: linear-gradient(0deg, rgba(20, 20, 30, 0.3) 0%, rgba(15, 15, 25, 0.3) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 87, 34, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Adjust spacing between main sections */
+        .top-section {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1rem; /* Reduced from 2rem */
+        }
+
+        .bottom-section {
+            margin-bottom: 1rem;
+        }
+
+        /* Consistent bottom section height */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            height: 450px; /* Fixed height for consistency */
+        }
+
+        .stats-row .stats-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Card styling with gradients */
+        .stats-card {
+            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 87, 34, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Full-width stats cards for better space usage */
+        .left-column .stats-card {
+            margin-bottom: 1rem; /* Reduced from 1.5rem */
+        }
+
+        /* Enhanced live feed - taller */
+        .live-feed-card {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stats-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Center chart titles and make them larger */
+        #investor-count .stats-title {
+            font-size: 1.3rem;
+            text-align: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+        }
+
+        #investment-distribution .stats-title {
+            font-size: 1.3rem;
+            text-align: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .stats-title i {
+            font-size: 1rem;
+            color: #666666;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+
+        /* Stats items with gradients */
+        .stat-item {
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
+            border-radius: 8px;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #b0b0b0;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #FF5722;
+        }
+
+        .stat-value.legion-stat {
+            color: #FF5722;
+        }
+
+        /* Make charts take up all available space */
+        .chart-container {
+            flex: 1;
+            position: relative;
+            height: auto !important;
+            margin-top: 0;
+        }
+
+        /* Investor count chart - make bars taller */
+        #investor-chart-container {
+            height: 90%; 
+            margin-top: 1rem;
+        }
+
+        /* Table container styling */
+        .table-container {
+            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 87, 34, 0.1);
+        }
+
+        .filter-bar {
+            background: linear-gradient(90deg, #1d1d28 0%, #242433 100%);
+            border-bottom: 1px solid #2a2a3a;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-button {
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
+            border: 1px solid #333343;
+            color: #e0e0e0;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .filter-button:hover {
+            background: linear-gradient(145deg, #242433 0%, #2a2a3d 100%);
+            border-color: #FF5722;
+            transform: translateY(-2px);
+        }
+
+        .filter-button.active {
+            background: linear-gradient(145deg, #2a2a3d 0%, #333348 100%);
+            border-color: #FF5722;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(255, 87, 34, 0.2);
+        }
+
+        .search-container {
+            margin-left: auto;
+            position: relative;
+        }
+
+        /* Search input styling */
+        .search-input {
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
+            border: 1px solid #333343;
+            color: #ffffff;
+            padding: 0.35rem 1rem 0.35rem 2.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            width: 200px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #FF5722;
+            box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777777;
+        }
+
+        /* Table header gradient */
+        .table-header {
+            background: linear-gradient(90deg, #1d1d28 0%, #242433 100%);
+            border-bottom: 1px solid #2a2a3a;
+            display: grid;
+            grid-template-columns: 60px minmax(150px, 1fr) minmax(150px, 1fr) minmax(120px, 1fr) 120px;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            color: #b0b0b0;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Table body */
+        .table-body {
+            flex: 1;
+            min-height: 500px;
+            max-height: calc(100vh - 350px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #FF5722 #242433;
+        }
+
+        .table-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .table-body::-webkit-scrollbar-track {
+            background: #242433;
+            border-radius: 3px;
+        }
+
+        .table-body::-webkit-scrollbar-thumb {
+            background-color: #FF5722;
+            border-radius: 3px;
+        }
+
+        /* Table row */
+        .table-row {
+            display: grid;
+            grid-template-columns: 60px minmax(150px, 1fr) minmax(150px, 1fr) minmax(120px, 1fr) 120px;
+            padding: 0.75rem 1rem;
+            align-items: center;
+            border-bottom: 1px solid #1a1a1a;
+            transition: all 0.2s ease;
+        }
+
+        /* Table row hover effect */
+        .table-row:hover {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.04) 100%);
+        }
+
+        /* Loading skeleton */
+        .skeleton-row {
+            display: grid;
+            grid-template-columns: 60px minmax(150px, 1fr) minmax(150px, 1fr) minmax(120px, 1fr) 120px;
+            padding: 0.75rem 1rem;
+            align-items: center;
+            border-bottom: 1px solid #1a1a1a;
+            height: 64px;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #222 0%, #333 50%, #222 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .skeleton-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        .skeleton-text {
+            height: 18px;
+            width: 80%;
+        }
+
+        .skeleton-text-lg {
+            height: 24px;
+            width: 70%;
+        }
+
+        .skeleton-button {
+            height: 32px;
+            width: 120px;
+        }
+
+        /* Logo styling */
+        .logo-container {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sale-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        /* Name styling */
+        .sale-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Amount styling */
+        .sale-amount {
+            font-size: 1.125rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        /* Investor count styling */
+        .sale-investors {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        /* Action button styling */
+        .action-button {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Live feed card special styling */
+        .live-feed {
+            max-height: 350px; /* Increased height */
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #FF5722 #242433;
+            flex: 1;
+        }
+
+        .live-feed::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .live-feed::-webkit-scrollbar-track {
+            background: #242433;
+            border-radius: 3px;
+        }
+
+        .live-feed::-webkit-scrollbar-thumb {
+            background-color: #FF5722;
+            border-radius: 3px;
+        }
+
+        .feed-item {
+            background: linear-gradient(90deg, rgba(29, 29, 40, 0.4) 0%, rgba(36, 36, 51, 0.4) 100%);
+            margin-bottom: 4px;
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .feed-item:hover {
+            background: linear-gradient(90deg, rgba(36, 36, 51, 0.7) 0%, rgba(42, 42, 61, 0.7) 100%);
+        }
+
+        .feed-item:last-child {
+            border-bottom: none;
+        }
+
+        .feed-logo {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 12px;
+        }
+
+        .feed-address {
+            color: #b0b0b0;
+            font-family: monospace;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            flex: 1;
+        }
+
+        .feed-address:hover {
+            color: #ffffff;
+            text-decoration: underline;
+        }
+
+        .feed-amount {
+            font-weight: 700;
+            margin-left: auto;
+            margin-right: 10px;
+            font-family: monospace;
+        }
+
+        .feed-time {
+            color: #777;
+            font-size: 0.75rem;
+            width: 60px;
+            text-align: right;
+        }
+
+        /* Project-specific styles */
+        .almanak-row {
+    border-left: 3px solid #a0c4ff; /* Changed from #ffffff */
+}
+
+.almanak-color {
+    color: #a0c4ff; /* Changed from #ffffff */
+}
+
+.almanak-button {
+    background-color: #a0c4ff; /* Changed from #f5f5f5 */
+    color: #000000;
+}
+
+.almanak-button:hover {
+    background-color: #b8d3ff; /* Changed from #ffffff */
+}
+
+/* Giza - changed from cream to gold/amber */
+.giza-row {
+    border-left: 3px solid #ffd166; /* Changed from #fffdf0 */
+}
+
+.giza-color {
+    color: #ffd166; /* Changed from #fffdf0 */
+}
+
+.giza-button {
+    background-color: #ffd166; /* Changed from #fffdf0 */
+    color: #000000;
+}
+
+.giza-button:hover {
+    background-color: #ffda85; /* Changed from #f5f3e6 */
+}
+        
+        /* Skate Chain */
+        .skate-row {
+            border-left: 3px solid #c5ff33;
         }
         
-        /* Neon green color */
-        .neon-color {
+        .skate-color {
             color: #c5ff33;
         }
         
-        /* Header style */
-        .header {
-            background: linear-gradient(90deg, #880000 0%, #bb0000 100%);
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        
-        /* Card style */
-        .card {
-            background-color: #1a1a1a;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-        }
-        
-        /* Stats box */
-        .stats-box {
-            background-color: #222;
-            border-left: 4px solid #c5ff33;
-            padding: 16px;
-            margin-bottom: 10px;
-        }
-        
-        /* Table styles */
-        .table-header {
-            background-color: #333;
-        }
-        
-        .table-row:nth-child(odd) {
-            background-color: #222;
-        }
-        
-        .table-row:nth-child(even) {
-            background-color: #282828;
-        }
-        
-        .table-row:hover {
-            background-color: #333;
-        }
-        
-        /* Button style */
-        .green-button {
+        .skate-button {
             background-color: #c5ff33;
-            color: #000;
-            font-weight: bold;
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
+            color: #000000;
         }
         
-        .green-button:disabled {
-            background-color: #444;
-            color: #888;
-            cursor: not-allowed;
+        .skate-button:hover {
+            background-color: #d2ff5c;
         }
         
-        /* Top rank badge */
-        .rank-badge {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            background-color: #c5ff33;
-            color: black;
-            font-weight: bold;
-            border-radius: 50%;
+        /* Pulse */
+        .pulse-row {
+            border-left: 3px solid #b14aff;
         }
         
-        /* Responsive table */
-        @media (max-width: 768px) {
-            .address-cell {
-                max-width: 150px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
+        .pulse-color {
+            color: #b14aff;
+        }
+        
+        .pulse-button {
+            background-color: #b14aff;
+            color: #ffffff;
+        }
+        
+        .pulse-button:hover {
+            background-color: #c06fff;
+        }
+        
+        /* FUEL */
+        .fuel-row {
+            border-left: 3px solid #00f58c;
+        }
+        
+        .fuel-color {
+            color: #00f58c;
+        }
+        
+        .fuel-button {
+            background-color: #00f58c;
+            color: #000000;
+        }
+        
+        .fuel-button:hover {
+            background-color: #34f9a7;
+        }
+        
+        /* Electron */
+        .electron-row {
+            border-left: 3px solid #92c2ff;
+        }
+        
+        .electron-color {
+            color: #92c2ff;
+        }
+        
+        .electron-button {
+            background-color: #92c2ff;
+            color: #000000;
+        }
+        
+        .electron-button:hover {
+            background-color: #aad0ff;
+        }
+        
+        /* corn */
+        .corn-row {
+            border-left: 3px solid #ff931e;
+        }
+        
+        .corn-color {
+            color: #ff931e;
+        }
+        
+        .corn-button {
+            background-color: #ff931e;
+            color: #000000;
+        }
+        
+        .corn-button:hover {
+            background-color: #ffa545;
+        }
+        
+        /* Enclave */
+        .enclave-row {
+            border-left: 3px solid #60c2ff;
+        }
+        
+        .enclave-color {
+            color: #60c2ff;
+        }
+        
+        .enclave-button {
+            background-color: #60c2ff;
+            color: #000000;
+        }
+        
+        .enclave-button:hover {
+            background-color: #84d0ff;
+        }
+        
+        .nil-row {
+    border-left: 3px solid #c9b6e4; /* Changed from #ffffff */
+}
+
+.nil-color {
+    color: #c9b6e4; /* Changed from #ffffff */
+}
+
+.nil-button {
+    background-color: #323232;
+    color: #ffffff;
+}
+
+.nil-button:hover {
+    background-color: #424242;
+}
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 1200px) {
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
-        
-        /* Note box */
-        .note-box {
-            background-color: rgba(197, 255, 51, 0.1);
-            border-left: 3px solid #c5ff33;
-            padding: 12px 16px;
-            margin: 12px 0;
-            font-size: 0.9rem;
+
+        @media screen and (max-width: 992px) {
+            .top-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .bottom-section {
+                margin-top: 1rem;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .table-row, .table-header {
+                grid-template-columns: 60px 1fr 1fr 120px;
+            }
+            
+            .table-row > div:nth-child(4), .table-header > div:nth-child(4) {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 580px) {
+            .header-title {
+                font-size: 1.8rem;
+            }
+            
+            .table-row, .table-header {
+                grid-template-columns: 60px 1fr 120px;
+            }
+            
+            .table-row > div:nth-child(3), .table-header > div:nth-child(3) {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Root div where React will render -->
-    <div id="app">Loading...</div>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container mx-auto px-4">
+            <div class="header-content">
+                <img src="legion.png" alt="Legion" class="header-logo-image">
+                <h1 class="header-title">LEGION SALE TRACKERS</h1>
+            </div>
+        </div>
+    </header>
     
-    <!-- React app script -->
-    <script type="text/babel">
-        // Main app component
-        function LegionTracker() {
-            // State hooks
-            const [deposits, setDeposits] = React.useState([]);
-            const [totalInvestment, setTotalInvestment] = React.useState(0);
-            const [loading, setLoading] = React.useState(true);
-            const [error, setError] = React.useState(null);
-            const [sortOrder, setSortOrder] = React.useState('desc');
-            const [currentPage, setCurrentPage] = React.useState(1);
-            const [stats, setStats] = React.useState({
-                average: 0,
-                median: 0,
-                highest: 0,
-                lowest: 0
-            });
-            
-            // Constants
-            const depositsPerPage = 10;
-            
-            // Fetch data on component mount
-            React.useEffect(() => {
-                fetchData();
-            }, []);
-            
-            // Function to fetch data from API
-            const fetchData = async () => {
-                try {
-                    console.log("Fetching data...");
-                    setLoading(true);
-                    
-                    // Fetch total investment
-                    const totalRes = await fetch('/api/total-investment');
-                    if (!totalRes.ok) {
-                        throw new Error('Failed to fetch total investment');
-                    }
-                    const totalData = await totalRes.json();
-                    console.log("Total investment:", totalData);
-                    setTotalInvestment(totalData.total);
-                    
-                    // Fetch deposits
-                    const depositsRes = await fetch('/api/deposits');
-                    if (!depositsRes.ok) {
-                        throw new Error('Failed to fetch deposits');
-                    }
-                    const depositsData = await depositsRes.json();
-                    console.log("Deposits:", depositsData);
-                    setDeposits(depositsData.deposits);
-                    
-                    // Calculate statistics
-                    if (depositsData.deposits.length > 0) {
-                        const amounts = depositsData.deposits.map(d => d.amount);
-                        const sortedAmounts = [...amounts].sort((a, b) => a - b);
-                        
-                        setStats({
-                            average: amounts.reduce((a, b) => a + b, 0) / amounts.length,
-                            median: sortedAmounts.length % 2 === 0 
-                                ? (sortedAmounts[sortedAmounts.length/2 - 1] + sortedAmounts[sortedAmounts.length/2]) / 2 
-                                : sortedAmounts[Math.floor(sortedAmounts.length/2)],
-                            highest: Math.max(...amounts),
-                            lowest: Math.min(...amounts)
-                        });
-                    }
-                    
-                    setLoading(false);
-                } catch (err) {
-                    console.error("Error fetching data:", err);
-                    setError(err.message);
-                    setLoading(false);
-                }
-            };
-            
-            // Function to format currency
-            const formatAmount = (amount) => {
-                return amount.toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            };
-            
-            // Sort deposits based on current sort order
-            const sortedDeposits = [...deposits].sort((a, b) => {
-                return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
-            });
-            
-            // Toggle sort order
-            const toggleSortOrder = () => {
-                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            };
-            
-            // Pagination calculations
-            const indexOfLastDeposit = currentPage * depositsPerPage;
-            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
-            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
-            const totalPages = Math.ceil(deposits.length / depositsPerPage);
-            
-            // Show loading state
-            if (loading) {
-                return (
-                    <div className="flex items-center justify-center h-screen">
-                        <div className="text-center p-8 card max-w-md">
-                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                            <p className="mb-6">Loading Skate Sale Data...</p>
-                            <div className="note-box">
-                                <p className="text-sm text-gray-300">
-                                    Note: This dashboard displays only the total amount successfully invested, 
-                                    not the amount being requested on the Legion website.
-                                </p>
+    <!-- Main Content -->
+    <main class="container mx-auto px-4">
+        <div class="dashboard-container">
+            <!-- Top section -->
+            <div class="top-section">
+                <!-- Left Column - Stats and Charts -->
+                <div class="left-column">
+                    <!-- Live Feed - Taller -->
+                    <div class="stats-card live-feed-card">
+                        <div class="stats-title">
+                            <span>Live Feed</span>
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="live-feed" id="live-feed">
+                            <div class="text-center text-gray-500 py-2">
+                                <i class="fas fa-circle-notch fa-spin mr-2"></i>
+                                Connecting to live feed...
                             </div>
                         </div>
                     </div>
-                );
-            }
-            
-            // Show error state
-            if (error) {
-                return (
-                    <div className="container mx-auto px-4 py-8">
-                        <div className="card p-8 text-center">
-                            <h2 className="text-xl text-red-500 mb-4">Error</h2>
-                            <p>{error}</p>
-                            <button 
-                                onClick={fetchData} 
-                                className="green-button mt-4"
-                            >
-                                Retry
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-            
-            // Main component render
-            return (
-                <div className="container mx-auto px-4 py-8">
-                    {/* Header */}
-                    <div className="header flex items-center justify-between">
-                        <div>
-                            <h1 className="text-4xl font-bold">Skate</h1>
-                            <p className="text-gray-300">Legion Sale Tracker</p>
-                        </div>
-                        <div className="text-right">
-                            <img src="/static/cover.png" alt="Legion Logo" className="h-16 inline-block" />
-                        </div>
-                    </div>
                     
-                    {/* Note about data */}
-                    <div className="note-box mb-6">
-                        <p className="text-sm">
-                            <span className="font-bold neon-color">Note:</span> This dashboard shows only the total amount successfully invested, not the amount being requested on the Legion website.
-                        </p>
-                    </div>
-                    
-                    {/* Two column layout */}
-                    <div className="flex flex-col md:flex-row gap-6">
-                        {/* Left column - Stats */}
-                        <div className="md:w-1/3">
-                            {/* Total investment */}
-                            <div className="card">
-                                <div className="p-6 text-center">
-                                    <h2 className="text-xl mb-2">Total USDC Invested</h2>
-                                    <p className="text-4xl font-bold neon-color">${formatAmount(totalInvestment)}</p>
-                                    <p className="text-gray-400 text-sm mt-2">{deposits.length} unique addresses</p>
+                    <!-- Legion Overall Stats -->
+                    <div class="stats-card">
+                        <div class="stats-title">
+                            <span>Legion Overall Stats</span>
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="stat-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">Total Investment</div>
+                                <div class="stat-value legion-stat" id="total-investment">
+                                    <div class="skeleton skeleton-text-lg mx-auto"></div>
                                 </div>
                             </div>
-                            
-                            {/* Stats boxes */}
-                            <h3 className="text-xl font-bold mt-6 mb-4">Investment Stats</h3>
-                            
-                            <div className="stats-box">
-                                <p className="text-gray-400 text-sm">Average</p>
-                                <p className="text-xl font-bold neon-color">${formatAmount(stats.average)}</p>
+                            <div class="stat-item">
+                                <div class="stat-label">Total Investors</div>
+                                <div class="stat-value legion-stat" id="total-investors">
+                                    <div class="skeleton skeleton-text-lg mx-auto"></div>
+                                </div>
                             </div>
-                            
-                            <div className="stats-box">
-                                <p className="text-gray-400 text-sm">Median</p>
-                                <p className="text-xl font-bold neon-color">${formatAmount(stats.median)}</p>
+                            <div class="stat-item">
+                                <div class="stat-label">Average Investment</div>
+                                <div class="stat-value legion-stat" id="avg-investment">
+                                    <div class="skeleton skeleton-text-lg mx-auto"></div>
+                                </div>
                             </div>
-                            
-                            <div className="stats-box">
-                                <p className="text-gray-400 text-sm">Highest</p>
-                                <p className="text-xl font-bold neon-color">${formatAmount(stats.highest)}</p>
-                            </div>
-                            
-                            <div className="stats-box">
-                                <p className="text-gray-400 text-sm">Lowest</p>
-                                <p className="text-xl font-bold neon-color">${formatAmount(stats.lowest)}</p>
+                            <div class="stat-item">
+                                <div class="stat-label">Active Sales</div>
+                                <div class="stat-value legion-stat" id="active-sales">
+                                    <div class="skeleton skeleton-text-lg mx-auto"></div>
+                                </div>
                             </div>
                         </div>
-                        
-                        {/* Right column - Leaderboard */}
-                        <div className="md:w-2/3">
-                            <div className="card">
-                                <div className="p-4 border-b border-gray-800">
-                                    <h2 className="text-xl font-bold">Top Investors</h2>
-                                    <p className="text-gray-400 text-sm">Ranked by investment amount</p>
-                                </div>
-                                
-                                <div className="overflow-x-auto">
-                                    <table className="w-full">
-                                        <thead className="table-header">
-                                            <tr>
-                                                <th className="p-3 text-left">Rank</th>
-                                                <th className="p-3 text-left">Address</th>
-                                                <th className="p-3 text-right cursor-pointer" onClick={toggleSortOrder}>
-                                                    Amount {sortOrder === 'desc' ? '↓' : '↑'}
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {currentDeposits.map((deposit, index) => (
-                                                <tr key={deposit.address} className="table-row">
-                                                    <td className="p-3">
-                                                        {indexOfFirstDeposit + index + 1 <= 3 ? (
-                                                            <span className="rank-badge">{indexOfFirstDeposit + index + 1}</span>
-                                                        ) : (
-                                                            <span>#{indexOfFirstDeposit + index + 1}</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="p-3 address-cell">
-                                                        <a
-                                                            href={`https://debank.com/profile/${deposit.address}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="hover:underline"
-                                                            title={deposit.address}
-                                                        >
-                                                            {deposit.address}
-                                                        </a>
-                                                    </td>
-                                                    <td className="p-3 text-right font-mono">
-                                                        <span className={indexOfFirstDeposit + index + 1 <= 3 ? "neon-color" : ""}>
-                                                            ${formatAmount(deposit.amount)}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                
-                                {/* Pagination */}
-                                {totalPages > 1 && (
-                                    <div className="p-4 flex justify-center items-center space-x-2">
-                                        <button
-                                            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                                            disabled={currentPage === 1}
-                                            className={currentPage === 1 ? "green-button opacity-50 cursor-not-allowed" : "green-button"}
-                                        >
-                                            Previous
-                                        </button>
-                                        
-                                        <span className="px-3 py-1 bg-gray-800 rounded">
-                                            {currentPage} of {totalPages}
-                                        </span>
-                                        
-                                        <button
-                                            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-                                            disabled={currentPage === totalPages}
-                                            className={currentPage === totalPages ? "green-button opacity-50 cursor-not-allowed" : "green-button"}
-                                        >
-                                            Next
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="text-center text-gray-500 text-sm mt-6">
-                        Last updated: {new Date().toLocaleString()}
                     </div>
                 </div>
-            );
+
+                <!-- Right Column - Sales Table -->
+                <div class="right-column">
+                    <div class="table-container">
+                        <!-- Filter Bar -->
+                        <div class="filter-bar">
+                            <button class="filter-button active" data-sort="default">
+                                <i class="fas fa-sort"></i> Default Order
+                            </button>
+                            <button class="filter-button" data-sort="invested-high">
+                                <i class="fas fa-sort-amount-down"></i> Highest Invested
+                            </button>
+                            <button class="filter-button" data-sort="invested-low">
+                                <i class="fas fa-sort-amount-up"></i> Lowest Invested
+                            </button>
+                            <button class="filter-button" data-sort="investors-high">
+                                <i class="fas fa-users"></i> Most Investors
+                            </button>
+                            <button class="filter-button" data-sort="investors-low">
+                                <i class="fas fa-user-minus"></i> Fewest Investors
+                            </button>
+                            
+                            <div class="search-container">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" class="search-input" placeholder="Search sales..." id="search-input">
+                            </div>
+                        </div>
+                        
+                        <!-- Table Header -->
+                        <div class="table-header">
+                            <div></div>
+                            <div>Sale</div>
+                            <div>Invested</div>
+                            <div>Investors</div>
+                            <div></div>
+                        </div>
+                        
+                        <!-- Table Body -->
+                        <div class="table-body" id="sales-table">
+                            <!-- Loading skeletons -->
+                            <div class="skeleton-row">
+                                <div><div class="skeleton skeleton-logo"></div></div>
+                                <div><div class="skeleton skeleton-text-lg"></div></div>
+                                <div><div class="skeleton skeleton-text-lg"></div></div>
+                                <div><div class="skeleton skeleton-text"></div></div>
+                                <div><div class="skeleton skeleton-button"></div></div>
+                            </div>
+                            <div class="skeleton-row">
+                                <div><div class="skeleton skeleton-logo"></div></div>
+                                <div><div class="skeleton skeleton-text-lg"></div></div>
+                                <div><div class="skeleton skeleton-text-lg"></div></div>
+                                <div><div class="skeleton skeleton-text"></div></div>
+                                <div><div class="skeleton skeleton-button"></div></div>
+                            </div>
+                            <div class="skeleton-row">
+                                <div><div class="skeleton skeleton-logo"></div></div>
+                                <div><div class="skeleton skeleton-text-lg"></div></div>
+                                <div><div class="skeleton skeleton-text-lg"></div></div>
+                                <div><div class="skeleton skeleton-text"></div></div>
+                                <div><div class="skeleton skeleton-button"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom section (moved from left side) -->
+            <div class="bottom-section">
+                <div class="stats-row">
+                    <!-- Top Performers - Regular layout as before -->
+                    <div class="stats-card">
+                        <div class="stats-title">
+                            <span>Top Performers</span>
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-grid">
+                            <div class="stat-item">
+                                <div class="stat-label">Highest Investment</div>
+                                <div id="highest-investment-name">
+                                    <div class="skeleton skeleton-text mx-auto"></div>
+                                </div>
+                                <div id="highest-investment-value">
+                                    <div class="skeleton skeleton-text-lg mx-auto"></div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Most Investors</div>
+                                <div id="most-investors-name">
+                                    <div class="skeleton skeleton-text mx-auto"></div>
+                                </div>
+                                <div id="most-investors-value">
+                                    <div class="skeleton skeleton-text-lg mx-auto"></div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Highest Average</div>
+                                <div id="highest-avg-name">
+                                    <div class="skeleton skeleton-text mx-auto"></div>
+                                </div>
+                                <div id="highest-avg-value">
+                                    <div class="skeleton skeleton-text-lg mx-auto"></div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Lowest Average</div>
+                                <div id="lowest-avg-name">
+                                    <div class="skeleton skeleton-text mx-auto"></div>
+                                </div>
+                                <div id="lowest-avg-value">
+                                    <div class="skeleton skeleton-text-lg mx-auto"></div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Lowest Investment</div>
+                                <div id="lowest-investment-name">
+                                    <div class="skeleton skeleton-text mx-auto"></div>
+                                </div>
+                                <div id="lowest-investment-value">
+                                    <div class="skeleton skeleton-text-lg mx-auto"></div>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-label">Lowest Investors</div>
+                                <div id="lowest-investors-name">
+                                    <div class="skeleton skeleton-text mx-auto"></div>
+                                </div>
+                                <div id="lowest-investors-value">
+                                    <div class="skeleton skeleton-text-lg mx-auto"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Investment Distribution -->
+                    <div class="stats-card" id="investment-distribution">
+                        <div class="stats-title">
+                            <span>Investment Distribution</span>
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="investment-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Investor Count - Made stats bigger -->
+                    <div class="stats-card" id="investor-count">
+                        <div class="stats-title">
+                            <span>Investor Count by Sale</span>
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div id="investor-chart-container" class="chart-container">
+                            <canvas id="investor-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Define the sales data structure
+        const sales = [
+            { id: 'almanak', name: 'ALMANAK', className: 'almanak' },
+            { id: 'giza', name: 'Giza', className: 'giza' },
+            { id: 'skate', name: 'Skate Chain', className: 'skate' },
+            { id: 'pulse', name: 'Pulse', className: 'pulse' },
+            { id: 'fuel', name: 'FUEL', className: 'fuel' },
+            { id: 'electron', name: 'Electron', className: 'electron' },
+            { id: 'nil', name: '=nil;', className: 'nil' },
+            { id: 'corn', name: 'corn', className: 'corn' },
+            { id: 'enclave', name: 'Enclave', className: 'enclave' }
+        ];
+        
+        // Chart colors that match project branding
+        const chartColors = {
+    almanak: '#a0c4ff',   /* Updated from #ffffff */
+    giza: '#ffd166',      /* Updated from #fffdf0 */
+    skate: '#c5ff33',     /* No change */
+    pulse: '#b14aff',     /* No change */
+    fuel: '#00f58c',      /* No change */
+    electron: '#92c2ff',  /* No change */
+    corn: '#ff931e',      /* No change */
+    enclave: '#60c2ff',   /* No change */
+    nil: '#c9b6e4'        /* Updated from #ffffff */
+};
+        
+        // Data storage for all sales
+        let salesData = [];
+        let investmentChart = null;
+        let investorChart = null;
+        let liveFeedLastUpdate = 0;
+        
+        // Format currency helper
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
         }
         
-        // Render the app to the Skate Legion Sale Tracker
-
-
-        ReactDOM.render(<LegionTracker />, document.getElementById('app'));
+        // Format address helper
+        function formatAddress(address) {
+            if (!address) return 'Unknown';
+            return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+        }
+        
+        // Function to fetch data for a sale
+        async function fetchSaleData(sale) {
+            try {
+                // Fetch sale stats (includes total, investors, and allocations)
+                const statsRes = await fetch(`/api/${sale.id}/stats`);
+                if (!statsRes.ok) {
+                    throw new Error(`Failed to fetch ${sale.id} stats data`);
+                }
+                const statsData = await statsRes.json();
+                
+                // Create sale data object with stats
+                return {
+                    id: sale.id,
+                    name: sale.name,
+                    className: sale.className,
+                    invested: statsData.total_investment,
+                    investors: statsData.total_investors,
+                    avgInvestment: statsData.average_allocation,
+                    highestAllocation: statsData.highest_allocation,
+                    lowestAllocation: statsData.lowest_allocation,
+                    // For Skate, we're considering it the only active sale
+                    isActive: sale.id === 'skate'
+                };
+            } catch (error) {
+                console.error(`Error fetching ${sale.id} data:`, error);
+                
+                // Try the old endpoints as fallback
+                try {
+                    // Fetch total investment
+                    const totalRes = await fetch(`/api/${sale.id}/total-investment`);
+                    if (!totalRes.ok) {
+                        throw new Error(`Failed to fetch ${sale.id} investment data`);
+                    }
+                    const totalData = await totalRes.json();
+                    
+                    // Fetch deposits
+                    const depositsRes = await fetch(`/api/${sale.id}/deposits`);
+                    if (!depositsRes.ok) {
+                        throw new Error(`Failed to fetch ${sale.id} deposits data`);
+                    }
+                    const depositsData = await depositsRes.json();
+                    
+                    const investors = depositsData.count || depositsData.deposits.length;
+                    
+                    // Create sale data object
+                    return {
+                        id: sale.id,
+                        name: sale.name,
+                        className: sale.className,
+                        invested: totalData.total,
+                        investors: investors,
+                        avgInvestment: totalData.total / investors,
+                        // Default values for allocations
+                        highestAllocation: { address: "Unknown", amount: 0 },
+                        lowestAllocation: { address: "Unknown", amount: 0 },
+                        // For Skate, we're considering it the only active sale
+                        isActive: sale.id === 'skate'
+                    };
+                } catch (fallbackError) {
+                    console.error(`Fallback also failed for ${sale.id}:`, fallbackError);
+                    
+                    // Return a default object for failed fetches
+                    return {
+                        id: sale.id,
+                        name: sale.name,
+                        className: sale.className,
+                        invested: 0,
+                        investors: 0,
+                        avgInvestment: 0,
+                        highestAllocation: { address: "Unknown", amount: 0 },
+                        lowestAllocation: { address: "Unknown", amount: 0 },
+                        isActive: false,
+                        error: true
+                    };
+                }
+            }
+        }
+        
+        // Function to create a table row for a sale
+        function createSaleRow(sale) {
+            const row = document.createElement('div');
+            row.className = `table-row ${sale.className}-row`;
+            
+            const amount = sale.error ? 'Error' : `${formatCurrency(sale.invested).replace('$', '')} USDC`;
+            const investors = sale.error ? 'Error' : `${sale.investors} addresses`;
+            
+            row.innerHTML = `
+                <div class="logo-container">
+                    <img 
+                        src="${sale.id}.jpg" 
+                        onerror="this.onerror=null; this.src='${sale.id}.png';" 
+                        alt="${sale.name} Logo" 
+                        class="sale-logo"
+                    >
+                </div>
+                <div class="sale-name">${sale.name}</div>
+                <div class="sale-amount ${sale.className}-color">${amount}</div>
+                <div class="sale-investors">${investors}</div>
+                <div>
+                    <a href="/${sale.id}.html" class="action-button ${sale.className}-button">View Details</a>
+                </div>
+            `;
+            
+            return row;
+        }
+        
+        // Function to update the table with current sales data
+        function updateTable(sortType = 'default') {
+            const salesTable = document.getElementById('sales-table');
+            
+            // Abort if table doesn't exist or no sales data
+            if (!salesTable || salesData.length === 0) return;
+            
+            // Clone the sales data for sorting
+            let sortedSales = [...salesData];
+            
+            // Sort based on the specified type
+            switch (sortType) {
+                case 'invested-high':
+                    sortedSales.sort((a, b) => b.invested - a.invested);
+                    break;
+                case 'invested-low':
+                    sortedSales.sort((a, b) => a.invested - b.invested);
+                    break;
+                case 'investors-high':
+                    sortedSales.sort((a, b) => b.investors - a.investors);
+                    break;
+                case 'investors-low':
+                    sortedSales.sort((a, b) => a.investors - b.investors);
+                    break;
+                default:
+                    // Keep the default order (by name)
+                    break;
+            }
+            
+            // Apply search filter if any
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            if (searchTerm) {
+                sortedSales = sortedSales.filter(sale => 
+                    sale.name.toLowerCase().includes(searchTerm) || 
+                    formatCurrency(sale.invested).toLowerCase().includes(searchTerm) ||
+                    String(sale.investors).includes(searchTerm)
+                );
+            }
+            
+            // Clear the current table
+            salesTable.innerHTML = '';
+            
+            // Populate with sorted sales
+            sortedSales.forEach(sale => {
+                salesTable.appendChild(createSaleRow(sale));
+            });
+            
+            // Show a message if no results
+            if (sortedSales.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'text-center text-gray-500 py-4';
+                emptyMessage.textContent = 'No matching sales found.';
+                salesTable.appendChild(emptyMessage);
+            }
+        }
+        
+        // Function to update overall stats
+        function updateOverallStats() {
+            // Skip if no sales data
+            if (salesData.length === 0) return;
+            
+            // Calculate overall stats
+            const totalInvestment = salesData.reduce((sum, sale) => sum + sale.invested, 0);
+            const totalInvestors = salesData.reduce((sum, sale) => sum + sale.investors, 0);
+            const avgInvestment = totalInvestment / totalInvestors;
+            const activeSales = salesData.filter(sale => sale.isActive).length;
+            
+            // Update the UI
+            document.getElementById('total-investment').textContent = formatCurrency(totalInvestment);
+            document.getElementById('total-investors').textContent = totalInvestors.toLocaleString();
+            document.getElementById('avg-investment').textContent = formatCurrency(avgInvestment);
+            document.getElementById('active-sales').textContent = activeSales;
+            
+            // Find highest investment
+            const highestInvestment = salesData.reduce((max, sale) => 
+                sale.invested > max.invested ? sale : max, salesData[0]);
+            
+            document.getElementById('highest-investment-name').textContent = highestInvestment.name;
+            document.getElementById('highest-investment-name').className = `font-bold ${highestInvestment.className}-color`;
+            document.getElementById('highest-investment-value').textContent = formatCurrency(highestInvestment.invested);
+            document.getElementById('highest-investment-value').className = `stat-value ${highestInvestment.className}-color`;
+            
+            // Find most investors
+            const mostInvestors = salesData.reduce((max, sale) => 
+                sale.investors > max.investors ? sale : max, salesData[0]);
+            
+            document.getElementById('most-investors-name').textContent = mostInvestors.name;
+            document.getElementById('most-investors-name').className = `font-bold ${mostInvestors.className}-color`;
+            document.getElementById('most-investors-value').textContent = mostInvestors.investors.toLocaleString();
+            document.getElementById('most-investors-value').className = `stat-value ${mostInvestors.className}-color`;
+            
+            // Find lowest investors
+            const lowestInvestors = salesData.reduce((min, sale) => 
+                (sale.investors < min.investors && sale.investors > 0) ? sale : min,
+                { investors: Number.MAX_VALUE, ...salesData[0] });
+                
+            document.getElementById('lowest-investors-name').textContent = lowestInvestors.name;
+            document.getElementById('lowest-investors-name').className = `font-bold ${lowestInvestors.className}-color`;
+            document.getElementById('lowest-investors-value').textContent = lowestInvestors.investors.toLocaleString();
+            document.getElementById('lowest-investors-value').className = `stat-value ${lowestInvestors.className}-color`;
+            
+            // Find lowest investment
+            const lowestInvestment = salesData.reduce((min, sale) => 
+                (sale.invested < min.invested && sale.invested > 0) ? sale : min,
+                { invested: Number.MAX_VALUE, ...salesData[0] });
+                
+            document.getElementById('lowest-investment-name').textContent = lowestInvestment.name;
+            document.getElementById('lowest-investment-name').className = `font-bold ${lowestInvestment.className}-color`;
+            document.getElementById('lowest-investment-value').textContent = formatCurrency(lowestInvestment.invested);
+            document.getElementById('lowest-investment-value').className = `stat-value ${lowestInvestment.className}-color`;
+            
+            // Find highest average investment
+            const highestAvg = salesData.reduce((max, sale) => 
+                sale.avgInvestment > max.avgInvestment ? sale : max, salesData[0]);
+            
+            document.getElementById('highest-avg-name').textContent = highestAvg.name;
+            document.getElementById('highest-avg-name').className = `font-bold ${highestAvg.className}-color`;
+            document.getElementById('highest-avg-value').textContent = formatCurrency(highestAvg.avgInvestment);
+            document.getElementById('highest-avg-value').className = `stat-value ${highestAvg.className}-color`;
+            
+            // Find lowest average investment
+            const lowestAvg = salesData.reduce((min, sale) => 
+                (sale.avgInvestment < min.avgInvestment && sale.avgInvestment > 0) ? sale : min, 
+                { avgInvestment: Number.MAX_VALUE, ...salesData[0] });
+            
+            document.getElementById('lowest-avg-name').textContent = lowestAvg.name;
+            document.getElementById('lowest-avg-name').className = `font-bold ${lowestAvg.className}-color`;
+            document.getElementById('lowest-avg-value').textContent = formatCurrency(lowestAvg.avgInvestment);
+            document.getElementById('lowest-avg-value').className = `stat-value ${lowestAvg.className}-color`;
+        }
+        
+        // Function to update charts
+        function updateCharts() {
+            if (salesData.length === 0) return;
+            
+            const ctx1 = document.getElementById('investment-chart').getContext('2d');
+            const ctx2 = document.getElementById('investor-chart').getContext('2d');
+            
+            // Prepare chart data
+            const labels = salesData.map(sale => sale.name);
+            const investmentValues = salesData.map(sale => sale.invested);
+            const investorValues = salesData.map(sale => sale.investors);
+            const backgroundColors = salesData.map(sale => chartColors[sale.id]);
+            
+            // Destroy existing charts if any
+            if (investmentChart) investmentChart.destroy();
+            if (investorChart) investorChart.destroy();
+            
+            // Create the investment distribution chart
+            investmentChart = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: investmentValues,
+                        backgroundColor: backgroundColors,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#b0b0b0',
+                                font: {
+                                    family: "'Rajdhani', sans-serif",
+                                    size: 11
+                                },
+                                boxWidth: 12,
+                                padding: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const value = context.raw;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${formatCurrency(value)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+            
+            // Create the investor count chart with larger text and bars
+            investorChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Investors',
+                        data: investorValues,
+                        backgroundColor: backgroundColors,
+                        borderWidth: 0,
+                        borderRadius: 4,
+                        barThickness: 20 // Make bars thicker
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.raw.toLocaleString()} investors`;
+                                }
+                            },
+                            titleFont: {
+                                size: 14
+                            },
+                            bodyFont: {
+                                size: 14
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                color: '#333333'
+                            },
+                            ticks: {
+                                color: '#888888',
+                                font: {
+                                    family: "'Rajdhani', sans-serif",
+                                    size: 12 // Larger font size
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#333333'
+                            },
+                            ticks: {
+                                color: '#888888',
+                                font: {
+                                    family: "'Rajdhani', sans-serif",
+                                    size: 12 // Larger font size
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Function to format time "time ago"
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            
+            if (seconds < 5) return 'just now';
+            if (seconds < 60) return `${seconds}s ago`;
+            
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+            
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+            
+            const days = Math.floor(hours / 24);
+            return `${days}d ago`;
+        }
+        
+        // Function to fetch live transactions
+        async function fetchLiveTransactions() {
+            try {
+                const response = await fetch('/api/live-feed?limit=10');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch live transactions');
+                }
+                
+                const data = await response.json();
+                updateLiveFeed(data.transactions);
+                
+                // Update last fetch time
+                liveFeedLastUpdate = Date.now();
+            } catch (error) {
+                console.error('Error fetching live transactions:', error);
+            }
+        }
+        
+        // Function to update the live feed
+        function updateLiveFeed(transactions) {
+            const liveFeed = document.getElementById('live-feed');
+            if (!liveFeed) return;
+            
+            // Clear existing content
+            liveFeed.innerHTML = '';
+            
+            if (!transactions || transactions.length === 0) {
+                liveFeed.innerHTML = `
+                    <div class="text-center text-gray-500 py-2">
+                        No recent transactions found.
+                    </div>
+                `;
+                return;
+            }
+            
+            // Add transactions to feed
+            transactions.forEach(tx => {
+                const timestamp = tx.timestamp ? timeAgo(tx.timestamp) : 'Unknown';
+                
+                const feedItem = document.createElement('div');
+                feedItem.className = 'feed-item';
+                feedItem.innerHTML = `
+                    <img src="skate.jpg" onerror="this.src='skate.png'" class="feed-logo" alt="Skate">
+                    <a href="https://arbiscan.io/tx/${tx.hash}" target="_blank" class="feed-address">${formatAddress(tx.from)}</a>
+                    <span class="feed-amount skate-color">+$${tx.amount.toFixed(2)}</span>
+                    <span class="feed-time">${timestamp}</span>
+                `;
+                liveFeed.appendChild(feedItem);
+            });
+        }
+        
+        // Function to update times in the live feed
+        function updateLiveFeedTimes() {
+            const liveFeed = document.getElementById('live-feed');
+            if (!liveFeed) return;
+            
+            const timeElements = liveFeed.querySelectorAll('.feed-time');
+            timeElements.forEach(el => {
+                // Extract the transaction timestamp from the data attribute
+                const txItem = el.closest('.feed-item');
+                if (txItem && txItem.dataset.timestamp) {
+                    el.textContent = timeAgo(txItem.dataset.timestamp);
+                }
+            });
+        }
+        
+        // Function to initialize live feed with real data
+        function initLiveFeed() {
+            // Fetch real transactions
+            fetchLiveTransactions();
+            
+            // Set up polling for live feed (every 30 seconds)
+            setInterval(fetchLiveTransactions, 30000);
+            
+            // Update times every minute
+            setInterval(updateLiveFeedTimes, 60000);
+        }
+        
+        // Function to fetch data for all sales
+        async function fetchAllSalesData() {
+            // Clear existing data
+            salesData = [];
+            
+            // Fetch data for each sale
+            const promises = sales.map(sale => fetchSaleData(sale));
+            const results = await Promise.all(promises);
+            
+            // Update salesData with the results
+            salesData = results;
+            
+            // Update UI components
+            updateTable();
+            updateOverallStats();
+            updateCharts();
+            initLiveFeed();
+            
+            // Set up auto-refresh for Skate data (active sale)
+            setInterval(refreshActiveData, 60000); // Every minute
+        }
+        
+        // Function to refresh active sale data (Skate)
+        async function refreshActiveData() {
+            try {
+                // Only refresh the active sale (Skate)
+                const skateIndex = salesData.findIndex(sale => sale.id === 'skate');
+                if (skateIndex === -1) return;
+                
+                // Fetch updated data
+                const updatedSkate = await fetchSaleData(sales.find(sale => sale.id === 'skate'));
+                
+                // Update the data
+                salesData[skateIndex] = updatedSkate;
+                
+                // Update UI components
+                updateTable();
+                updateOverallStats();
+                updateCharts();
+            } catch (error) {
+                console.error('Error refreshing active sale data:', error);
+            }
+        }
+        
+        // Set up event listeners for filtering
+        function setupEventListeners() {
+            // Filter buttons
+            const filterButtons = document.querySelectorAll('.filter-button');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Update active state
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // Update table with the selected sort type
+                    updateTable(button.getAttribute('data-sort'));
+                });
+            });
+            
+            // Search input
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', () => {
+                // Get the currently active sort type
+                const activeButton = document.querySelector('.filter-button.active');
+                const sortType = activeButton ? activeButton.getAttribute('data-sort') : 'default';
+                
+                // Update the table with current sort and search
+                updateTable(sortType);
+            });
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            fetchAllSalesData();
+        });
     </script>
 </body>
 </html>
