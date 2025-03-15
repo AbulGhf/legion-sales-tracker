@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, send_from_directory, request
+from token_prices import get_fuel_price_data, get_silencio_price_data, get_skate_price_data, calculate_pnl
 import json
 import requests
 import time
@@ -306,6 +307,92 @@ def sale_stats(sale_name):
         "average_allocation": average_allocation,
         "top_investors": top_investors
     })
+
+@app.route('/api/token-prices/<string:token_name>', methods=['GET'])
+def token_prices(token_name):
+    """
+    Get token price data for a specific token
+    """
+    if token_name == 'fuel':
+        price_data = get_fuel_price_data()
+    elif token_name == 'silencio':
+        price_data = get_silencio_price_data()
+    elif token_name == 'skate':
+        price_data = get_skate_price_data()
+    else:
+        return jsonify({"error": f"Invalid token name: {token_name}"}), 400
+    
+    return jsonify(price_data)
+
+@app.route('/api/calculate-pnl/<string:token_name>', methods=['POST'])
+def calculate_token_pnl(token_name):
+    """
+    Calculate PNL for a token investment
+    """
+    # Validate token name
+    if token_name not in ['fuel', 'silencio', 'skate']:
+        return jsonify({"error": f"Invalid token name: {token_name}"}), 400
+    
+    # Get request data
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+    
+    input_type = data.get('type', 'manual')
+    
+    if input_type == 'manual':
+        # Get investment amount from request
+        try:
+            investment_amount = float(data.get('amount', 0))
+            if investment_amount <= 0:
+                return jsonify({"error": "Investment amount must be positive"}), 400
+        except ValueError:
+            return jsonify({"error": "Invalid investment amount"}), 400
+        
+        # Calculate PNL
+        result = calculate_pnl(token_name, investment_amount)
+        return jsonify(result)
+        
+    elif input_type == 'address':
+        # Get address from request
+        address = data.get('address', '')
+        if not address:
+            return jsonify({"error": "No address provided"}), 400
+        
+        # Get deposits for this token
+        try:
+            if token_name == 'fuel':
+                deposits = get_fuel_usdc_deposits()
+                deposits_list = aggregate_fuel_deposits(deposits)
+            elif token_name == 'silencio':
+                # If silencio is in static data
+                if 'silencio' in STATIC_DATA:
+                    deposits_list = STATIC_DATA['silencio']['deposits']
+                else:
+                    return jsonify({"error": "Silencio deposits not available"}), 404
+            elif token_name == 'skate':
+                deposits = get_skate_usdc_deposits()
+                deposits_list = aggregate_skate_deposits(deposits)
+            else:
+                return jsonify({"error": f"Invalid token name: {token_name}"}), 400
+                
+            # Find the address in deposits
+            deposit = next((d for d in deposits_list if d['address'].lower() == address.lower()), None)
+            
+            if not deposit:
+                return jsonify({"error": "Address not found in investors list"}), 404
+                
+            investment_amount = deposit['amount']
+            
+            # Calculate PNL
+            result = calculate_pnl(token_name, investment_amount)
+            return jsonify(result)
+            
+        except Exception as e:
+            return jsonify({"error": f"Error retrieving deposit data: {str(e)}"}), 500
+        
+    else:
+        return jsonify({"error": "Invalid input type"}), 400
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

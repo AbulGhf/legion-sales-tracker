@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FUEL</title>
+    <title>Silencio Legion Sale Tracker</title>
     <!-- Load React -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
@@ -13,10 +13,14 @@
     <style>
         /* Basic styles */
         body {
-            background-color: #003c22;
-            background-image: linear-gradient(to bottom, #00593a, #003c22);
+            background-color: #0f0f0f;
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Silencio blue color */
+        .neon-color {
+            color: #284ee9;
         }
         
         /* Main container */
@@ -26,33 +30,17 @@
             padding: 20px;
         }
         
-        /* Back button */
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            transition: background-color 0.2s;
-        }
-        
-        .back-button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Header */
+        /* Header card */
         .header-card {
-            background: linear-gradient(90deg, #00a862 0%, #00c770 100%);
+            background: linear-gradient(90deg, #0d2166 0%, #1a3889 100%);
             border-radius: 8px;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border: 1px solid rgba(0, 245, 140, 0.2);
-            box-shadow: 0 4px 12px rgba(0, 245, 140, 0.15);
+            border: 1px solid rgba(40, 78, 233, 0.15);
+            box-shadow: 0 4px 12px rgba(40, 78, 233, 0.15);
         }
         
         .header-title {
@@ -63,11 +51,11 @@
         
         /* Cards */
         .card {
-            background: linear-gradient(135deg, #121827 0%, #1a2436 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #242424 100%);
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 20px;
-            border: 1px solid rgba(0, 245, 140, 0.2);
+            border: 1px solid rgba(40, 78, 233, 0.15);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
@@ -86,12 +74,12 @@
         .amount-display {
             font-size: 2rem;
             font-weight: bold;
-            color: #00f58c;
+            color: #284ee9;
             margin: 10px 0;
-            text-shadow: 0 0 10px rgba(0, 245, 140, 0.3);
+            text-shadow: 0 0 10px rgba(40, 78, 233, 0.3);
         }
         
-        /* Stats section */
+        /* Stats box */
         .stats-section {
             margin-top: 20px;
         }
@@ -100,13 +88,13 @@
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 15px;
-            color: #00f58c;
-            text-shadow: 0 0 10px rgba(0, 245, 140, 0.3);
+            color: #284ee9;
+            text-shadow: 0 0 10px rgba(40, 78, 233, 0.3);
         }
         
         .stats-card {
-            background: linear-gradient(90deg, rgba(0, 60, 34, 0.7) 0%, rgba(0, 85, 45, 0.7) 100%);
-            border-left: 4px solid #00f58c;
+            background: linear-gradient(90deg, rgba(18, 24, 39, 0.7) 0%, rgba(30, 36, 60, 0.7) 100%);
+            border-left: 4px solid #284ee9;
             padding: 15px;
             margin-bottom: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
@@ -120,11 +108,11 @@
         .stats-value {
             font-size: 1.2rem;
             font-weight: bold;
-            color: #00f58c;
+            color: #284ee9;
         }
         
         .profit-positive {
-            color: #00f58c;
+            color: #3dd656;
         }
         
         .profit-negative {
@@ -145,7 +133,7 @@
         }
         
         .table-header {
-            background-color: #00593a;
+            background-color: rgba(13, 33, 102, 0.8);
             padding: 15px;
             text-align: left;
             font-weight: bold;
@@ -153,7 +141,7 @@
         
         .table-header th {
             padding: 12px 15px;
-            border-bottom: 1px solid rgba(0, 245, 140, 0.1);
+            border-bottom: 1px solid rgba(40, 78, 233, 0.1);
         }
         
         .table-header th:first-child {
@@ -166,19 +154,19 @@
         
         .table-row td {
             padding: 12px 15px;
-            border-bottom: 1px solid rgba(0, 245, 140, 0.05);
+            border-bottom: 1px solid rgba(40, 78, 233, 0.05);
         }
         
         .table-row:nth-child(odd) {
-            background-color: rgba(0, 65, 35, 0.6);
+            background-color: rgba(30, 30, 30, 0.6);
         }
         
         .table-row:nth-child(even) {
-            background-color: rgba(0, 75, 40, 0.6);
+            background-color: rgba(40, 40, 40, 0.6);
         }
         
         .table-row:hover {
-            background-color: rgba(0, 85, 45, 0.8);
+            background-color: rgba(13, 33, 102, 0.3);
         }
         
         /* Rank badge */
@@ -188,8 +176,8 @@
             justify-content: center;
             width: 28px;
             height: 28px;
-            background-color: #00f58c;
-            color: #003c22;
+            background-color: #284ee9;
+            color: #fff;
             font-weight: bold;
             border-radius: 50%;
         }
@@ -202,7 +190,7 @@
         
         .address-cell a:hover {
             text-decoration: underline;
-            color: #00f58c;
+            color: #284ee9;
         }
         
         /* Pagination */
@@ -215,8 +203,8 @@
         }
         
         .pagination-button {
-            background-color: #00f58c;
-            color: #003c22;
+            background-color: #284ee9;
+            color: #fff;
             border: none;
             padding: 8px 16px;
             border-radius: 4px;
@@ -226,14 +214,14 @@
         }
         
         .pagination-button:hover {
-            background-color: #34f9a7;
+            background-color: #4367f0;
             transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(0, 245, 140, 0.4);
+            box-shadow: 0 2px 8px rgba(40, 78, 233, 0.4);
         }
         
         .pagination-button:disabled {
-            background-color: #006e42;
-            color: #80fabc;
+            background-color: #132c8a;
+            color: #97abf5;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
@@ -245,19 +233,47 @@
             border-radius: 4px;
         }
         
+        /* Back button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            transition: background-color 0.2s;
+        }
+        
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Price card */
+        .price-card {
+            background: linear-gradient(90deg, rgba(18, 24, 39, 0.7) 0%, rgba(30, 36, 60, 0.7) 100%);
+            border-left: 4px solid #284ee9;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
         /* Calculator */
         .calculator-card {
-            background: linear-gradient(135deg, rgba(0, 60, 34, 0.7) 0%, rgba(0, 85, 45, 0.7) 100%);
+            background: linear-gradient(135deg, rgba(13, 33, 102, 0.7) 0%, rgba(26, 56, 137, 0.7) 100%);
             border-radius: 8px;
             padding: 15px;
             margin-top: 20px;
-            border: 1px solid rgba(0, 245, 140, 0.2);
+            border: 1px solid rgba(40, 78, 233, 0.2);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .calculator-input {
-            background: linear-gradient(135deg, rgba(0, 25, 14, 0.8) 0%, rgba(0, 35, 20, 0.8) 100%);
-            border: 1px solid rgba(0, 245, 140, 0.3);
+            background: linear-gradient(135deg, rgba(10, 15, 40, 0.8) 0%, rgba(20, 30, 70, 0.8) 100%);
+            border: 1px solid rgba(40, 78, 233, 0.3);
             padding: 8px 12px;
             border-radius: 4px;
             color: white;
@@ -268,13 +284,13 @@
         
         .calculator-input:focus {
             outline: none;
-            border-color: #00f58c;
-            box-shadow: 0 0 0 2px rgba(0, 245, 140, 0.2);
+            border-color: #284ee9;
+            box-shadow: 0 0 0 2px rgba(40, 78, 233, 0.2);
         }
         
         .tab-button {
-            background: linear-gradient(to bottom, rgba(0, 70, 40, 0.5) 0%, rgba(0, 50, 30, 0.5) 100%);
-            border: 1px solid rgba(0, 245, 140, 0.2);
+            background: linear-gradient(to bottom, rgba(13, 33, 102, 0.5) 0%, rgba(10, 25, 80, 0.5) 100%);
+            border: 1px solid rgba(40, 78, 233, 0.2);
             padding: 8px 12px;
             border-radius: 4px 4px 0 0;
             color: white;
@@ -285,34 +301,23 @@
         }
         
         .tab-button:hover {
-            background: linear-gradient(to bottom, rgba(0, 80, 45, 0.6) 0%, rgba(0, 60, 35, 0.6) 100%);
+            background: linear-gradient(to bottom, rgba(20, 45, 120, 0.6) 0%, rgba(15, 35, 100, 0.6) 100%);
         }
         
         .tab-button.active {
-            background: linear-gradient(to bottom, rgba(0, 100, 55, 0.9) 0%, rgba(0, 85, 45, 0.9) 100%);
+            background: linear-gradient(to bottom, rgba(30, 60, 150, 0.9) 0%, rgba(20, 45, 120, 0.9) 100%);
             border-bottom: none;
             font-weight: 600;
             box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
         }
         
         .result-card {
-            background: linear-gradient(135deg, rgba(0, 40, 22, 0.8) 0%, rgba(0, 60, 30, 0.8) 100%);
+            background: linear-gradient(135deg, rgba(10, 25, 60, 0.8) 0%, rgba(15, 35, 80, 0.8) 100%);
             padding: 10px;
             border-radius: 4px;
             margin-top: 10px;
-            border: 1px solid rgba(0, 245, 140, 0.1);
+            border: 1px solid rgba(40, 78, 233, 0.1);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        }
-        
-        .price-card {
-            background: linear-gradient(90deg, rgba(0, 60, 34, 0.7) 0%, rgba(0, 85, 45, 0.7) 100%);
-            border-left: 4px solid #00f58c;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -323,7 +328,7 @@
     <!-- React app script -->
     <script type="text/babel">
         // Main app component
-        function FuelTracker() {
+        function SilencioTracker() {
             // State hooks
             const [deposits, setDeposits] = React.useState([]);
             const [totalInvestment, setTotalInvestment] = React.useState(0);
@@ -340,7 +345,7 @@
             
             // New state for token price data
             const [priceData, setPriceData] = React.useState({
-                salePrice: 0.02, // Fixed sale price as mentioned
+                salePrice: 0.0006, // Default sale price
                 currentPrice: 0,
                 athPrice: 0,
                 lowestPrice: 0,
@@ -355,9 +360,10 @@
             const [calculatorLoading, setCalculatorLoading] = React.useState(false);
             
             // Constants
-            const depositsPerPage = 15;
+            const CONTRACT_ADDRESS = '0x448537DB42ee64146b67A71E3f9cE835E2d08f30';
+            const depositsPerPage = 10;
             const COINGECKO_API_KEY = 'CG-4Fnx2x1Ga65oHP6HufVGevXh';
-            const FUEL_TOKEN_ID = 'fuel-network';
+            const SILENCIO_TOKEN_ID = 'silencio';
             
             // Fetch data on component mount
             React.useEffect(() => {
@@ -368,26 +374,29 @@
             // Function to fetch data from API
             const fetchData = async () => {
                 try {
+                    console.log("Fetching data...");
                     setLoading(true);
                     
                     // Fetch total investment
-                    const totalRes = await fetch('/api/fuel/total-investment');
+                    const totalRes = await fetch('/api/silencio/total-investment');
                     if (!totalRes.ok) {
                         throw new Error('Failed to fetch total investment');
                     }
                     const totalData = await totalRes.json();
+                    console.log("Total investment:", totalData);
                     setTotalInvestment(totalData.total);
                     
                     // Fetch deposits
-                    const depositsRes = await fetch('/api/fuel/deposits');
+                    const depositsRes = await fetch('/api/silencio/deposits');
                     if (!depositsRes.ok) {
                         throw new Error('Failed to fetch deposits');
                     }
                     const depositsData = await depositsRes.json();
-                    setDeposits(depositsData.deposits || []);
+                    console.log("Deposits:", depositsData);
+                    setDeposits(depositsData.deposits);
                     
                     // Calculate statistics
-                    if (depositsData.deposits && depositsData.deposits.length > 0) {
+                    if (depositsData.deposits.length > 0) {
                         const amounts = depositsData.deposits.map(d => d.amount);
                         const sortedAmounts = [...amounts].sort((a, b) => a - b);
                         
@@ -415,7 +424,7 @@
                     setPriceData(prev => ({ ...prev, loading: true, error: null }));
                     
                     // CoinGecko API endpoint with API key
-                    const apiUrl = `https://api.coingecko.com/api/v3/coins/${FUEL_TOKEN_ID}?x_cg_demo_api_key=${COINGECKO_API_KEY}`;
+                    const apiUrl = `https://api.coingecko.com/api/v3/coins/${SILENCIO_TOKEN_ID}?x_cg_demo_api_key=${COINGECKO_API_KEY}`;
                     const response = await fetch(apiUrl);
                     
                     if (!response.ok) {
@@ -430,7 +439,7 @@
                     const lowestPrice = data.market_data.atl.usd;
                     
                     setPriceData({
-                        salePrice: 0.02, // Fixed sale price
+                        salePrice: 0.0006, // Fixed sale price
                         currentPrice,
                         athPrice,
                         lowestPrice,
@@ -584,7 +593,7 @@
                     <div className="flex items-center justify-center h-screen">
                         <div className="text-center p-8 card max-w-md">
                             <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                            <p className="mb-6">Loading FUEL Sale Data...</p>
+                            <p className="mb-6">Loading Silencio Sale Data...</p>
                         </div>
                     </div>
                 );
@@ -621,8 +630,8 @@
                     
                     {/* Header */}
                     <div className="header-card">
-                        <div className="header-title">FUEL</div>
-                        <img src="fuel.png" alt="FUEL Logo" className="h-16" />
+                        <div className="header-title">Silencio</div>
+                        <img src="silencio.png" alt="Silencio Logo" className="h-16" onerror="this.src='silencio.png';" />
                     </div>
                     
                     {/* Main Content Grid */}
@@ -663,7 +672,7 @@
                             
                             {/* Token Price Card */}
                             <div className="card p-6 mt-6">
-                                <div className="stats-title mb-4">FUEL Token Price</div>
+                                <div className="stats-title mb-4">Silencio Token Price</div>
                                 
                                 {priceData.loading ? (
                                     <div className="text-center p-4">
@@ -842,7 +851,7 @@
                         {/* Right Column - Investors Table */}
                         <div className="md:col-span-2">
                             <div className="card">
-                                <div className="p-4 border-b border-green-800">
+                                <div className="p-4 border-b border-gray-800">
                                     <div className="card-title">Top Investors</div>
                                     <div className="card-subtitle">Ranked by investment amount</div>
                                 </div>
@@ -918,12 +927,16 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div className="text-center text-gray-500 text-sm mt-6">
+                        Last updated: {new Date().toLocaleString()}
+                    </div>
                 </div>
             );
         }
         
         // Render the app to the DOM
-        ReactDOM.render(<FuelTracker />, document.getElementById('app'));
+        ReactDOM.render(<SilencioTracker />, document.getElementById('app'));
     </script>
 </body>
 </html>
