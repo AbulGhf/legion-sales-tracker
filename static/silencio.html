@@ -40,6 +40,7 @@
             align-items: center;
             margin-bottom: 20px;
             border: 1px solid rgba(40, 78, 233, 0.15);
+            box-shadow: 0 4px 12px rgba(40, 78, 233, 0.15);
         }
         
         .header-title {
@@ -50,11 +51,12 @@
         
         /* Cards */
         .card {
-            background-color: #1a1a1a;
+            background: linear-gradient(135deg, #1a1a1a 0%, #242424 100%);
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 20px;
             border: 1px solid rgba(40, 78, 233, 0.15);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
         
         .card-title {
@@ -74,6 +76,7 @@
             font-weight: bold;
             color: #284ee9;
             margin: 10px 0;
+            text-shadow: 0 0 10px rgba(40, 78, 233, 0.3);
         }
         
         /* Stats box */
@@ -85,13 +88,16 @@
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 15px;
+            color: #284ee9;
+            text-shadow: 0 0 10px rgba(40, 78, 233, 0.3);
         }
         
         .stats-card {
-            background-color: #121827;
+            background: linear-gradient(90deg, rgba(18, 24, 39, 0.7) 0%, rgba(30, 36, 60, 0.7) 100%);
             border-left: 4px solid #284ee9;
             padding: 15px;
             margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         .stats-label {
@@ -103,6 +109,14 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: #284ee9;
+        }
+        
+        .profit-positive {
+            color: #3dd656;
+        }
+        
+        .profit-negative {
+            color: #ff6b6b;
         }
         
         /* Table */
@@ -201,12 +215,16 @@
         
         .pagination-button:hover {
             background-color: #4367f0;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(40, 78, 233, 0.4);
         }
         
         .pagination-button:disabled {
             background-color: #132c8a;
             color: #97abf5;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .pagination-info {
@@ -229,6 +247,77 @@
         
         .back-button:hover {
             background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Price card */
+        .price-card {
+            background: linear-gradient(90deg, rgba(18, 24, 39, 0.7) 0%, rgba(30, 36, 60, 0.7) 100%);
+            border-left: 4px solid #284ee9;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Calculator */
+        .calculator-card {
+            background: linear-gradient(135deg, rgba(13, 33, 102, 0.7) 0%, rgba(26, 56, 137, 0.7) 100%);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid rgba(40, 78, 233, 0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .calculator-input {
+            background: linear-gradient(135deg, rgba(10, 15, 40, 0.8) 0%, rgba(20, 30, 70, 0.8) 100%);
+            border: 1px solid rgba(40, 78, 233, 0.3);
+            padding: 8px 12px;
+            border-radius: 4px;
+            color: white;
+            width: 100%;
+            margin: 8px 0;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .calculator-input:focus {
+            outline: none;
+            border-color: #284ee9;
+            box-shadow: 0 0 0 2px rgba(40, 78, 233, 0.2);
+        }
+        
+        .tab-button {
+            background: linear-gradient(to bottom, rgba(13, 33, 102, 0.5) 0%, rgba(10, 25, 80, 0.5) 100%);
+            border: 1px solid rgba(40, 78, 233, 0.2);
+            padding: 8px 12px;
+            border-radius: 4px 4px 0 0;
+            color: white;
+            cursor: pointer;
+            margin-right: 4px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .tab-button:hover {
+            background: linear-gradient(to bottom, rgba(20, 45, 120, 0.6) 0%, rgba(15, 35, 100, 0.6) 100%);
+        }
+        
+        .tab-button.active {
+            background: linear-gradient(to bottom, rgba(30, 60, 150, 0.9) 0%, rgba(20, 45, 120, 0.9) 100%);
+            border-bottom: none;
+            font-weight: 600;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, rgba(10, 25, 60, 0.8) 0%, rgba(15, 35, 80, 0.8) 100%);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            border: 1px solid rgba(40, 78, 233, 0.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
@@ -254,13 +343,32 @@
                 lowest: 0
             });
             
+            // New state for token price data
+            const [priceData, setPriceData] = React.useState({
+                salePrice: 0.0006, // Default sale price
+                currentPrice: 0,
+                athPrice: 0,
+                lowestPrice: 0,
+                loading: true,
+                error: null
+            });
+            
+            // Calculator state
+            const [calculatorMode, setCalculatorMode] = React.useState('amount'); // 'amount' or 'address'
+            const [inputValue, setInputValue] = React.useState('');
+            const [calculationResult, setCalculationResult] = React.useState(null);
+            const [calculatorLoading, setCalculatorLoading] = React.useState(false);
+            
             // Constants
             const CONTRACT_ADDRESS = '0x448537DB42ee64146b67A71E3f9cE835E2d08f30';
             const depositsPerPage = 10;
+            const COINGECKO_API_KEY = 'CG-4Fnx2x1Ga65oHP6HufVGevXh';
+            const SILENCIO_TOKEN_ID = 'silencio';
             
             // Fetch data on component mount
             React.useEffect(() => {
                 fetchData();
+                fetchTokenPriceData();
             }, []);
             
             // Function to fetch data from API
@@ -310,8 +418,132 @@
                 }
             };
             
-            // Function to format currency
-            const formatAmount = (amount) => {
+            // Fetch token price data from CoinGecko
+            const fetchTokenPriceData = async () => {
+                try {
+                    setPriceData(prev => ({ ...prev, loading: true, error: null }));
+                    
+                    // CoinGecko API endpoint with API key
+                    const apiUrl = `https://api.coingecko.com/api/v3/coins/${SILENCIO_TOKEN_ID}?x_cg_demo_api_key=${COINGECKO_API_KEY}`;
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch token price data');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Extract price data
+                    const currentPrice = data.market_data.current_price.usd;
+                    const athPrice = data.market_data.ath.usd;
+                    const lowestPrice = data.market_data.atl.usd;
+                    
+                    setPriceData({
+                        salePrice: 0.0006, // Fixed sale price
+                        currentPrice,
+                        athPrice,
+                        lowestPrice,
+                        loading: false,
+                        error: null
+                    });
+                    
+                } catch (err) {
+                    console.error("Error fetching token price data:", err);
+                    setPriceData(prev => ({
+                        ...prev,
+                        loading: false,
+                        error: err.message
+                    }));
+                }
+            };
+            
+            // Calculate PnL at different price points
+            const calculatePnL = (investmentAmount) => {
+                const tokensReceived = investmentAmount / priceData.salePrice;
+                
+                const currentValue = tokensReceived * priceData.currentPrice;
+                const athValue = tokensReceived * priceData.athPrice;
+                const lowestValue = tokensReceived * priceData.lowestPrice;
+                
+                const currentPnL = currentValue - investmentAmount;
+                const currentPnLPercent = (currentPnL / investmentAmount) * 100;
+                
+                const athPnL = athValue - investmentAmount;
+                const athPnLPercent = (athPnL / investmentAmount) * 100;
+                
+                const lowestPnL = lowestValue - investmentAmount;
+                const lowestPnLPercent = (lowestPnL / investmentAmount) * 100;
+                
+                return {
+                    tokensReceived,
+                    currentValue,
+                    currentPnL,
+                    currentPnLPercent,
+                    athValue,
+                    athPnL,
+                    athPnLPercent,
+                    lowestValue,
+                    lowestPnL,
+                    lowestPnLPercent
+                };
+            };
+            
+            // Handle calculate button click
+            const handleCalculate = async () => {
+                if (!inputValue) return;
+                
+                setCalculatorLoading(true);
+                
+                try {
+                    let investmentAmount = 0;
+                    
+                    if (calculatorMode === 'address') {
+                        // Fetch investment amount from address
+                        const deposit = deposits.find(d => d.address.toLowerCase() === inputValue.toLowerCase());
+                        
+                        if (deposit) {
+                            investmentAmount = deposit.amount;
+                        } else {
+                            throw new Error('Address not found in deposits');
+                        }
+                    } else {
+                        // Use directly entered amount
+                        investmentAmount = parseFloat(inputValue);
+                        
+                        if (isNaN(investmentAmount) || investmentAmount <= 0) {
+                            throw new Error('Please enter a valid amount');
+                        }
+                    }
+                    
+                    const result = calculatePnL(investmentAmount);
+                    setCalculationResult({
+                        investmentAmount,
+                        ...result
+                    });
+                    
+                } catch (err) {
+                    setCalculationResult({
+                        error: err.message
+                    });
+                } finally {
+                    setCalculatorLoading(false);
+                }
+            };
+            
+            // Function to format currency with appropriate decimal places
+            const formatAmount = (amount, isTokenPrice = false) => {
+                // For token prices, show more decimal places if value is small
+                if (isTokenPrice) {
+                    if (amount < 0.01) {
+                        return '$' + amount.toFixed(6);
+                    } else if (amount < 1) {
+                        return '$' + amount.toFixed(5);
+                    } else if (amount < 10) {
+                        return '$' + amount.toFixed(4);
+                    }
+                }
+                
+                // Standard formatting for other amounts
                 return amount.toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
@@ -343,6 +575,17 @@
             const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
             const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
             const totalPages = Math.max(1, Math.ceil(deposits.length / depositsPerPage));
+            
+            // Calculate overall token performance
+            const getCurrentPnLPercent = () => {
+                if (priceData.loading || priceData.error) return null;
+                return ((priceData.currentPrice - priceData.salePrice) / priceData.salePrice) * 100;
+            };
+            
+            const getAthPnLPercent = () => {
+                if (priceData.loading || priceData.error) return null;
+                return ((priceData.athPrice - priceData.salePrice) / priceData.salePrice) * 100;
+            };
             
             // Show loading state
             if (loading) {
@@ -403,7 +646,7 @@
                             </div>
                             
                             {/* Stats section */}
-                            <div className="stats-section">
+                            <div className="card p-6 mt-6">
                                 <div className="stats-title">Investment Stats</div>
                                 
                                 <div className="stats-card">
@@ -424,6 +667,183 @@
                                 <div className="stats-card">
                                     <div className="stats-label">Lowest</div>
                                     <div className="stats-value">{formatAmount(stats.lowest)}</div>
+                                </div>
+                            </div>
+                            
+                            {/* Token Price Card */}
+                            <div className="card p-6 mt-6">
+                                <div className="stats-title mb-4">Silencio Token Price</div>
+                                
+                                {priceData.loading ? (
+                                    <div className="text-center p-4">
+                                        <div className="inline-block w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin mb-2"></div>
+                                        <p>Loading price data...</p>
+                                    </div>
+                                ) : priceData.error ? (
+                                    <div className="text-center text-red-400 p-4">
+                                        <p>Error loading price data</p>
+                                        <button 
+                                            onClick={fetchTokenPriceData} 
+                                            className="pagination-button mt-4 text-sm"
+                                        >
+                                            Retry
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        <div className="price-card">
+                                            <div className="stats-label">Sale Price</div>
+                                            <div className="stats-value">{formatAmount(priceData.salePrice, true)}</div>
+                                        </div>
+                                        
+                                        <div className="price-card">
+                                            <div className="stats-label">Current Price</div>
+                                            <div className="stats-value">{formatAmount(priceData.currentPrice, true)}</div>
+                                        </div>
+                                        
+                                        <div className="price-card">
+                                            <div className="stats-label">All-Time High</div>
+                                            <div className="stats-value">{formatAmount(priceData.athPrice, true)}</div>
+                                        </div>
+                                        
+                                        <div className="price-card">
+                                            <div className="stats-label">All-Time Low</div>
+                                            <div className="stats-value">{formatAmount(priceData.lowestPrice, true)}</div>
+                                        </div>
+                                        
+                                        <div className="price-card">
+                                            <div className="stats-label">Current ROI</div>
+                                            <div className={`stats-value ${getCurrentPnLPercent() >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                {getCurrentPnLPercent() !== null ? `${getCurrentPnLPercent().toFixed(2)}%` : 'N/A'}
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="price-card">
+                                            <div className="stats-label">ATH ROI</div>
+                                            <div className={`stats-value ${getAthPnLPercent() >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                {getAthPnLPercent() !== null ? `${getAthPnLPercent().toFixed(2)}%` : 'N/A'}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            {/* Investment Calculator */}
+                            <div className="card p-6 mt-6">
+                                <div className="stats-title mb-4">ROI Calculator</div>
+                                <div className="card-subtitle mb-4">Calculate your investment performance</div>
+                                
+                                <div className="flex mb-4">
+                                    <button 
+                                        className={`tab-button ${calculatorMode === 'amount' ? 'active' : ''}`}
+                                        onClick={() => setCalculatorMode('amount')}
+                                    >
+                                        USDC Amount
+                                    </button>
+                                    <button 
+                                        className={`tab-button ${calculatorMode === 'address' ? 'active' : ''}`}
+                                        onClick={() => setCalculatorMode('address')}
+                                    >
+                                        Wallet Address
+                                    </button>
+                                </div>
+                                
+                                <div className="bg-opacity-30 bg-black p-4 rounded">
+                                    {calculatorMode === 'amount' ? (
+                                        <div>
+                                            <label className="block text-sm mb-1">Enter USDC Investment Amount</label>
+                                            <input 
+                                                type="number" 
+                                                className="calculator-input" 
+                                                placeholder="e.g. 1000" 
+                                                value={inputValue}
+                                                onChange={(e) => setInputValue(e.target.value)}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <label className="block text-sm mb-1">Enter Wallet Address</label>
+                                            <input 
+                                                type="text" 
+                                                className="calculator-input" 
+                                                placeholder="0x..." 
+                                                value={inputValue}
+                                                onChange={(e) => setInputValue(e.target.value)}
+                                            />
+                                        </div>
+                                    )}
+                                    
+                                    <button 
+                                        className="pagination-button w-full mt-4"
+                                        onClick={handleCalculate}
+                                        disabled={calculatorLoading || !inputValue || priceData.loading}
+                                    >
+                                        {calculatorLoading ? 'Calculating...' : 'Calculate'}
+                                    </button>
+                                    
+                                    {calculationResult && !calculationResult.error && (
+                                        <div className="result-card mt-4">
+                                            <div className="text-sm text-gray-400 mb-2">Investment Results</div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Investment:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.investmentAmount)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Tokens Received:</span>
+                                                <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()}</span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Current Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.currentValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Current P&L:</span>
+                                                <span className={`font-medium ${calculationResult.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.currentPnL)} ({calculationResult.currentPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>ATH Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.athValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>ATH P&L:</span>
+                                                <span className={`font-medium ${calculationResult.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.athPnL)} ({calculationResult.athPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Lowest Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.lowestValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between">
+                                                <span>Lowest P&L:</span>
+                                                <span className={`font-medium ${calculationResult.lowestPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.lowestPnL)} ({calculationResult.lowestPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {calculationResult && calculationResult.error && (
+                                        <div className="result-card mt-4 text-red-400">
+                                            {calculationResult.error}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
