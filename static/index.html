@@ -656,6 +656,24 @@
     background-color: #424242;
 }
 
+        /* Silencio */
+        .silencio-row {
+            border-left: 3px solid #284ee9;
+        }
+        
+        .silencio-color {
+            color: #284ee9;
+        }
+        
+        .silencio-button {
+            background-color: #284ee9;
+            color: #ffffff;
+        }
+        
+        .silencio-button:hover {
+            background-color: #4367f0;
+        }
+
         /* Responsive adjustments */
         @media screen and (max-width: 1200px) {
             .stats-row {
@@ -928,30 +946,31 @@
     </main>
     
     <script>
-        // Define the sales data structure
-        const sales = [
-            { id: 'almanak', name: 'ALMANAK', className: 'almanak' },
-            { id: 'giza', name: 'Giza', className: 'giza' },
-            { id: 'skate', name: 'Skate Chain', className: 'skate' },
-            { id: 'pulse', name: 'Pulse', className: 'pulse' },
-            { id: 'fuel', name: 'FUEL', className: 'fuel' },
-            { id: 'electron', name: 'Electron', className: 'electron' },
-            { id: 'nil', name: '=nil;', className: 'nil' },
-            { id: 'corn', name: 'corn', className: 'corn' },
-            { id: 'enclave', name: 'Enclave', className: 'enclave' }
-        ];
+const sales = [
+    { id: 'almanak', name: 'ALMANAK', className: 'almanak' },
+    { id: 'giza', name: 'Giza', className: 'giza' },
+    { id: 'skate', name: 'Skate Chain', className: 'skate' },
+    { id: 'pulse', name: 'Pulse', className: 'pulse' },
+    { id: 'fuel', name: 'FUEL', className: 'fuel' },
+    { id: 'electron', name: 'Electron', className: 'electron' },
+    { id: 'nil', name: '=nil;', className: 'nil' },
+    { id: 'corn', name: 'corn', className: 'corn' },
+    { id: 'enclave', name: 'Enclave', className: 'enclave' },
+    { id: 'silencio', name: 'Silencio', className: 'silencio' }
+];
         
         // Chart colors that match project branding
         const chartColors = {
-    almanak: '#a0c4ff',   /* Updated from #ffffff */
-    giza: '#ffd166',      /* Updated from #fffdf0 */
-    skate: '#c5ff33',     /* No change */
-    pulse: '#b14aff',     /* No change */
-    fuel: '#00f58c',      /* No change */
-    electron: '#92c2ff',  /* No change */
-    corn: '#ff931e',      /* No change */
-    enclave: '#60c2ff',   /* No change */
-    nil: '#c9b6e4'        /* Updated from #ffffff */
+    almanak: '#a0c4ff',
+    giza: '#ffd166',
+    skate: '#c5ff33',
+    pulse: '#b14aff',
+    fuel: '#00f58c',
+    electron: '#92c2ff',
+    corn: '#ff931e',
+    enclave: '#60c2ff',
+    nil: '#c9b6e4',
+    silencio: '#284ee9'  // Silencio color
 };
         
         // Data storage for all sales
