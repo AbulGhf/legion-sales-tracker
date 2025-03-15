@@ -278,7 +278,7 @@
             background: linear-gradient(90deg, #1d1d28 0%, #242433 100%);
             border-bottom: 1px solid #2a2a3a;
             display: grid;
-            grid-template-columns: 60px minmax(150px, 1fr) minmax(150px, 1fr) minmax(120px, 1fr) 120px;
+            grid-template-columns: 60px minmax(150px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) 120px;
             padding: 0.75rem 1rem;
             font-weight: 600;
             color: #b0b0b0;
@@ -313,7 +313,7 @@
         /* Table row */
         .table-row {
             display: grid;
-            grid-template-columns: 60px minmax(150px, 1fr) minmax(150px, 1fr) minmax(120px, 1fr) 120px;
+            grid-template-columns: 60px minmax(150px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) 120px;
             padding: 0.75rem 1rem;
             align-items: center;
             border-bottom: 1px solid #1a1a1a;
@@ -328,7 +328,7 @@
         /* Loading skeleton */
         .skeleton-row {
             display: grid;
-            grid-template-columns: 60px minmax(150px, 1fr) minmax(150px, 1fr) minmax(120px, 1fr) 120px;
+            grid-template-columns: 60px minmax(150px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) 120px;
             padding: 0.75rem 1rem;
             align-items: center;
             border-bottom: 1px solid #1a1a1a;
@@ -400,6 +400,12 @@
 
         /* Investor count styling */
         .sale-investors {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        /* Token price styling */
+        .token-price {
             font-size: 1.125rem;
             font-weight: 600;
         }
@@ -679,6 +685,10 @@
             .stats-row {
                 grid-template-columns: repeat(2, 1fr);
             }
+            
+            .table-header, .table-row, .skeleton-row {
+                grid-template-columns: 60px minmax(120px, 1fr) minmax(120px, 1fr) minmax(80px, 1fr) minmax(80px, 1fr) 100px;
+            }
         }
 
         @media screen and (max-width: 992px) {
@@ -696,8 +706,8 @@
                 grid-template-columns: 1fr;
             }
             
-            .table-row, .table-header {
-                grid-template-columns: 60px 1fr 1fr 120px;
+            .table-header, .table-row, .skeleton-row {
+                grid-template-columns: 60px 1fr 1fr 1fr 120px;
             }
             
             .table-row > div:nth-child(4), .table-header > div:nth-child(4) {
@@ -710,11 +720,12 @@
                 font-size: 1.8rem;
             }
             
-            .table-row, .table-header {
-                grid-template-columns: 60px 1fr 120px;
+            .table-header, .table-row, .skeleton-row {
+                grid-template-columns: 60px 1fr 1fr 120px;
             }
             
-            .table-row > div:nth-child(3), .table-header > div:nth-child(3) {
+            .table-row > div:nth-child(3), .table-header > div:nth-child(3),
+            .table-row > div:nth-child(5), .table-header > div:nth-child(5) {
                 display: none;
             }
         }
@@ -820,6 +831,7 @@
                             <div>Sale</div>
                             <div>Invested</div>
                             <div>Investors</div>
+                            <div>Token Price</div>
                             <div></div>
                         </div>
                         
@@ -831,12 +843,6 @@
                                 <div><div class="skeleton skeleton-text-lg"></div></div>
                                 <div><div class="skeleton skeleton-text-lg"></div></div>
                                 <div><div class="skeleton skeleton-text"></div></div>
-                                <div><div class="skeleton skeleton-button"></div></div>
-                            </div>
-                            <div class="skeleton-row">
-                                <div><div class="skeleton skeleton-logo"></div></div>
-                                <div><div class="skeleton skeleton-text-lg"></div></div>
-                                <div><div class="skeleton skeleton-text-lg"></div></div>
                                 <div><div class="skeleton skeleton-text"></div></div>
                                 <div><div class="skeleton skeleton-button"></div></div>
                             </div>
@@ -844,6 +850,15 @@
                                 <div><div class="skeleton skeleton-logo"></div></div>
                                 <div><div class="skeleton skeleton-text-lg"></div></div>
                                 <div><div class="skeleton skeleton-text-lg"></div></div>
+                                <div><div class="skeleton skeleton-text"></div></div>
+                                <div><div class="skeleton skeleton-text"></div></div>
+                                <div><div class="skeleton skeleton-button"></div></div>
+                            </div>
+                            <div class="skeleton-row">
+                                <div><div class="skeleton skeleton-logo"></div></div>
+                                <div><div class="skeleton skeleton-text-lg"></div></div>
+                                <div><div class="skeleton skeleton-text-lg"></div></div>
+                                <div><div class="skeleton skeleton-text"></div></div>
                                 <div><div class="skeleton skeleton-text"></div></div>
                                 <div><div class="skeleton skeleton-button"></div></div>
                             </div>
@@ -972,6 +987,14 @@ const sales = [
     nil: '#c9b6e4',
     silencio: '#284ee9'  // Silencio color
 };
+
+        // Token prices data
+        const tokenPrices = {
+            fuel: "0.02",
+            silencio: "0.0006",
+            skate: "0.08"
+            // All other tokens will display as N/A
+        };
         
         // Data storage for all sales
         let salesData = [];
@@ -995,6 +1018,11 @@ const sales = [
             return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
         }
         
+        // Function to get token price
+        function getTokenPrice(saleId) {
+            return tokenPrices[saleId] ? `$${tokenPrices[saleId]}` : 'N/A';
+        }
+        
         // Function to fetch data for a sale
         async function fetchSaleData(sale) {
             try {
@@ -1015,6 +1043,7 @@ const sales = [
                     avgInvestment: statsData.average_allocation,
                     highestAllocation: statsData.highest_allocation,
                     lowestAllocation: statsData.lowest_allocation,
+                    tokenPrice: getTokenPrice(sale.id),
                     // For Skate, we're considering it the only active sale
                     isActive: sale.id === 'skate'
                 };
@@ -1050,6 +1079,7 @@ const sales = [
                         // Default values for allocations
                         highestAllocation: { address: "Unknown", amount: 0 },
                         lowestAllocation: { address: "Unknown", amount: 0 },
+                        tokenPrice: getTokenPrice(sale.id),
                         // For Skate, we're considering it the only active sale
                         isActive: sale.id === 'skate'
                     };
@@ -1066,6 +1096,7 @@ const sales = [
                         avgInvestment: 0,
                         highestAllocation: { address: "Unknown", amount: 0 },
                         lowestAllocation: { address: "Unknown", amount: 0 },
+                        tokenPrice: getTokenPrice(sale.id),
                         isActive: false,
                         error: true
                     };
@@ -1079,7 +1110,7 @@ const sales = [
             row.className = `table-row ${sale.className}-row`;
             
             const amount = sale.error ? 'Error' : `${formatCurrency(sale.invested).replace('$', '')} USDC`;
-            const investors = sale.error ? 'Error' : `${sale.investors} addresses`;
+            const investors = sale.error ? 'Error' : `${sale.investors}`;
             
             row.innerHTML = `
                 <div class="logo-container">
@@ -1093,6 +1124,7 @@ const sales = [
                 <div class="sale-name">${sale.name}</div>
                 <div class="sale-amount ${sale.className}-color">${amount}</div>
                 <div class="sale-investors">${investors}</div>
+                <div class="token-price ${sale.className}-color">${sale.tokenPrice}</div>
                 <div>
                     <a href="/${sale.id}.html" class="action-button ${sale.className}-button">View Details</a>
                 </div>
