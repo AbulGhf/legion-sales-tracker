@@ -15,6 +15,7 @@
             background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
             color: white;
             font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
         }
 
         /* Update header with gradient */
@@ -25,6 +26,7 @@
             padding: 0.75rem 0;
             margin-bottom: 1rem;
             position: relative;
+            width: 100%;
         }
 
         .header-content {
@@ -36,13 +38,13 @@
 
         /* Logo image styling */
         .header-logo-image {
-            height: 50px;
-            margin-right: 1rem;
+            height: 40px;
+            margin-right: 0.75rem;
         }
 
         .header-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: 800;
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -54,7 +56,7 @@
         .dashboard-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1.5rem;
+            padding: 1rem;
             background: linear-gradient(0deg, rgba(20, 20, 30, 0.3) 0%, rgba(15, 15, 25, 0.3) 100%);
             border-radius: 12px;
             border: 1px solid rgba(255, 87, 34, 0.1);
@@ -66,7 +68,7 @@
             display: grid;
             grid-template-columns: 380px 1fr;
             gap: 1.5rem;
-            margin-bottom: 1rem; /* Reduced from 2rem */
+            margin-bottom: 1rem;
         }
 
         .bottom-section {
@@ -78,7 +80,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
-            height: 450px; /* Fixed height for consistency */
+            height: 450px;
         }
 
         .stats-row .stats-card {
@@ -101,7 +103,7 @@
 
         /* Full-width stats cards for better space usage */
         .left-column .stats-card {
-            margin-bottom: 1rem; /* Reduced from 1.5rem */
+            margin-bottom: 1rem;
         }
 
         /* Enhanced live feed - taller */
@@ -214,6 +216,24 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 8px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #FF5722 #242433;
+        }
+
+        .filter-bar::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .filter-bar::-webkit-scrollbar-track {
+            background: #242433;
+        }
+
+        .filter-bar::-webkit-scrollbar-thumb {
+            background-color: #FF5722;
+            border-radius: 3px;
         }
 
         .filter-button {
@@ -224,10 +244,11 @@
             border-radius: 4px;
             font-size: 0.85rem;
             font-weight: 600;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
             transition: all 0.2s ease;
+            margin-right: 4px;
         }
 
         .filter-button:hover {
@@ -246,6 +267,9 @@
         .search-container {
             margin-left: auto;
             position: relative;
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+            width: 200px;
         }
 
         /* Search input styling */
@@ -256,7 +280,7 @@
             padding: 0.35rem 1rem 0.35rem 2.5rem;
             border-radius: 4px;
             font-size: 0.85rem;
-            width: 200px;
+            width: 100%;
         }
 
         .search-input:focus {
@@ -286,10 +310,33 @@
             letter-spacing: 0.5px;
         }
 
+        /* Table container with horizontal scroll */
+        .table-scroll-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #FF5722 #242433;
+        }
+        
+        .table-scroll-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .table-scroll-container::-webkit-scrollbar-track {
+            background: #242433;
+            border-radius: 3px;
+        }
+        
+        .table-scroll-container::-webkit-scrollbar-thumb {
+            background-color: #FF5722;
+            border-radius: 3px;
+        }
+        
         /* Table body */
         .table-body {
             flex: 1;
-            min-height: 500px;
+            min-height: 300px;
             max-height: calc(100vh - 350px);
             overflow-y: auto;
             scrollbar-width: thin;
@@ -318,6 +365,7 @@
             align-items: center;
             border-bottom: 1px solid #1a1a1a;
             transition: all 0.2s ease;
+            min-width: 900px; /* Ensure minimum width for scrolling */
         }
 
         /* Table row hover effect */
@@ -443,7 +491,7 @@
 
         /* Live feed card special styling */
         .live-feed {
-            max-height: 350px; /* Increased height */
+            max-height: 350px;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #FF5722 #242433;
@@ -518,39 +566,39 @@
 
         /* Project-specific styles */
         .almanak-row {
-    border-left: 3px solid #a0c4ff; /* Changed from #ffffff */
-}
+            border-left: 3px solid #a0c4ff;
+        }
 
-.almanak-color {
-    color: #a0c4ff; /* Changed from #ffffff */
-}
+        .almanak-color {
+            color: #a0c4ff;
+        }
 
-.almanak-button {
-    background-color: #a0c4ff; /* Changed from #f5f5f5 */
-    color: #000000;
-}
+        .almanak-button {
+            background-color: #a0c4ff;
+            color: #000000;
+        }
 
-.almanak-button:hover {
-    background-color: #b8d3ff; /* Changed from #ffffff */
-}
+        .almanak-button:hover {
+            background-color: #b8d3ff;
+        }
 
-/* Giza - changed from cream to gold/amber */
-.giza-row {
-    border-left: 3px solid #ffd166; /* Changed from #fffdf0 */
-}
+        /* Giza - changed from cream to gold/amber */
+        .giza-row {
+            border-left: 3px solid #ffd166;
+        }
 
-.giza-color {
-    color: #ffd166; /* Changed from #fffdf0 */
-}
+        .giza-color {
+            color: #ffd166;
+        }
 
-.giza-button {
-    background-color: #ffd166; /* Changed from #fffdf0 */
-    color: #000000;
-}
+        .giza-button {
+            background-color: #ffd166;
+            color: #000000;
+        }
 
-.giza-button:hover {
-    background-color: #ffda85; /* Changed from #f5f3e6 */
-}
+        .giza-button:hover {
+            background-color: #ffda85;
+        }
         
         /* Skate Chain */
         .skate-row {
@@ -661,21 +709,21 @@
         }
         
         .nil-row {
-    border-left: 3px solid #c9b6e4; /* Changed from #ffffff */
-}
+            border-left: 3px solid #c9b6e4;
+        }
 
-.nil-color {
-    color: #c9b6e4; /* Changed from #ffffff */
-}
+        .nil-color {
+            color: #c9b6e4;
+        }
 
-.nil-button {
-    background-color: #323232;
-    color: #ffffff;
-}
+        .nil-button {
+            background-color: #323232;
+            color: #ffffff;
+        }
 
-.nil-button:hover {
-    background-color: #424242;
-}
+        .nil-button:hover {
+            background-color: #424242;
+        }
 
         /* Silencio */
         .silencio-row {
@@ -695,18 +743,14 @@
             background-color: #4367f0;
         }
 
-        /* Responsive adjustments */
+        /* IMPROVED RESPONSIVE DESIGN FOR MOBILE */
         @media screen and (max-width: 1200px) {
             .stats-row {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .table-header, .table-row, .skeleton-row {
-                grid-template-columns: 60px minmax(120px, 1fr) minmax(120px, 1fr) minmax(80px, 0.6fr) minmax(80px, 0.6fr) 100px;
-            }
-            
-            .table-row > div:nth-child(6), .table-header > div:nth-child(6) {
-                display: none;
+            .dashboard-container {
+                padding: 1rem 0.75rem;
             }
         }
 
@@ -718,35 +762,127 @@
             .bottom-section {
                 margin-top: 1rem;
             }
+            
+            .stats-card {
+                padding: 1rem;
+            }
+            
+            .dashboard-container {
+                padding: 0.75rem;
+                border-radius: 8px;
+            }
+
+            .search-container {
+                margin-left: auto;
+            }
         }
 
         @media screen and (max-width: 768px) {
             .stats-row {
                 grid-template-columns: 1fr;
+                height: auto;
             }
             
-            .table-header, .table-row, .skeleton-row {
-                grid-template-columns: 60px 1fr 1fr 1fr 120px;
+            .stats-row .stats-card {
+                height: auto;
+                min-height: 300px;
             }
             
-            .table-row > div:nth-child(4), .table-header > div:nth-child(4),
-            .table-row > div:nth-child(6), .table-header > div:nth-child(6) {
-                display: none;
+            .chart-container {
+                min-height: 250px;
+            }
+            
+            .main-header {
+                padding: 0.5rem 0;
+            }
+            
+            .header-logo-image {
+                height: 30px;
+                margin-right: 0.5rem;
+            }
+            
+            .header-title {
+                font-size: 1.5rem;
+                letter-spacing: 1px;
+            }
+            
+            /* Make filter bar scrollable on mobile */
+            .filter-bar {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            /* Add hint for horizontal scroll on mobile */
+            .table-container::after {
+                content: "Swipe horizontally to view complete table →";
+                display: block;
+                text-align: center;
+                padding: 8px;
+                font-size: 0.8rem;
+                color: #FF5722;
+                background: rgba(255, 87, 34, 0.1);
+                border-bottom-left-radius: 8px;
+                border-bottom-right-radius: 8px;
+                font-style: italic;
             }
         }
 
         @media screen and (max-width: 580px) {
             .header-title {
-                font-size: 1.8rem;
+                font-size: 1.2rem;
+                letter-spacing: 0.5px;
             }
             
-            .table-header, .table-row, .skeleton-row {
-                grid-template-columns: 60px 1fr 1fr 120px;
+            .header-logo-image {
+                height: 28px;
             }
             
-            .table-row > div:nth-child(3), .table-header > div:nth-child(3),
-            .table-row > div:nth-child(5), .table-header > div:nth-child(5) {
-                display: none;
+            /* Keep the 2-column layout for stats on mobile */
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+            
+            .stats-title {
+                font-size: 1rem;
+            }
+            
+            #investor-count .stats-title,
+            #investment-distribution .stats-title {
+                font-size: 1.1rem;
+            }
+            
+            .sale-name {
+                font-size: 0.95rem;
+            }
+            
+            .sale-amount {
+                font-size: 0.95rem;
+            }
+            
+            .action-button {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.5rem;
+            }
+            
+            .dashboard-container {
+                padding: 0.5rem;
+                border-radius: 6px;
+            }
+        }
+        
+        @media screen and (max-width: 400px) {
+            .header-title {
+                font-size: 1rem;
+            }
+            
+            .header-logo-image {
+                height: 24px;
+            }
+            
+            .action-button {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -845,46 +981,49 @@
                             </div>
                         </div>
                         
-                        <!-- Table Header -->
-                        <div class="table-header">
-                            <div></div>
-                            <div>Sale</div>
-                            <div>Invested</div>
-                            <div>Investors</div>
-                            <div>Sale Price</div>
-                            <div>Live Price</div>
-                            <div></div>
-                        </div>
-                        
-                        <!-- Table Body -->
-                        <div class="table-body" id="sales-table">
-                            <!-- Loading skeletons -->
-                            <div class="skeleton-row">
-                                <div><div class="skeleton skeleton-logo"></div></div>
-                                <div><div class="skeleton skeleton-text-lg"></div></div>
-                                <div><div class="skeleton skeleton-text-lg"></div></div>
-                                <div><div class="skeleton skeleton-text"></div></div>
-                                <div><div class="skeleton skeleton-text"></div></div>
-                                <div><div class="skeleton skeleton-text"></div></div>
-                                <div><div class="skeleton skeleton-button"></div></div>
+                        <!-- Table Content with Horizontal Scroll -->
+                        <div class="table-scroll-container">
+                            <!-- Table Header -->
+                            <div class="table-header">
+                                <div></div>
+                                <div>Sale</div>
+                                <div>Invested</div>
+                                <div>Investors</div>
+                                <div>Sale Price</div>
+                                <div>Live Price</div>
+                                <div></div>
                             </div>
-                            <div class="skeleton-row">
-                                <div><div class="skeleton skeleton-logo"></div></div>
-                                <div><div class="skeleton skeleton-text-lg"></div></div>
-                                <div><div class="skeleton skeleton-text-lg"></div></div>
-                                <div><div class="skeleton skeleton-text"></div></div>
-                                <div><div class="skeleton skeleton-text"></div></div>
-                                <div><div class="skeleton skeleton-text"></div></div>
-                                <div><div class="skeleton skeleton-button"></div></div>
-                            </div>
-                            <div class="skeleton-row">
-                                <div><div class="skeleton skeleton-logo"></div></div>
-                                <div><div class="skeleton skeleton-text-lg"></div></div>
-                                <div><div class="skeleton skeleton-text-lg"></div></div>
-                                <div><div class="skeleton skeleton-text"></div></div>
-                                <div><div class="skeleton skeleton-text"></div></div>
-                                <div><div class="skeleton skeleton-text"></div></div>
-                                <div><div class="skeleton skeleton-button"></div></div>
+                            
+                            <!-- Table Body -->
+                            <div class="table-body" id="sales-table">
+                                <!-- Loading skeletons -->
+                                <div class="skeleton-row">
+                                    <div><div class="skeleton skeleton-logo"></div></div>
+                                    <div><div class="skeleton skeleton-text-lg"></div></div>
+                                    <div><div class="skeleton skeleton-text-lg"></div></div>
+                                    <div><div class="skeleton skeleton-text"></div></div>
+                                    <div><div class="skeleton skeleton-text"></div></div>
+                                    <div><div class="skeleton skeleton-text"></div></div>
+                                    <div><div class="skeleton skeleton-button"></div></div>
+                                </div>
+                                <div class="skeleton-row">
+                                    <div><div class="skeleton skeleton-logo"></div></div>
+                                    <div><div class="skeleton skeleton-text-lg"></div></div>
+                                    <div><div class="skeleton skeleton-text-lg"></div></div>
+                                    <div><div class="skeleton skeleton-text"></div></div>
+                                    <div><div class="skeleton skeleton-text"></div></div>
+                                    <div><div class="skeleton skeleton-text"></div></div>
+                                    <div><div class="skeleton skeleton-button"></div></div>
+                                </div>
+                                <div class="skeleton-row">
+                                    <div><div class="skeleton skeleton-logo"></div></div>
+                                    <div><div class="skeleton skeleton-text-lg"></div></div>
+                                    <div><div class="skeleton skeleton-text-lg"></div></div>
+                                    <div><div class="skeleton skeleton-text"></div></div>
+                                    <div><div class="skeleton skeleton-text"></div></div>
+                                    <div><div class="skeleton skeleton-text"></div></div>
+                                    <div><div class="skeleton skeleton-button"></div></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1373,15 +1512,15 @@ const sales = [
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'right',
+                            position: window.innerWidth < 768 ? 'bottom' : 'right',
                             labels: {
                                 color: '#b0b0b0',
                                 font: {
                                     family: "'Rajdhani', sans-serif",
-                                    size: 11
+                                    size: window.innerWidth < 768 ? 9 : 11
                                 },
-                                boxWidth: 12,
-                                padding: 10
+                                boxWidth: window.innerWidth < 768 ? 8 : 12,
+                                padding: window.innerWidth < 768 ? 6 : 10
                             }
                         },
                         tooltip: {
@@ -1410,7 +1549,7 @@ const sales = [
                         backgroundColor: backgroundColors,
                         borderWidth: 0,
                         borderRadius: 4,
-                        barThickness: 20 // Make bars thicker
+                        barThickness: window.innerWidth < 768 ? 14 : 20 // Adjust bar thickness for mobile
                     }]
                 },
                 options: {
@@ -1427,10 +1566,10 @@ const sales = [
                                 }
                             },
                             titleFont: {
-                                size: 14
+                                size: window.innerWidth < 768 ? 12 : 14
                             },
                             bodyFont: {
-                                size: 14
+                                size: window.innerWidth < 768 ? 12 : 14
                             }
                         }
                     },
@@ -1444,7 +1583,7 @@ const sales = [
                                 color: '#888888',
                                 font: {
                                     family: "'Rajdhani', sans-serif",
-                                    size: 12 // Larger font size
+                                    size: window.innerWidth < 768 ? 10 : 12
                                 }
                             }
                         },
@@ -1456,7 +1595,7 @@ const sales = [
                                 color: '#888888',
                                 font: {
                                     family: "'Rajdhani', sans-serif",
-                                    size: 12 // Larger font size
+                                    size: window.innerWidth < 768 ? 10 : 12
                                 }
                             }
                         }
@@ -1523,6 +1662,11 @@ const sales = [
                 
                 const feedItem = document.createElement('div');
                 feedItem.className = 'feed-item';
+                // Store timestamp as data attribute for later updating
+                if (tx.timestamp) {
+                    feedItem.dataset.timestamp = tx.timestamp;
+                }
+                
                 feedItem.innerHTML = `
                     <img src="skate.jpg" onerror="this.src='skate.png'" class="feed-logo" alt="Skate">
                     <a href="https://arbiscan.io/tx/${tx.hash}" target="_blank" class="feed-address">${formatAddress(tx.from)}</a>
@@ -1610,6 +1754,12 @@ const sales = [
             }
         }
         
+        // Function to handle window resize
+        function handleResize() {
+            // Update charts when window size changes
+            updateCharts();
+        }
+        
         // Set up event listeners for filtering
         function setupEventListeners() {
             // Filter buttons
@@ -1635,12 +1785,24 @@ const sales = [
                 // Update the table with current sort and search
                 updateTable(sortType);
             });
+            
+            // Add window resize listener for responsive charts
+            window.addEventListener('resize', handleResize);
         }
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
             fetchAllSalesData();
+            
+            // Add mobile scroll hint
+            const mobileScrollHint = document.createElement('div');
+            mobileScrollHint.className = 'mobile-scroll-hint';
+            mobileScrollHint.style.display = window.innerWidth <= 768 ? 'block' : 'none';
+            
+            window.addEventListener('resize', () => {
+                mobileScrollHint.style.display = window.innerWidth <= 768 ? 'block' : 'none';
+            });
         });
     </script>
 </body>
