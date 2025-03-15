@@ -278,7 +278,7 @@
             background: linear-gradient(90deg, #1d1d28 0%, #242433 100%);
             border-bottom: 1px solid #2a2a3a;
             display: grid;
-            grid-template-columns: 60px minmax(150px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) 120px;
+            grid-template-columns: 60px minmax(140px, 0.8fr) minmax(140px, 1fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) 120px;
             padding: 0.75rem 1rem;
             font-weight: 600;
             color: #b0b0b0;
@@ -313,7 +313,7 @@
         /* Table row */
         .table-row {
             display: grid;
-            grid-template-columns: 60px minmax(150px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) 120px;
+            grid-template-columns: 60px minmax(140px, 0.8fr) minmax(140px, 1fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) 120px;
             padding: 0.75rem 1rem;
             align-items: center;
             border-bottom: 1px solid #1a1a1a;
@@ -328,7 +328,7 @@
         /* Loading skeleton */
         .skeleton-row {
             display: grid;
-            grid-template-columns: 60px minmax(150px, 1fr) minmax(120px, 1fr) minmax(100px, 1fr) minmax(100px, 1fr) 120px;
+            grid-template-columns: 60px minmax(140px, 0.8fr) minmax(140px, 1fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) 120px;
             padding: 0.75rem 1rem;
             align-items: center;
             border-bottom: 1px solid #1a1a1a;
@@ -396,6 +396,7 @@
             font-size: 1.125rem;
             font-weight: 700;
             letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
         /* Investor count styling */
@@ -405,9 +406,23 @@
         }
 
         /* Token price styling */
-        .token-price {
+        .token-sale-price, .token-price {
             font-size: 1.125rem;
             font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Price indicator */
+        .loading-price {
+            font-size: 0.875rem;
+            color: #777;
+            font-style: italic;
+        }
+
+        .not-live {
+            font-size: 0.95rem;
+            color: #999;
+            font-weight: 500;
         }
 
         /* Action button styling */
@@ -687,7 +702,11 @@
             }
             
             .table-header, .table-row, .skeleton-row {
-                grid-template-columns: 60px minmax(120px, 1fr) minmax(120px, 1fr) minmax(80px, 1fr) minmax(80px, 1fr) 100px;
+                grid-template-columns: 60px minmax(120px, 1fr) minmax(120px, 1fr) minmax(80px, 0.6fr) minmax(80px, 0.6fr) 100px;
+            }
+            
+            .table-row > div:nth-child(6), .table-header > div:nth-child(6) {
+                display: none;
             }
         }
 
@@ -710,7 +729,8 @@
                 grid-template-columns: 60px 1fr 1fr 1fr 120px;
             }
             
-            .table-row > div:nth-child(4), .table-header > div:nth-child(4) {
+            .table-row > div:nth-child(4), .table-header > div:nth-child(4),
+            .table-row > div:nth-child(6), .table-header > div:nth-child(6) {
                 display: none;
             }
         }
@@ -831,7 +851,8 @@
                             <div>Sale</div>
                             <div>Invested</div>
                             <div>Investors</div>
-                            <div>Token Price</div>
+                            <div>Sale Price</div>
+                            <div>Live Price</div>
                             <div></div>
                         </div>
                         
@@ -844,6 +865,7 @@
                                 <div><div class="skeleton skeleton-text-lg"></div></div>
                                 <div><div class="skeleton skeleton-text"></div></div>
                                 <div><div class="skeleton skeleton-text"></div></div>
+                                <div><div class="skeleton skeleton-text"></div></div>
                                 <div><div class="skeleton skeleton-button"></div></div>
                             </div>
                             <div class="skeleton-row">
@@ -852,12 +874,14 @@
                                 <div><div class="skeleton skeleton-text-lg"></div></div>
                                 <div><div class="skeleton skeleton-text"></div></div>
                                 <div><div class="skeleton skeleton-text"></div></div>
+                                <div><div class="skeleton skeleton-text"></div></div>
                                 <div><div class="skeleton skeleton-button"></div></div>
                             </div>
                             <div class="skeleton-row">
                                 <div><div class="skeleton skeleton-logo"></div></div>
                                 <div><div class="skeleton skeleton-text-lg"></div></div>
                                 <div><div class="skeleton skeleton-text-lg"></div></div>
+                                <div><div class="skeleton skeleton-text"></div></div>
                                 <div><div class="skeleton skeleton-text"></div></div>
                                 <div><div class="skeleton skeleton-text"></div></div>
                                 <div><div class="skeleton skeleton-button"></div></div>
@@ -989,12 +1013,21 @@ const sales = [
 };
 
         // Token prices data
-        const tokenPrices = {
+        const tokenSalePrices = {
             fuel: "0.02",
             silencio: "0.0006",
             skate: "0.08"
             // All other tokens will display as N/A
         };
+
+        // Token CoinGecko IDs
+        const coinGeckoIds = {
+            fuel: "fuel-network",
+            silencio: "silencio"
+        };
+
+        // Store fetched market prices
+        let marketPrices = {};
         
         // Data storage for all sales
         let salesData = [];
@@ -1018,9 +1051,51 @@ const sales = [
             return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
         }
         
-        // Function to get token price
-        function getTokenPrice(saleId) {
-            return tokenPrices[saleId] ? `$${tokenPrices[saleId]}` : 'N/A';
+        // Function to get token sale price
+        function getTokenSalePrice(saleId) {
+            return tokenSalePrices[saleId] ? `$${tokenSalePrices[saleId]}` : 'N/A';
+        }
+
+        // Function to fetch token prices from CoinGecko
+        async function fetchTokenPrices() {
+            try {
+                // Get all available CoinGecko IDs
+                const ids = Object.values(coinGeckoIds).filter(id => id);
+                
+                if (ids.length === 0) return;
+                
+                const idsString = ids.join(',');
+                const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${idsString}&vs_currencies=usd`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch token prices');
+                }
+                
+                const data = await response.json();
+                
+                // Update marketPrices object
+                Object.entries(coinGeckoIds).forEach(([saleId, coinId]) => {
+                    if (data[coinId] && data[coinId].usd) {
+                        marketPrices[saleId] = data[coinId].usd;
+                    }
+                });
+                
+                // Update the table with new prices
+                updateTable();
+            } catch (error) {
+                console.error('Error fetching token prices:', error);
+            }
+        }
+
+        // Function to get market price display
+        function getMarketPrice(saleId) {
+            if (marketPrices[saleId]) {
+                return `$${marketPrices[saleId]}`;
+            } else if (coinGeckoIds[saleId]) {
+                return `<span class="loading-price">Loading...</span>`;
+            } else {
+                return `<span class="not-live">Not Live</span>`;
+            }
         }
         
         // Function to fetch data for a sale
@@ -1043,7 +1118,7 @@ const sales = [
                     avgInvestment: statsData.average_allocation,
                     highestAllocation: statsData.highest_allocation,
                     lowestAllocation: statsData.lowest_allocation,
-                    tokenPrice: getTokenPrice(sale.id),
+                    tokenSalePrice: getTokenSalePrice(sale.id),
                     // For Skate, we're considering it the only active sale
                     isActive: sale.id === 'skate'
                 };
@@ -1079,7 +1154,7 @@ const sales = [
                         // Default values for allocations
                         highestAllocation: { address: "Unknown", amount: 0 },
                         lowestAllocation: { address: "Unknown", amount: 0 },
-                        tokenPrice: getTokenPrice(sale.id),
+                        tokenSalePrice: getTokenSalePrice(sale.id),
                         // For Skate, we're considering it the only active sale
                         isActive: sale.id === 'skate'
                     };
@@ -1096,7 +1171,7 @@ const sales = [
                         avgInvestment: 0,
                         highestAllocation: { address: "Unknown", amount: 0 },
                         lowestAllocation: { address: "Unknown", amount: 0 },
-                        tokenPrice: getTokenPrice(sale.id),
+                        tokenSalePrice: getTokenSalePrice(sale.id),
                         isActive: false,
                         error: true
                     };
@@ -1109,8 +1184,8 @@ const sales = [
             const row = document.createElement('div');
             row.className = `table-row ${sale.className}-row`;
             
-            const amount = sale.error ? 'Error' : `${formatCurrency(sale.invested).replace('$', '')} USDC`;
-            const investors = sale.error ? 'Error' : `${sale.investors}`;
+            const amount = sale.error ? 'Error' : `$${parseFloat(sale.invested).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            const investors = sale.error ? 'Error' : `${sale.investors.toLocaleString()}`;
             
             row.innerHTML = `
                 <div class="logo-container">
@@ -1124,7 +1199,8 @@ const sales = [
                 <div class="sale-name">${sale.name}</div>
                 <div class="sale-amount ${sale.className}-color">${amount}</div>
                 <div class="sale-investors">${investors}</div>
-                <div class="token-price ${sale.className}-color">${sale.tokenPrice}</div>
+                <div class="token-sale-price ${sale.className}-color">${sale.tokenSalePrice}</div>
+                <div class="token-price ${sale.className}-color">${getMarketPrice(sale.id)}</div>
                 <div>
                     <a href="/${sale.id}.html" class="action-button ${sale.className}-button">View Details</a>
                 </div>
@@ -1502,8 +1578,14 @@ const sales = [
             updateCharts();
             initLiveFeed();
             
+            // Fetch token prices from CoinGecko
+            fetchTokenPrices();
+            
             // Set up auto-refresh for Skate data (active sale)
             setInterval(refreshActiveData, 60000); // Every minute
+            
+            // Refresh token prices every 5 minutes
+            setInterval(fetchTokenPrices, 300000); // Every 5 minutes
         }
         
         // Function to refresh active sale data (Skate)
