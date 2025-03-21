@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legion Top Investors</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        
+        /* Modern background gradient for the entire page */
+        body {
+            background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Update header with gradient */
+        .main-header {
+            background: linear-gradient(90deg, #13131f 0%, #1f1f2c 100%);
+            border-bottom: 1px solid #FF5722;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            padding: 0.75rem 0;
+            margin-bottom: 1rem;
+            position: relative;
+            width: 100%;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Logo image styling */
+        .header-logo-image {
+            height: 40px;
+            margin-right: 0.75rem;
+        }
+
+        .header-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #e0e0e0;
+            text-shadow: 0 0 15px rgba(255, 87, 34, 0.4);
+            margin-right: auto; /* Push it to the left */
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            margin-left: 1rem;
+        }
+        
+        .nav-button {
+            background: linear-gradient(145deg, #2a2a3d 0%, #333348 100%);
+            border: 1px solid #FF5722;
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        
+        .nav-button:hover {
+            background: linear-gradient(145deg, #333348 0%, #3a3a52 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Dashboard container */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+            background: linear-gradient(0deg, rgba(20, 20, 30, 0.3) 0%, rgba(15, 15, 25, 0.3) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 87, 34, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Statistics cards */
+        .stats-card {
+            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 87, 34, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+
+        .stat-item {
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
+            border-radius: 8px;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #b0b0b0;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #FF5722;
+        }
+        
+        .stats-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Table container */
+        .table-container {
+            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255, 87, 34, 0.1);
+            position: relative;
+        }
+
+        .table-header-container {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .table-header {
+            background: #1a1a25;
+            border-bottom: 1px solid rgba(255, 87, 34, 0.2);
+            display: grid;
+            grid-template-columns: 60px minmax(140px, 1fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) 120px;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-bar {
+            background: linear-gradient(90deg, #1d1d28 0%, #242433 100%);
+            border-bottom: 1px solid #2a2a3a;
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #FF5722 #242433;
+        }
+
+        .filter-button {
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
+            border: 1px solid #333343;
+            color: #e0e0e0;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            margin-right: 4px;
+        }
+
+        .filter-button:hover {
+            background: linear-gradient(145deg, #242433 0%, #2a2a3d 100%);
+            border-color: #FF5722;
+            transform: translateY(-2px);
+        }
+
+        .filter-button.active {
+            background: linear-gradient(145deg, #2a2a3d 0%, #333348 100%);
+            border-color: #FF5722;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(255, 87, 34, 0.2);
+        }
+
+        .search-container {
+            margin-left: auto;
+            position: relative;
+            margin-top: 0.25rem;
+            margin-bottom: 0.25rem;
+            width: 200px;
+        }
+
+        .search-input {
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
+            border: 1px solid #333343;
+            color: #ffffff;
+            padding: 0.35rem 1rem 0.35rem 2.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            width: 100%;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #FF5722;
+            box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777777;
+        }
+
+        /* Table scroll container */
+        .table-scroll-container {
+            flex: 1;
+            overflow-x: auto;
+            overflow-y: visible;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #FF5722 #242433;
+            position: relative;
+        }
+        
+        .table-scroll-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        
+        .table-scroll-container::-webkit-scrollbar-track {
+            background: #242433;
+            border-radius: 3px;
+        }
+        
+        .table-scroll-container::-webkit-scrollbar-thumb {
+            background-color: #FF5722;
+            border-radius: 3px;
+        }
+        
+        /* Table body */
+        .table-body {
+            width: 100%;
+            overflow-y: visible;
+        }
+
+        /* Table row */
+        .table-row {
+            display: grid;
+            grid-template-columns: 60px minmax(140px, 1fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) 120px;
+            padding: 0.75rem 1rem;
+            align-items: center;
+            transition: all 0.2s ease;
+            min-width: 900px;
+            position: relative;
+        }
+
+        .table-row:hover {
+            background: rgba(255, 87, 34, 0.05);
+        }
+
+        .table-row:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            right: 1rem;
+            bottom: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Loading skeleton */
+        .skeleton-row {
+            display: grid;
+            grid-template-columns: 60px minmax(140px, 1fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) 120px;
+            padding: 0.75rem 1rem;
+            align-items: center;
+            position: relative;
+            height: 64px;
+        }
+
+        .skeleton-row:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            right: 1rem;
+            bottom: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #222 0%, #333 50%, #222 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .skeleton-text {
+            height: 18px;
+            width: 80%;
+        }
+
+        .skeleton-text-lg {
+            height: 24px;
+            width: 70%;
+        }
+
+        .skeleton-button {
+            height: 32px;
+            width: 120px;
+        }
+
+        /* Address styling */
+        .investor-rank {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #FF5722;
+        }
+
+        .investor-address {
+            font-size: 1.125rem;
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        /* Investment amounts */
+        .investment-amount {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #FF5722;
+        }
+
+        /* Sale participation */
+        .sales-count {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        /* Badge styling for sales */
+        .sale-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .sale-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+
+        /* Action button styling */
+        .action-button {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            background-color: #FF5722;
+            color: #ffffff;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+            background-color: #ff6a3c;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1rem;
+            gap: 0.5rem;
+        }
+
+        .page-button {
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
+            border: 1px solid #333343;
+            color: #e0e0e0;
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .page-button:hover:not(.disabled) {
+            background: linear-gradient(145deg, #242433 0%, #2a2a3d 100%);
+            border-color: #FF5722;
+            transform: translateY(-2px);
+        }
+
+        .page-button.active {
+            background: linear-gradient(145deg, #2a2a3d 0%, #333348 100%);
+            border-color: #FF5722;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(255, 87, 34, 0.2);
+        }
+
+        .page-button.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .page-jump-input {
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
+            border: 1px solid #333343;
+            color: #ffffff;
+            padding: 0.35rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            width: 70px;
+            text-align: center;
+        }
+        
+        .page-jump-input:focus {
+            outline: none;
+            border-color: #FF5722;
+            box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
+        }
+
+        /* Project-specific colors */
+        .almanak-badge { background-color: #a0c4ff; color: #000000; }
+        .giza-badge { background-color: #ffd166; color: #000000; }
+        .skate-badge { background-color: #c5ff33; color: #000000; }
+        .pulse-badge { background-color: #b14aff; color: #ffffff; }
+        .fuel-badge { background-color: #00f58c; color: #000000; }
+        .electron-badge { background-color: #92c2ff; color: #000000; }
+        .corn-badge { background-color: #ff931e; color: #000000; }
+        .enclave-badge { background-color: #60c2ff; color: #000000; }
+        .nil-badge { background-color: #c9b6e4; color: #000000; }
+        .silencio-badge { background-color: #284ee9; color: #ffffff; }
+        .session-badge { background-color: #24f2d2; color: #000000; }
+        .fragmetric-badge { background-color: #007d3a; color: #ffffff; }
+        .resolv-badge { background-color: #6696ae; color: #ffffff; }
+        .lit-badge { background-color: #fd7244; color: #000000; }
+        .hyperlane-badge { background-color: #2262c0; color: #ffffff; }
+        .eoracle-badge { background-color: #1b6a58; color: #ffffff; }
+        .overlay-badge { background-color: #545454; color: #ffffff; }
+
+        /* Modal for investor details */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal-backdrop.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888888;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: #ffffff;
+        }
+
+        .modal-body {
+            margin-bottom: 1rem;
+        }
+
+        .sale-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sale-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .sale-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .sale-amount {
+            font-weight: 700;
+            color: #FF5722;
+        }
+
+        /* Mobile styles */
+        @media screen and (max-width: 992px) {
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            .header-title {
+                font-size: 1.5rem;
+            }
+            
+            .header-logo-image {
+                height: 30px;
+            }
+            
+            .dashboard-container {
+                padding: 0.75rem;
+            }
+            
+            .stat-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-button {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+        
+        @media screen and (max-width: 580px) {
+            .header-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container mx-auto px-4">
+            <div class="header-content">
+                <img src="legion.png" alt="Legion" class="header-logo-image">
+                <h1 class="header-title">LEGION TOP INVESTORS</h1>
+                <div class="header-nav">
+                    <a href="/index.html" class="nav-button">
+                        <i class="fas fa-chart-line mr-2"></i> Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Main Content -->
+    <main class="container mx-auto px-4">
+        <div class="dashboard-container">
+            <!-- Stats Overview -->
+            <div class="stats-card mb-4">
+                <div class="stats-title">
+                    <span>Investor Statistics</span>
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <div class="stat-grid">
+                    <div class="stat-item">
+                        <div class="stat-label">Total Unique Investors</div>
+                        <div class="stat-value" id="total-investors">
+                            <div class="skeleton skeleton-text-lg mx-auto"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Total Investment</div>
+                        <div class="stat-value" id="total-investment">
+                            <div class="skeleton skeleton-text-lg mx-auto"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Largest Investor</div>
+                        <div class="stat-value" id="largest-investor">
+                            <div class="skeleton skeleton-text-lg mx-auto"></div>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Most Active Investor</div>
+                        <div class="stat-value" id="most-active-investor">
+                            <div class="skeleton skeleton-text-lg mx-auto"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Investors Table -->
+            <div class="table-container">
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <button class="filter-button active" data-sort="total">
+                        <i class="fas fa-sort-amount-down"></i> Sort by Total Invested
+                    </button>
+                    <button class="filter-button" data-sort="sales">
+                        <i class="fas fa-project-diagram"></i> Sort by Sales Participation
+                    </button>
+                    
+                    <div class="search-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" placeholder="Search address..." id="search-input">
+                    </div>
+                </div>
+                
+                <!-- Fixed Header -->
+                <div class="table-header-container">
+                    <div class="table-header">
+                        <div>Rank</div>
+                        <div>Investor Address</div>
+                        <div>Total Invested</div>
+                        <div># of Sales</div>
+                        <div>Sales</div>
+                        <div></div>
+                    </div>
+                </div>
+                
+                <!-- Table Content -->
+                <div class="table-scroll-container">
+                    <!-- Table Body -->
+                    <div class="table-body" id="investors-table">
+                        <!-- Loading skeletons -->
+                        <div class="skeleton-row">
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-text-lg"></div></div>
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-button"></div></div>
+                        </div>
+                        <div class="skeleton-row">
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-text-lg"></div></div>
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-button"></div></div>
+                        </div>
+                        <div class="skeleton-row">
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-text-lg"></div></div>
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-text"></div></div>
+                            <div><div class="skeleton skeleton-button"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <button class="page-button disabled" id="prev-page" disabled>
+                    <i class="fas fa-chevron-left mr-1"></i> Previous
+                </button>
+                <div id="page-numbers" class="flex gap-2">
+                    <!-- Page numbers will be inserted here -->
+                </div>
+                <button class="page-button" id="next-page">
+                    Next <i class="fas fa-chevron-right ml-1"></i>
+                </button>
+                
+                <!-- Page Jump Feature -->
+                <div class="flex items-center ml-4">
+                    <span class="text-sm text-gray-400 mr-2">Go to:</span>
+                    <input type="number" min="1" id="page-jump-input" class="page-jump-input" placeholder="Page">
+                    <button class="page-button ml-2" id="page-jump-button">Go</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Investor Detail Modal -->
+    <div class="modal-backdrop" id="investor-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Investor Details</h3>
+                <button class="modal-close" id="modal-close">×</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Investor details will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Project colors for badges
+        const projectColors = {
+            'almanak': 'almanak-badge',
+            'giza': 'giza-badge',
+            'skate': 'skate-badge',
+            'pulse': 'pulse-badge',
+            'fuel': 'fuel-badge',
+            'electron': 'electron-badge',
+            'corn': 'corn-badge',
+            'enclave': 'enclave-badge',
+            'nil': 'nil-badge',
+            'silencio': 'silencio-badge',
+            'session': 'session-badge',
+            'fragmetric': 'fragmetric-badge',
+            'resolv': 'resolv-badge',
+            'lit': 'lit-badge',
+            'hyperlane': 'hyperlane-badge',
+            'eoracle': 'eoracle-badge',
+            'overlay': 'overlay-badge'
+        };
+        
+        // Project names for display
+        const projectNames = {
+            'almanak': 'ALMANAK',
+            'giza': 'Giza',
+            'skate': 'Skate Chain',
+            'pulse': 'Pulse',
+            'fuel': 'FUEL',
+            'electron': 'Electron',
+            'corn': 'corn',
+            'enclave': 'Enclave',
+            'nil': '=nil;',
+            'silencio': 'Silencio',
+            'session': 'Session',
+            'fragmetric': 'Fragmetric',
+            'resolv': 'Resolv',
+            'lit': 'Lit Protocol',
+            'hyperlane': 'Hyperlane',
+            'eoracle': 'eOracle',
+            'overlay': 'Overlay'
+        };
+        
+        // State variables
+        let currentPage = 1;
+        let totalPages = 1;
+        let pageSize = 25;
+        let currentSort = 'total';
+        let searchTerm = '';
+        let investors = [];
+        let totalInvestors = 0;
+        
+        // Format currency helper
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+        
+        // Format address helper
+        function formatAddress(address) {
+            if (!address) return 'Unknown';
+            return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+        }
+        
+        // Function to fetch investors data
+        async function fetchInvestors() {
+            try {
+                const url = `/api/top-investors?page=${currentPage}&limit=${pageSize}&sort=${currentSort}${searchTerm ? `&search=${searchTerm}` : ''}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch investors data');
+                }
+                
+                const data = await response.json();
+                investors = data.investors;
+                totalInvestors = data.total_investors;
+                totalPages = data.total_pages;
+                
+                updateTable();
+                updatePagination();
+                updateStats();
+            } catch (error) {
+                console.error('Error fetching investors:', error);
+                document.getElementById('investors-table').innerHTML = `
+                    <div class="text-center text-gray-500 py-4">
+                        Error loading investors data. Please try again later.
+                    </div>
+                `;
+            }
+        }
+        
+        // Function to update the investors table
+        function updateTable() {
+            const tableBody = document.getElementById('investors-table');
+            
+            // Clear the table
+            tableBody.innerHTML = '';
+            
+            if (investors.length === 0) {
+                tableBody.innerHTML = `
+                    <div class="text-center text-gray-500 py-4">
+                        No investors found matching your criteria.
+                    </div>
+                `;
+                return;
+            }
+            
+            // Add investors to the table
+            investors.forEach(investor => {
+                const row = document.createElement('div');
+                row.className = 'table-row';
+                
+                // Create badges for sales
+                const salesBadges = document.createElement('div');
+                salesBadges.className = 'sale-badges';
+                
+                // Add up to 5 sales badges, more will be visible in the modal
+                const maxBadges = 5;
+                const displayedSales = investor.sales_list.slice(0, maxBadges);
+                
+                displayedSales.forEach(sale => {
+                    const badge = document.createElement('span');
+                    badge.className = `sale-badge ${projectColors[sale.sale] || ''}`;
+                    badge.textContent = projectNames[sale.sale] || sale.sale;
+                    salesBadges.appendChild(badge);
+                });
+                
+                // Add "more" indicator if there are more sales
+                if (investor.sales_list.length > maxBadges) {
+                    const moreBadge = document.createElement('span');
+                    moreBadge.className = 'sale-badge';
+                    moreBadge.style.backgroundColor = '#333';
+                    moreBadge.textContent = `+${investor.sales_list.length - maxBadges} more`;
+                    salesBadges.appendChild(moreBadge);
+                }
+                
+                row.innerHTML = `
+                    <div class="investor-rank">#${investor.rank}</div>
+                    <div class="investor-address">${formatAddress(investor.address)}</div>
+                    <div class="investment-amount">${formatCurrency(investor.total_invested)}</div>
+                    <div class="sales-count">${investor.sales_participated}</div>
+                    <div></div>
+                    <div>
+                        <button class="action-button view-details" data-address="${investor.address}">
+                            View Details
+                        </button>
+                    </div>
+                `;
+                
+                // Insert sales badges into the 5th column
+                row.children[4].appendChild(salesBadges);
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to view details buttons
+            document.querySelectorAll('.view-details').forEach(button => {
+                button.addEventListener('click', () => {
+                    const address = button.getAttribute('data-address');
+                    showInvestorDetails(address);
+                });
+            });
+        }
+        
+        // Function to update pagination controls
+        function updatePagination() {
+            const prevButton = document.getElementById('prev-page');
+            const nextButton = document.getElementById('next-page');
+            const pageNumbers = document.getElementById('page-numbers');
+            const pageJumpInput = document.getElementById('page-jump-input');
+            
+            // Update prev/next buttons
+            prevButton.disabled = currentPage <= 1;
+            prevButton.classList.toggle('disabled', currentPage <= 1);
+            
+            nextButton.disabled = currentPage >= totalPages;
+            nextButton.classList.toggle('disabled', currentPage >= totalPages);
+            
+            // Update page jump input max
+            if (pageJumpInput) {
+                pageJumpInput.setAttribute('max', totalPages);
+                pageJumpInput.placeholder = `1-${totalPages}`;
+            }
+            
+            // Generate page numbers
+            pageNumbers.innerHTML = '';
+            
+            // Determine range of pages to show
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + 4);
+            
+            // Adjust start if end is maxed out
+            if (endPage === totalPages) {
+                startPage = Math.max(1, endPage - 4);
+            }
+            
+            // Add first page button if not in range
+            if (startPage > 1) {
+                const firstPageButton = document.createElement('button');
+                firstPageButton.className = 'page-button';
+                firstPageButton.textContent = '1';
+                firstPageButton.addEventListener('click', () => goToPage(1));
+                pageNumbers.appendChild(firstPageButton);
+                
+                // Add ellipsis if needed
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'text-gray-500 mx-1';
+                    ellipsis.textContent = '...';
+                    pageNumbers.appendChild(ellipsis);
+                }
+            }
+            
+            // Add page number buttons
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.className = `page-button ${i === currentPage ? 'active' : ''}`;
+                pageButton.textContent = i;
+                pageButton.addEventListener('click', () => goToPage(i));
+                pageNumbers.appendChild(pageButton);
+            }
+            
+            // Add last page button if not in range
+            if (endPage < totalPages) {
+                // Add ellipsis if needed
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'text-gray-500 mx-1';
+                    ellipsis.textContent = '...';
+                    pageNumbers.appendChild(ellipsis);
+                }
+                
+                const lastPageButton = document.createElement('button');
+                lastPageButton.className = 'page-button';
+                lastPageButton.textContent = totalPages;
+                lastPageButton.addEventListener('click', () => goToPage(totalPages));
+                pageNumbers.appendChild(lastPageButton);
+            }
+        }
+        
+        // Function to go to a specific page
+        function goToPage(page) {
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            fetchInvestors();
+        }
+        
+        // Function to update the stats section with global data
+        function updateStats() {
+            // Fetch global stats from the backend for ALL statistics
+            fetch('/api/global-stats')
+                .then(response => response.json())
+                .then(data => {
+                    // Now using data.total_investors for the investor count
+                    document.getElementById('total-investors').textContent = data.total_investors.toLocaleString();
+                    document.getElementById('total-investment').textContent = formatCurrency(data.total_investment);
+                    document.getElementById('largest-investor').textContent = formatCurrency(data.largest_investment);
+                    document.getElementById('most-active-investor').textContent = `${data.most_active_sales} sales`;
+                })
+                .catch(error => {
+                    console.error('Error fetching global stats:', error);
+                    
+                    // Fallback to hardcoded values from homepage data
+                    document.getElementById('total-investors').textContent = "6,625";  // Updated from homepage data
+                    document.getElementById('total-investment').textContent = formatCurrency(18548209.00);
+                    
+                    // Use the investor with the highest rank for largest investor if available
+                    const topInvestor = investors.find(investor => investor.rank === 1);
+                    if (topInvestor) {
+                        document.getElementById('largest-investor').textContent = formatCurrency(topInvestor.total_invested);
+                    } else {
+                        document.getElementById('largest-investor').textContent = 'N/A';
+                    }
+                    
+                    // Use the investor with most sales for most active if available
+                    const mostActiveSales = Math.max(...investors.map(investor => investor.sales_participated), 0);
+                    const mostActiveInvestor = investors.find(investor => investor.sales_participated === mostActiveSales);
+                    if (mostActiveInvestor) {
+                        document.getElementById('most-active-investor').textContent = `${mostActiveInvestor.sales_participated} sales`;
+                    } else {
+                        document.getElementById('most-active-investor').textContent = 'N/A';
+                    }
+                });
+        }
+        
+        // Function to show investor details in modal
+        async function showInvestorDetails(address) {
+            try {
+                // Show loading state in modal
+                const modalTitle = document.getElementById('modal-title');
+                const modalBody = document.getElementById('modal-body');
+                
+                modalTitle.textContent = 'Loading Investor Details...';
+                modalBody.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-circle-notch fa-spin fa-2x mb-3"></i>
+                        <p>Loading detailed information...</p>
+                    </div>
+                `;
+                
+                // Show modal
+                document.getElementById('investor-modal').classList.add('active');
+                
+                // Fetch investor details
+                const response = await fetch(`/api/investor/${address}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch investor details');
+                }
+                
+                const investor = await response.json();
+                
+                // Update modal title
+                modalTitle.innerHTML = `
+                    <span class="text-gray-400 mr-2">Investor:</span>
+                    <span class="font-mono">${formatAddress(investor.address)}</span>
+                `;
+                
+                // Create modal content
+                let modalContent = `
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="bg-opacity-10 bg-white p-3 rounded">
+                            <div class="text-gray-400 text-sm">Total Invested</div>
+                            <div class="text-xl font-bold text-orange-500">${formatCurrency(investor.total_invested)}</div>
+                        </div>
+                        <div class="bg-opacity-10 bg-white p-3 rounded">
+                            <div class="text-gray-400 text-sm">Sales Participated</div>
+                            <div class="text-xl font-bold text-orange-500">${investor.sales_participated}</div>
+                        </div>
+                    </div>
+                    
+                    <h4 class="text-lg font-semibold mb-3 border-b border-gray-700 pb-2">Investment Breakdown</h4>
+                `;
+                
+                // Add sales breakdown
+                if (investor.sales && investor.sales.length > 0) {
+                    modalContent += '<div class="space-y-2">';
+                    
+                    investor.sales.forEach(sale => {
+                        const saleClass = projectColors[sale.sale] || '';
+                        const saleName = projectNames[sale.sale] || sale.sale;
+                        
+                        modalContent += `
+                            <div class="sale-item">
+                                <div class="sale-name">
+                                    <span class="sale-badge ${saleClass} mr-2">${saleName}</span>
+                                </div>
+                                <div class="sale-amount">${formatCurrency(sale.amount)}</div>
+                            </div>
+                        `;
+                    });
+                    
+                    modalContent += '</div>';
+                } else {
+                    modalContent += `
+                        <div class="text-center text-gray-500 py-4">
+                            No sales data available for this investor.
+                        </div>
+                    `;
+                }
+                
+                // Add external link to Debank (changed from Arbiscan)
+                modalContent += `
+                    <div class="mt-4 pt-4 border-t border-gray-700 text-center">
+                        <a href="https://debank.com/profile/${investor.address}" target="_blank" class="text-blue-400 hover:text-blue-300">
+                            <i class="fas fa-external-link-alt mr-2"></i> View on Debank
+                        </a>
+                    </div>
+                `;
+                
+                // Update modal body
+                modalBody.innerHTML = modalContent;
+                
+            } catch (error) {
+                console.error('Error fetching investor details:', error);
+                document.getElementById('modal-body').innerHTML = `
+                    <div class="text-center text-red-500 py-4">
+                        <i class="fas fa-exclamation-circle fa-2x mb-3"></i>
+                        <p>Error loading investor details. Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Set up event listeners
+        function setupEventListeners() {
+            // Pagination controls
+            document.getElementById('prev-page').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    goToPage(currentPage - 1);
+                }
+            });
+            
+            document.getElementById('next-page').addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    goToPage(currentPage + 1);
+                }
+            });
+            
+            // Page jump feature
+            const pageJumpButton = document.getElementById('page-jump-button');
+            const pageJumpInput = document.getElementById('page-jump-input');
+            
+            if (pageJumpButton && pageJumpInput) {
+                // Go button click
+                pageJumpButton.addEventListener('click', () => {
+                    const pageNumber = parseInt(pageJumpInput.value);
+                    if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
+                        goToPage(pageNumber);
+                    } else {
+                        // Visual feedback for invalid input
+                        pageJumpInput.style.borderColor = '#ff0000';
+                        setTimeout(() => {
+                            pageJumpInput.style.borderColor = '#333343';
+                        }, 1000);
+                    }
+                });
+                
+                // Enter key in input
+                pageJumpInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const pageNumber = parseInt(pageJumpInput.value);
+                        if (!isNaN(pageNumber) && pageNumber >= 1 && pageNumber <= totalPages) {
+                            goToPage(pageNumber);
+                        } else {
+                            // Visual feedback for invalid input
+                            pageJumpInput.style.borderColor = '#ff0000';
+                            setTimeout(() => {
+                                pageJumpInput.style.borderColor = '#333343';
+                            }, 1000);
+                        }
+                    }
+                });
+                
+                // Update max attribute when totalPages changes
+                pageJumpInput.setAttribute('max', totalPages);
+            }
+            
+            // Sort buttons
+            document.querySelectorAll('.filter-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    // Update active state
+                    document.querySelectorAll('.filter-button').forEach(b => {
+                        b.classList.remove('active');
+                    });
+                    button.classList.add('active');
+                    
+                    // Update sort and fetch data
+                    currentSort = button.getAttribute('data-sort');
+                    currentPage = 1; // Reset to first page
+                    fetchInvestors();
+                });
+            });
+            
+            // Search input
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', () => {
+                searchTerm = searchInput.value.trim();
+                
+                // Use debouncing to avoid too many requests
+                clearTimeout(searchInput.timeout);
+                searchInput.timeout = setTimeout(() => {
+                    currentPage = 1; // Reset to first page
+                    fetchInvestors();
+                }, 300);
+            });
+            
+            // Modal close button
+            document.getElementById('modal-close').addEventListener('click', () => {
+                document.getElementById('investor-modal').classList.remove('active');
+            });
+            
+            // Close modal when clicking on backdrop
+            document.getElementById('investor-modal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('investor-modal')) {
+                    document.getElementById('investor-modal').classList.remove('active');
+                }
+            });
+            
+            // Escape key to close modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && document.getElementById('investor-modal').classList.contains('active')) {
+                    document.getElementById('investor-modal').classList.remove('active');
+                }
+            });
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            setupEventListeners();
+            fetchInvestors();
+        });
+    </script>
+</body>
+</html>

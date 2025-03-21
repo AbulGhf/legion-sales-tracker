@@ -23,7 +23,9 @@ cache = {
     'skate_deposits': None,
     'skate_deposits_timestamp': 0,
     'skate_total': None,
-    'skate_total_timestamp': 0
+    'skate_total_timestamp': 0,
+    'global_stats': None,
+    'global_stats_timestamp': 0
 }
 
 # Cache expiry time (15 minutes in seconds)
@@ -306,6 +308,300 @@ def sale_stats(sale_name):
         "average_allocation": average_allocation,
         "top_investors": top_investors
     })
+
+# Global stats endpoint with caching and improved Skate integration
+@app.route('/api/global-stats', methods=['GET'])
+@cached('global_stats', 'global_stats_timestamp')
+def global_stats():
+    """Return aggregated statistics for all sales combined with caching"""
+    # Initialize counters
+    total_investment = 0
+    total_investors_set = set()  # Use a set to prevent duplicate counting
+    all_investments = []
+    investor_sales_count = {}  # Track number of sales per investor
+    investor_total_investments = {}  # Track total investments per investor
+    
+    # Process static data first (past sales)
+    for sale_name, sale_data in STATIC_DATA.items():
+        if 'deposits' in sale_data:
+            for deposit in sale_data['deposits']:
+                address = deposit['address'].lower()
+                amount = deposit['amount']
+                
+                # Add to total investment
+                total_investment += amount
+                
+                # Add investor to set
+                total_investors_set.add(address)
+                
+                # Track individual investment (for median calculation)
+                all_investments.append(amount)
+                
+                # Track sales participation
+                if address not in investor_sales_count:
+                    investor_sales_count[address] = set()
+                    investor_total_investments[address] = 0
+                investor_sales_count[address].add(sale_name)
+                investor_total_investments[address] += amount
+    
+    # Process live Skate data - Force a fresh fetch for better accuracy
+    try:
+        # Clear Skate cache to ensure fresh data
+        cache['skate_deposits'] = None
+        cache['skate_deposits_timestamp'] = 0
+        
+        # Get fresh Skate data
+        transfers = get_skate_usdc_deposits()
+        deposits_list = aggregate_skate_deposits(transfers)
+        
+        # Log the Skate data size to verify it's working
+        print(f"Processing {len(deposits_list)} Skate deposits for global stats")
+        
+        for deposit in deposits_list:
+            address = deposit['address'].lower()
+            amount = deposit['amount']
+            
+            # Add to total investment
+            total_investment += amount
+            
+            # Add investor to set
+            total_investors_set.add(address)
+            
+            # Track individual investment
+            all_investments.append(amount)
+            
+            # Track sales participation
+            if address not in investor_sales_count:
+                investor_sales_count[address] = set()
+                investor_total_investments[address] = 0
+            investor_sales_count[address].add('skate')
+            investor_total_investments[address] += amount
+    except Exception as e:
+        print(f"Error fetching Skate data for global stats: {str(e)}")
+    
+    # Calculate statistics
+    total_investors = len(total_investors_set)
+    average_investment = total_investment / total_investors if total_investors > 0 else 0
+    
+    # Find largest individual investment (across all investors)
+    largest_investment = max(investor_total_investments.values()) if investor_total_investments else 0
+    
+    # Find median investment
+    if all_investments:
+        all_investments.sort()
+        mid = len(all_investments) // 2
+        median_investment = all_investments[mid] if len(all_investments) % 2 == 1 else (all_investments[mid-1] + all_investments[mid]) / 2
+    else:
+        median_investment = 0
+    
+    # Calculate average sales per investor
+    total_sales_participation = sum(len(sales) for sales in investor_sales_count.values())
+    average_sales = total_sales_participation / total_investors if total_investors > 0 else 0
+    
+    # Find the investor with most sales
+    most_active_sales = max(len(sales) for sales in investor_sales_count.values()) if investor_sales_count else 0
+    
+    # Log some stats to verify
+    print(f"Global Stats: {total_investors} investors, ${total_investment:,.2f} invested, ${average_investment:,.2f} average")
+    
+    return jsonify({
+        "total_investment": total_investment,
+        "total_investors": total_investors,
+        "average_investment": average_investment,
+        "median_investment": median_investment,
+        "largest_investment": largest_investment,
+        "most_active_sales": most_active_sales,
+        "average_sales": average_sales
+    })
+
+# Top investors endpoint with modified ranking that preserves ranks during search
+@app.route('/api/top-investors', methods=['GET'])
+def top_investors():
+    """Return aggregated data for top investors across all sales"""
+    # Get optional pagination parameters
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=100, type=int)
+    sort = request.args.get('sort', default='total', type=str)  # 'total' or 'sales'
+    search = request.args.get('search', default='', type=str)  # For address search
+    
+    # Limit values for safety
+    limit = min(limit, 500)  # Max 500 per page
+    page = max(page, 1)      # Min page 1
+    
+    # Initialize dict to store aggregated investor data
+    investors = {}
+    
+    # Process static data first (past sales)
+    for sale_name, sale_data in STATIC_DATA.items():
+        if 'deposits' in sale_data:
+            for deposit in sale_data['deposits']:
+                address = deposit['address'].lower()
+                amount = deposit['amount']
+                
+                if address not in investors:
+                    investors[address] = {
+                        'address': address,
+                        'total_invested': 0,
+                        'sales_participated': 0,
+                        'sales': {}
+                    }
+                
+                # If this is the first time we're seeing this address for this sale
+                if sale_name not in investors[address]['sales']:
+                    investors[address]['sales_participated'] += 1
+                    investors[address]['sales'][sale_name] = amount
+                else:
+                    # Add to existing amount for this sale
+                    investors[address]['sales'][sale_name] += amount
+                
+                # Update total invested amount
+                investors[address]['total_invested'] += amount
+    
+    # Process live Skate data
+    try:
+        transfers = get_skate_usdc_deposits()
+        deposits_list = aggregate_skate_deposits(transfers)
+        
+        for deposit in deposits_list:
+            address = deposit['address'].lower()
+            amount = deposit['amount']
+            
+            if address not in investors:
+                investors[address] = {
+                    'address': address,
+                    'total_invested': 0,
+                    'sales_participated': 0,
+                    'sales': {}
+                }
+            
+            # If this is the first time we're seeing this address for Skate
+            if 'skate' not in investors[address]['sales']:
+                investors[address]['sales_participated'] += 1
+                investors[address]['sales']['skate'] = amount
+            else:
+                # Add to existing amount for Skate
+                investors[address]['sales']['skate'] += amount
+            
+            # Update total invested amount
+            investors[address]['total_invested'] += amount
+    except Exception as e:
+        print(f"Error fetching Skate data: {str(e)}")
+    
+    # Convert to list for sorting
+    investors_list = list(investors.values())
+    
+    # Sort the list
+    if sort == 'sales':
+        investors_list.sort(key=lambda x: (x['sales_participated'], x['total_invested']), reverse=True)
+    else:  # Default sort by total invested
+        investors_list.sort(key=lambda x: x['total_invested'], reverse=True)
+    
+    # Add global rank to all investors BEFORE applying search filter
+    for i, investor in enumerate(investors_list):
+        investor['rank'] = i + 1
+    
+    # Store original total before applying search
+    total_investors_original = len(investors_list)
+    
+    # Apply search filter AFTER assigning global ranks
+    if search:
+        investors_list = [
+            investor for investor in investors_list
+            if search.lower() in investor['address'].lower()
+        ]
+    
+    # Calculate pagination
+    total_investors = len(investors_list)
+    total_pages = (total_investors + limit - 1) // limit if total_investors > 0 else 1
+    
+    # Adjust page if it's out of bounds after applying search
+    page = min(page, total_pages)
+    
+    # Paginate the results
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    paginated_investors = investors_list[start_idx:end_idx]
+    
+    # Process the paginated investors to add additional data
+    for investor in paginated_investors:
+        # Convert sales dict to list for easier frontend processing
+        investor['sales_list'] = [
+            {'sale': sale, 'amount': amount}
+            for sale, amount in investor['sales'].items()
+        ]
+        # Sort sales by amount
+        investor['sales_list'].sort(key=lambda x: x['amount'], reverse=True)
+    
+    return jsonify({
+        'investors': paginated_investors,
+        'page': page,
+        'limit': limit,
+        'total_investors': total_investors_original,  # Always return the total count without search filter
+        'total_pages': total_pages,
+        'sort': sort,
+        'filtered_count': total_investors  # Add a new field for the count after filtering
+    })
+
+# Endpoint to get data for a specific investor
+@app.route('/api/investor/<string:address>', methods=['GET'])
+def investor_detail(address):
+    """Return detailed data for a specific investor"""
+    address = address.lower()
+    investor_data = {
+        'address': address,
+        'total_invested': 0,
+        'sales_participated': 0,
+        'sales': []
+    }
+    
+    # Process static data
+    for sale_name, sale_data in STATIC_DATA.items():
+        if 'deposits' in sale_data:
+            for deposit in sale_data['deposits']:
+                if deposit['address'].lower() == address:
+                    # Add to sales list
+                    investor_data['sales'].append({
+                        'sale': sale_name,
+                        'amount': deposit['amount']
+                    })
+                    investor_data['total_invested'] += deposit['amount']
+    
+    # Process live Skate data
+    try:
+        transfers = get_skate_usdc_deposits()
+        deposits_list = aggregate_skate_deposits(transfers)
+        
+        for deposit in deposits_list:
+            if deposit['address'].lower() == address:
+                # Add to sales list
+                investor_data['sales'].append({
+                    'sale': 'skate',
+                    'amount': deposit['amount']
+                })
+                investor_data['total_invested'] += deposit['amount']
+    except Exception as e:
+        print(f"Error fetching Skate data: {str(e)}")
+    
+    # Remove duplicates and aggregate by sale
+    sales_dict = {}
+    for sale in investor_data['sales']:
+        sale_name = sale['sale']
+        if sale_name in sales_dict:
+            sales_dict[sale_name] += sale['amount']
+        else:
+            sales_dict[sale_name] = sale['amount']
+    
+    # Convert back to list and sort by amount
+    investor_data['sales'] = [
+        {'sale': sale, 'amount': amount}
+        for sale, amount in sales_dict.items()
+    ]
+    investor_data['sales'].sort(key=lambda x: x['amount'], reverse=True)
+    
+    # Update sales participated count
+    investor_data['sales_participated'] = len(investor_data['sales'])
+    
+    return jsonify(investor_data)
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
