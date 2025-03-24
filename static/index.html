@@ -800,6 +800,24 @@
             background-color: #4367f0;
         }
 
+        /* Lit Protocol - New Style */
+        .lit-row {
+            border-left: 3px solid #fd7244;
+        }
+        
+        .lit-color {
+            color: #fd7244;
+        }
+        
+        .lit-button {
+            background-color: #fd7244;
+            color: #000000;
+        }
+        
+        .lit-button:hover {
+            background-color: #fd8c66;
+        }
+
         /* Session */
         .session-row {
             border-left: 3px solid #24f2d2;
@@ -852,24 +870,6 @@
         
         .resolv-button:hover {
             background-color: #7aa7bd;
-        }
-
-        /* Lit Protocol */
-        .lit-row {
-            border-left: 3px solid #fd7244;
-        }
-        
-        .lit-color {
-            color: #fd7244;
-        }
-        
-        .lit-button {
-            background-color: #fd7244;
-            color: #000000;
-        }
-        
-        .lit-button:hover {
-            background-color: #fd8c66;
         }
 
         /* Hyperlane */
@@ -932,6 +932,21 @@
             background: rgba(255, 87, 34, 0.2);
             border: 1px solid rgba(255, 87, 34, 0.3);
             color: #FF5722;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Live badge */
+        .live-badge {
+            display: inline-block;
+            background: rgba(50, 205, 50, 0.2);
+            border: 1px solid rgba(50, 205, 50, 0.3);
+            color: #32CD32;
             font-size: 0.7rem;
             font-weight: 600;
             padding: 0.1rem 0.4rem;
@@ -1390,11 +1405,11 @@ const sales = [
     { id: 'corn', name: 'corn', className: 'corn' },
     { id: 'enclave', name: 'Enclave', className: 'enclave' },
     { id: 'silencio', name: 'Silencio', className: 'silencio' },
+    { id: 'lit', name: 'Lit Protocol', className: 'lit', isActive: true }, // New active sale - Lit Protocol
     // Add new upcoming sales
     { id: 'session', name: 'Session', className: 'session', upcoming: true },
     { id: 'fragmetric', name: 'Fragmetric', className: 'fragmetric', upcoming: true },
     { id: 'resolv', name: 'Resolv', className: 'resolv', upcoming: true },
-    { id: 'lit', name: 'Lit Protocol', className: 'lit', upcoming: true },
     { id: 'hyperlane', name: 'Hyperlane', className: 'hyperlane', upcoming: true },
     { id: 'eoracle', name: 'eOracle', className: 'eoracle', upcoming: true },
     { id: 'overlay', name: 'Overlay', className: 'overlay', upcoming: true }
@@ -1412,11 +1427,11 @@ const chartColors = {
     enclave: '#60c2ff',
     nil: '#c9b6e4',
     silencio: '#284ee9',
+    lit: '#fd7244', // Lit Protocol color
     // New colors for upcoming sales
     session: '#24f2d2',
     fragmetric: '#007d3a',
     resolv: '#6696ae',
-    lit: '#fd7244',
     hyperlane: '#2262c0',
     eoracle: '#1b6a58',
     overlay: '#545454'
@@ -1426,14 +1441,14 @@ const chartColors = {
 const tokenSalePrices = {
     fuel: "0.02",
     silencio: "0.0006",
-    skate: "0.08"
-    // All other tokens will display as N/A
+    skate: "0.08",
 };
 
 // Token CoinGecko IDs
 const coinGeckoIds = {
     fuel: "fuel-network",
-    silencio: "silencio"
+    silencio: "silencio",
+    lit: "lit-protocol" // Add Lit Protocol CoinGecko ID
 };
 
 // Store fetched market prices
@@ -1502,7 +1517,7 @@ function getMarketPrice(saleId) {
     if (marketPrices[saleId]) {
         return `$${marketPrices[saleId]}`;
     } else if (coinGeckoIds[saleId]) {
-        return `<span class="loading-price">Loading...</span>`;
+        return `<span class="loading-price">Not Live</span>`;
     } else {
         return `<span class="not-live">Not Live</span>`;
     }
@@ -1546,8 +1561,8 @@ async function fetchSaleData(sale) {
             highestAllocation: statsData.highest_allocation,
             lowestAllocation: statsData.lowest_allocation,
             tokenSalePrice: getTokenSalePrice(sale.id),
-            // For Skate, we're considering it the only active sale
-            isActive: sale.id === 'skate'
+            // For Lit, we're considering it the only active sale
+            isActive: sale.isActive || false
         };
     } catch (error) {
         console.error(`Error fetching ${sale.id} data:`, error);
@@ -1582,8 +1597,8 @@ async function fetchSaleData(sale) {
                 highestAllocation: { address: "Unknown", amount: 0 },
                 lowestAllocation: { address: "Unknown", amount: 0 },
                 tokenSalePrice: getTokenSalePrice(sale.id),
-                // For Skate, we're considering it the only active sale
-                isActive: sale.id === 'skate'
+                // For Lit, we're considering it the only active sale
+                isActive: sale.isActive || false
             };
         } catch (fallbackError) {
             console.error(`Fallback also failed for ${sale.id}:`, fallbackError);
@@ -1599,7 +1614,7 @@ async function fetchSaleData(sale) {
                 highestAllocation: { address: "Unknown", amount: 0 },
                 lowestAllocation: { address: "Unknown", amount: 0 },
                 tokenSalePrice: getTokenSalePrice(sale.id),
-                isActive: false,
+                isActive: sale.isActive || false,
                 error: true
             };
         }
@@ -1611,8 +1626,13 @@ function createSaleRow(sale) {
     const row = document.createElement('div');
     row.className = `table-row ${sale.className}-row`;
     
-    // Just use the sale name without an upcoming badge
+    // Add sale name with appropriate badge (upcoming or live)
     let nameDisplay = sale.name;
+    if (sale.upcoming) {
+        nameDisplay = `${sale.name} <span class="upcoming-badge">Upcoming</span>`;
+    } else if (sale.isActive) {
+        nameDisplay = `${sale.name} <span class="live-badge">Live</span>`;
+    }
     
     const amount = sale.upcoming ? 'TBA' : (sale.error ? 'Error' : `$${parseFloat(sale.invested).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`);
     const investors = sale.upcoming ? 'TBA' : (sale.error ? 'Error' : `${sale.investors.toLocaleString()}`);
@@ -2045,10 +2065,19 @@ function updateLiveFeed(transactions) {
             feedItem.dataset.timestamp = tx.timestamp;
         }
         
+        // Add tier badge if available (for Lit Protocol)
+        let tierBadge = '';
+        if (tx.tier) {
+            const tierClass = tx.tier === 1 ? 'bg-yellow-600' : 
+                             tx.tier === 2 ? 'bg-gray-400' : 
+                             tx.tier === 3 ? 'bg-yellow-700' : '';
+            tierBadge = `<span class="text-xs font-bold ml-1 px-1 rounded ${tierClass}">T${tx.tier}</span>`;
+        }
+        
         feedItem.innerHTML = `
-            <img src="skate.jpg" onerror="this.src='skate.png'" class="feed-logo" alt="Skate">
-            <a href="https://arbiscan.io/tx/${tx.hash}" target="_blank" class="feed-address">${formatAddress(tx.from)}</a>
-            <span class="feed-amount skate-color">+$${tx.amount.toFixed(2)}</span>
+            <img src="lit.jpg" onerror="this.src='lit.png'" class="feed-logo" alt="Lit">
+            <a href="https://arbiscan.io/tx/${tx.hash}" target="_blank" class="feed-address">${formatAddress(tx.from)}${tierBadge}</a>
+            <span class="feed-amount lit-color">+$${tx.amount.toFixed(2)}</span>
             <span class="feed-time">${timestamp}</span>
         `;
         liveFeed.appendChild(feedItem);
@@ -2103,25 +2132,25 @@ async function fetchAllSalesData() {
     // Fetch token prices from CoinGecko
     fetchTokenPrices();
     
-    // Set up auto-refresh for Skate data (active sale)
+    // Set up auto-refresh for Lit data (active sale)
     setInterval(refreshActiveData, 60000); // Every minute
     
     // Refresh token prices every 5 minutes
     setInterval(fetchTokenPrices, 300000); // Every 5 minutes
 }
 
-// Function to refresh active sale data (Skate)
+// Function to refresh active sale data (Lit Protocol)
 async function refreshActiveData() {
     try {
-        // Only refresh the active sale (Skate)
-        const skateIndex = salesData.findIndex(sale => sale.id === 'skate');
-        if (skateIndex === -1) return;
+        // Only refresh the active sale (Lit Protocol)
+        const litIndex = salesData.findIndex(sale => sale.id === 'lit');
+        if (litIndex === -1) return;
         
         // Fetch updated data
-        const updatedSkate = await fetchSaleData(sales.find(sale => sale.id === 'skate'));
+        const updatedLit = await fetchSaleData(sales.find(sale => sale.id === 'lit'));
         
         // Update the data
-        salesData[skateIndex] = updatedSkate;
+        salesData[litIndex] = updatedLit;
         
         // Update UI components
         updateTable();

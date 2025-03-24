@@ -2,15 +2,15 @@ import json
 import requests
 import time
 
-# Constants for Silencio (Ethereum)
-SILENCIO_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
-SILENCIO_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{SILENCIO_ALCHEMY_API_KEY}"
-SILENCIO_CONTRACT = "0x448537DB42ee64146b67A71E3f9cE835E2d08f30"
-SILENCIO_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # Ethereum USDC contract
+# Constants for Skate Chain (Arbitrum)
+SKATE_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
+SKATE_ALCHEMY_URL = f"https://arb-mainnet.g.alchemy.com/v2/{SKATE_ALCHEMY_API_KEY}"
+SKATE_CONTRACT = "0xd4f787fc73cb2d12559d0a3158cb8b4d491fbe7a"
+SKATE_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"  # Arbitrum USDC contract
 
-def get_silencio_usdc_deposits():
-    """Get all USDC transfers to the Silencio sale contract"""
-    print("Fetching USDC transfers to Silencio contract...")
+def get_skate_usdc_deposits():
+    """Get all USDC transfers to the Skate sale contract"""
+    print("Fetching USDC transfers to Skate contract...")
     
     all_transfers = []
     page_key = None
@@ -19,8 +19,8 @@ def get_silencio_usdc_deposits():
         params = {
             "fromBlock": "0x0",
             "toBlock": "latest",
-            "toAddress": SILENCIO_CONTRACT,
-            "contractAddresses": [SILENCIO_USDC_CONTRACT],
+            "toAddress": SKATE_CONTRACT,
+            "contractAddresses": [SKATE_USDC_CONTRACT],
             "category": ["erc20"],
             "withMetadata": True,
             "excludeZeroValue": True,
@@ -37,7 +37,7 @@ def get_silencio_usdc_deposits():
             "params": [params]
         }
         
-        response = requests.post(SILENCIO_ALCHEMY_URL, json=payload)
+        response = requests.post(SKATE_ALCHEMY_URL, json=payload)
         data = response.json()
         
         if "error" in data:
@@ -61,8 +61,8 @@ def get_silencio_usdc_deposits():
     print(f"Total transfers fetched: {len(all_transfers)}")
     return all_transfers
 
-def aggregate_silencio_deposits(transfers):
-    """Aggregate deposits by address for Silencio"""
+def aggregate_skate_deposits(transfers):
+    """Aggregate deposits by address for Skate"""
     print("Aggregating deposits by address...")
     
     deposits_by_address = {}
@@ -91,7 +91,7 @@ def aggregate_silencio_deposits(transfers):
     return deposits_list
 
 # Main execution
-print("Starting Silencio data collection...")
+print("Starting Skate data collection...")
 
 # Try to load existing static data
 try:
@@ -102,32 +102,32 @@ except Exception as e:
     print(f"Starting with fresh static data: {str(e)}")
     static_data = {}
 
-# Fetch and process Silencio data
+# Fetch and process Skate data
 start_time = time.time()
 try:
-    transfers = get_silencio_usdc_deposits()
-    deposits = aggregate_silencio_deposits(transfers)
+    transfers = get_skate_usdc_deposits()
+    deposits = aggregate_skate_deposits(transfers)
     
     total_investment = sum(deposit["amount"] for deposit in deposits)
     
-    silencio_data = {
+    skate_data = {
         'total': total_investment,
         'deposits': deposits,
         'count': len(deposits)
     }
     
-    print(f"\n✅ Silencio: Found {silencio_data['count']} investors with ${silencio_data['total']:.2f} total investment")
+    print(f"\n✅ Skate: Found {skate_data['count']} investors with ${skate_data['total']:.2f} total investment")
     print(f"   Data collection completed in {time.time() - start_time:.2f} seconds")
     
     # Add to static data
-    static_data['silencio'] = silencio_data
+    static_data['skate'] = skate_data
     
     # Save updated static data
     with open('static_data.json', 'w') as f:
         json.dump(static_data, f, indent=2)
     
-    print("\n✅ Updated static_data.json with Silencio data")
+    print("\n✅ Updated static_data.json with Skate data")
     print(f"Total sales in static data: {len(static_data)}")
     
 except Exception as e:
-    print(f"\n❌ Error processing Silencio data: {str(e)}")
+    print(f"\n❌ Error processing Skate data: {str(e)}")

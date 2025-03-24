@@ -244,92 +244,6 @@
         .back-button:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
-        
-        /* Live Feed Styling */
-        .live-feed-card {
-            background-color: #1a1a1a;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            border: 1px solid rgba(197, 255, 51, 0.15);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .live-feed-header {
-            padding: 15px;
-            border-bottom: 1px solid rgba(197, 255, 51, 0.15);
-        }
-        
-        .live-feed {
-            max-height: 320px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #c5ff33 #1a1a1a;
-        }
-        
-        .live-feed::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .live-feed::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 3px;
-        }
-        
-        .live-feed::-webkit-scrollbar-thumb {
-            background-color: #c5ff33;
-            border-radius: 3px;
-        }
-        
-        .feed-item {
-            background: rgba(40, 40, 40, 0.6);
-            margin: 4px;
-            border-radius: 4px;
-            padding: 10px 15px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-        }
-        
-        .feed-item:hover {
-            background: rgba(50, 50, 50, 0.8);
-        }
-        
-        .feed-logo {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 12px;
-        }
-        
-        .feed-address {
-            color: #b0b0b0;
-            font-family: monospace;
-            text-decoration: none;
-            transition: color 0.2s ease;
-            flex: 1;
-        }
-        
-        .feed-address:hover {
-            color: #ffffff;
-            text-decoration: underline;
-        }
-        
-        .feed-amount {
-            font-weight: 700;
-            margin-left: auto;
-            margin-right: 10px;
-            font-family: monospace;
-            color: #c5ff33;
-        }
-        
-        .feed-time {
-            color: #777;
-            font-size: 0.75rem;
-            width: 60px;
-            text-align: right;
-        }
     </style>
 </head>
 <body>
@@ -338,119 +252,6 @@
     
     <!-- React app script -->
     <script type="text/babel">
-        // LiveFeed component
-        function LiveFeed() {
-            const [transactions, setTransactions] = React.useState([]);
-            const [loading, setLoading] = React.useState(true);
-            const [error, setError] = React.useState(null);
-            
-            // Format address helper
-            const formatAddress = (address) => {
-                if (!address) return 'Unknown';
-                return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-            };
-            
-            // Function to format time "time ago"
-            const timeAgo = (date) => {
-                const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-                
-                if (seconds < 5) return 'just now';
-                if (seconds < 60) return `${seconds}s ago`;
-                
-                const minutes = Math.floor(seconds / 60);
-                if (minutes < 60) return `${minutes}m ago`;
-                
-                const hours = Math.floor(minutes / 60);
-                if (hours < 24) return `${hours}h ago`;
-                
-                const days = Math.floor(hours / 24);
-                return `${days}d ago`;
-            };
-            
-            // Function to fetch live transactions
-            const fetchLiveTransactions = React.useCallback(async () => {
-                try {
-                    setLoading(true);
-                    const response = await fetch('/api/live-feed?limit=8'); // Using limit=8 for a more compact feed
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch live transactions');
-                    }
-                    
-                    const data = await response.json();
-                    setTransactions(data.transactions || []);
-                    setLoading(false);
-                } catch (error) {
-                    console.error('Error fetching live transactions:', error);
-                    setError(error.message);
-                    setLoading(false);
-                }
-            }, []);
-            
-            // Update times every minute
-            React.useEffect(() => {
-                // Set up a timer to refresh the "time ago" values
-                const timeUpdateInterval = setInterval(() => {
-                    setTransactions(prevTransactions => [...prevTransactions]);
-                }, 60000);
-                
-                return () => clearInterval(timeUpdateInterval);
-            }, []);
-            
-            // Fetch transactions on component mount and set up polling
-            React.useEffect(() => {
-                fetchLiveTransactions();
-                
-                // Poll for new transactions every 30 seconds
-                const interval = setInterval(fetchLiveTransactions, 30000);
-                
-                // Clean up on unmount
-                return () => clearInterval(interval);
-            }, [fetchLiveTransactions]);
-            
-            return (
-                <div className="live-feed-card">
-                    <div className="live-feed-header">
-                        <div className="stats-title">
-                            <span>Live Feed</span>
-                            <i className="fas fa-bolt"></i>
-                        </div>
-                    </div>
-                    <div className="live-feed">
-                        {loading && transactions.length === 0 ? (
-                            <div className="text-center text-gray-500 py-2">
-                                <i className="fas fa-circle-notch fa-spin mr-2"></i>
-                                Connecting to live feed...
-                            </div>
-                        ) : error ? (
-                            <div className="text-center text-red-500 py-2">
-                                Error loading live feed: {error}
-                            </div>
-                        ) : transactions.length === 0 ? (
-                            <div className="text-center text-gray-500 py-2">
-                                No recent transactions found.
-                            </div>
-                        ) : (
-                            transactions.map((tx, index) => (
-                                <div className="feed-item" key={index}>
-                                    <img src="skate.jpg" onError={(e) => e.target.src = 'skate.png'} className="feed-logo" alt="Skate" />
-                                    <a 
-                                        href={`https://arbiscan.io/tx/${tx.hash}`} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="feed-address"
-                                    >
-                                        {formatAddress(tx.from)}
-                                    </a>
-                                    <span className="feed-amount">+${tx.amount.toFixed(2)}</span>
-                                    <span className="feed-time">{timeAgo(tx.timestamp)}</span>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
-            );
-        }
-        
         // Main app component
         function LegionTracker() {
             // State hooks
@@ -563,12 +364,6 @@
                         <div className="text-center p-8 card max-w-md">
                             <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
                             <p className="mb-6">Loading Skate Sale Data...</p>
-                            <div className="note-box">
-                                <p className="text-sm text-gray-300">
-                                    Note: This dashboard displays only the total amount successfully invested, 
-                                    not the amount being requested on the Legion website.
-                                </p>
-                            </div>
                         </div>
                     </div>
                 );
@@ -609,16 +404,9 @@
                         <img src="skate.jpg" alt="Skate Logo" className="h-16" />
                     </div>
                     
-                    {/* Note about data */}
-                    <div className="note-box mb-6">
-                        <p className="text-sm">
-                            <span className="font-bold neon-color">Note:</span> This dashboard shows only the total amount successfully invested, not the amount being requested on the Legion website.
-                        </p>
-                    </div>
-                    
                     {/* Main Content Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Left Column - Stats and Live Feed */}
+                        {/* Left Column - Stats */}
                         <div className="md:col-span-1">
                             {/* Total USDC Card */}
                             <div className="card p-6 text-center">
@@ -626,9 +414,6 @@
                                 <div className="amount-display">{formatAmount(totalInvestment)}</div>
                                 <div className="text-gray-400 text-sm">{deposits.length} unique addresses</div>
                             </div>
-                            
-                            {/* Live Feed Component */}
-                            <LiveFeed />
                             
                             {/* Stats section */}
                             <div className="stats-section">

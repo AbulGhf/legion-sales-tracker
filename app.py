@@ -18,12 +18,18 @@ except Exception as e:
     print(f"Error loading static data: {str(e)}")
     STATIC_DATA = {}
 
-# Cache for active sales (currently only Skate)
+# Cache for active sales (now only Lit Protocol)
 cache = {
-    'skate_deposits': None,
-    'skate_deposits_timestamp': 0,
-    'skate_total': None,
-    'skate_total_timestamp': 0,
+    'lit_deposits': None,
+    'lit_deposits_timestamp': 0,
+    'lit_total': None,
+    'lit_total_timestamp': 0,
+    'lit_tier1_deposits': None,
+    'lit_tier1_deposits_timestamp': 0,
+    'lit_tier2_deposits': None,
+    'lit_tier2_deposits_timestamp': 0,
+    'lit_tier3_deposits': None,
+    'lit_tier3_deposits_timestamp': 0,
     'global_stats': None,
     'global_stats_timestamp': 0
 }
@@ -31,11 +37,13 @@ cache = {
 # Cache expiry time (15 minutes in seconds)
 CACHE_EXPIRY = 900  # 15 minutes
 
-# Constants for Skate Chain (Arbitrum) - only active sale
-SKATE_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
-SKATE_ALCHEMY_URL = f"https://arb-mainnet.g.alchemy.com/v2/{SKATE_ALCHEMY_API_KEY}"
-SKATE_CONTRACT = "0xd4f787fc73cb2d12559d0a3158cb8b4d491fbe7a"
-SKATE_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"
+# Constants for Lit Protocol (Arbitrum)
+LIT_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
+LIT_ALCHEMY_URL = f"https://arb-mainnet.g.alchemy.com/v2/{LIT_ALCHEMY_API_KEY}"
+LIT_TIER1_CONTRACT = "0x5fdab714fe8bb9d40c8b1e5f7c2bacd8e7f869d8"
+LIT_TIER2_CONTRACT = "0x61a9c4fae2cf5f9fd88799a8423800cf33f951ef"
+LIT_TIER3_CONTRACT = "0x81ee48c2bb20b21bb20c95b24a36010f1dd9bce7"
+LIT_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"  # Arbitrum USDC contract
 
 # Cache decorator
 def cached(cache_key, timestamp_key):
@@ -58,131 +66,125 @@ def cached(cache_key, timestamp_key):
         return decorated_function
     return decorator
 
-# Skate Chain Functions - keep only the active sale functions
-def get_skate_usdc_deposits():
-    """Get all USDC transfers to the Skate sale contract"""
+# Lit Protocol Functions
+def get_lit_usdc_deposits(contract_address=None):
+    """Get all USDC transfers to the Lit Protocol sale contracts"""
     
     all_transfers = []
     page_key = None
     
-    while True:
-        params = {
-            "fromBlock": "0x0",
-            "toBlock": "latest",
-            "toAddress": SKATE_CONTRACT,
-            "contractAddresses": [SKATE_USDC_CONTRACT],
-            "category": ["erc20"],
-            "withMetadata": True,
-            "excludeZeroValue": True,
-            "maxCount": "0x64"  # Hex for 100
-        }
+    # If a specific contract is provided, only fetch for that contract
+    # Otherwise, fetch for all three tier contracts
+    if contract_address:
+        target_contracts = [contract_address]
+    else:
+        target_contracts = [LIT_TIER1_CONTRACT, LIT_TIER2_CONTRACT, LIT_TIER3_CONTRACT]
+    
+    for target_contract in target_contracts:
+        contract_transfers = []
+        contract_page_key = None
         
-        if page_key:
-            params["pageKey"] = page_key
+        print(f"Fetching USDC transfers to Lit Protocol contract: {target_contract}")
         
-        payload = {
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "alchemy_getAssetTransfers",
-            "params": [params]
-        }
-        
-        response = requests.post(SKATE_ALCHEMY_URL, json=payload)
-        data = response.json()
-        
-        if "error" in data:
-            print(f"Error fetching transfers: {data['error']['message']}")
-            break
-        
-        if "result" in data and "transfers" in data["result"]:
-            transfers = data["result"]["transfers"]
-            all_transfers.extend(transfers)
+        while True:
+            params = {
+                "fromBlock": "0x0",
+                "toBlock": "latest",
+                "toAddress": target_contract,
+                "contractAddresses": [LIT_USDC_CONTRACT],
+                "category": ["erc20"],
+                "withMetadata": True,
+                "excludeZeroValue": True,
+                "maxCount": "0x64"  # Hex for 100
+            }
             
-            # Check if there are more pages
-            if "pageKey" in data["result"]:
-                page_key = data["result"]["pageKey"]
-                print(f"Fetched {len(transfers)} transfers, getting next page...")
+            if contract_page_key:
+                params["pageKey"] = contract_page_key
+            
+            payload = {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "alchemy_getAssetTransfers",
+                "params": [params]
+            }
+            
+            response = requests.post(LIT_ALCHEMY_URL, json=payload)
+            data = response.json()
+            
+            if "error" in data:
+                print(f"Error fetching transfers: {data['error']['message']}")
+                break
+            
+            if "result" in data and "transfers" in data["result"]:
+                transfers = data["result"]["transfers"]
+                
+                # Add contract tier info to each transfer
+                for transfer in transfers:
+                    if target_contract == LIT_TIER1_CONTRACT:
+                        transfer["tier"] = 1
+                    elif target_contract == LIT_TIER2_CONTRACT:
+                        transfer["tier"] = 2
+                    elif target_contract == LIT_TIER3_CONTRACT:
+                        transfer["tier"] = 3
+                
+                contract_transfers.extend(transfers)
+                
+                # Check if there are more pages
+                if "pageKey" in data["result"]:
+                    contract_page_key = data["result"]["pageKey"]
+                    print(f"Fetched {len(transfers)} transfers for tier contract, getting next page...")
+                else:
+                    print(f"Fetched {len(transfers)} transfers for tier contract, no more pages.")
+                    break
             else:
                 break
-        else:
-            break
+        
+        print(f"Total transfers fetched for contract {target_contract}: {len(contract_transfers)}")
+        all_transfers.extend(contract_transfers)
     
+    print(f"Total transfers fetched across all contracts: {len(all_transfers)}")
     return all_transfers
 
-def aggregate_skate_deposits(transfers):
-    """Aggregate deposits by address for Skate"""
+def aggregate_lit_deposits(transfers, tier=None):
+    """Aggregate deposits by address for Lit Protocol, optionally filtering by tier"""
     
     deposits_by_address = {}
     
     for transfer in transfers:
+        # If tier is specified, only include transfers from that tier
+        if tier is not None and transfer.get("tier") != tier:
+            continue
+            
         # Check if it's a USDC transfer
         if transfer.get("asset") in ["USDC", "USD Coin"]:
             from_address = transfer["from"].lower()
             amount = float(transfer["value"])
+            tier_value = transfer.get("tier", 0)  # Default to 0 if no tier
             
             if from_address in deposits_by_address:
-                deposits_by_address[from_address] += amount
+                deposits_by_address[from_address]["amount"] += amount
+                if tier_value not in deposits_by_address[from_address]["tiers"]:
+                    deposits_by_address[from_address]["tiers"].append(tier_value)
             else:
-                deposits_by_address[from_address] = amount
+                deposits_by_address[from_address] = {
+                    "address": from_address,
+                    "amount": amount,
+                    "tiers": [tier_value]
+                }
     
-    # Convert to a list of dicts for JSON
-    deposits_list = [
-        {"address": address, "amount": amount}
-        for address, amount in deposits_by_address.items()
-    ]
+    # Convert to a list for JSON
+    deposits_list = list(deposits_by_address.values())
     
     # Sort by amount in descending order
     deposits_list.sort(key=lambda x: x["amount"], reverse=True)
     
     return deposits_list
 
-# Route handlers
-@app.route('/')
-def index():
-    return send_from_directory('static', 'index.html')
-
-# HTML pages for each sale
-@app.route('/<string:sale_name>.html')
-def sale_page(sale_name):
-    return send_from_directory('static', f'{sale_name}.html')
-
-# API Endpoints for Skate (with caching)
-@app.route('/api/skate/total-investment', methods=['GET'])
-@cached('skate_total', 'skate_total_timestamp')
-def skate_total_investment():
-    # Get all deposits and sum them up
-    transfers = get_skate_usdc_deposits()
-    deposits_list = aggregate_skate_deposits(transfers)
-    total = sum(deposit["amount"] for deposit in deposits_list)
-    return jsonify({"total": total})
-
-@app.route('/api/skate/deposits', methods=['GET'])
-@cached('skate_deposits', 'skate_deposits_timestamp')
-def skate_deposits():
-    transfers = get_skate_usdc_deposits()
-    deposits_list = aggregate_skate_deposits(transfers)
-    
-    return jsonify({
-        "deposits": deposits_list,
-        "count": len(deposits_list)
-    })
-
-# Generic API Endpoints for all sales
-@app.route('/api/<string:sale_name>/total-investment', methods=['GET'])
-def sale_total_investment(sale_name):
-    if sale_name == 'skate':
-        return skate_total_investment()
-    
-    if sale_name in STATIC_DATA:
-        return jsonify({"total": STATIC_DATA[sale_name]['total']})
-    else:
-        return jsonify({"error": f"Sale {sale_name} not found"}), 404
-
-def get_recent_skate_transactions(limit=10):
-    """Get recent USDC transfers to the Skate sale contract"""
+def get_recent_lit_transactions(limit=10):
+    """Get recent USDC transfers to the Lit Protocol sale contracts"""
     
     # Get the transfers
-    transfers = get_skate_usdc_deposits()
+    transfers = get_lit_usdc_deposits()
     
     # Convert to our format
     transactions = []
@@ -194,7 +196,8 @@ def get_recent_skate_transactions(limit=10):
             "from": transfer["from"],
             "amount": float(transfer["value"]),
             "hash": transfer.get("hash", ""),
-            "timestamp": timestamp
+            "timestamp": timestamp,
+            "tier": transfer.get("tier", 0)
         }
         transactions.append(tx)
     
@@ -205,6 +208,84 @@ def get_recent_skate_transactions(limit=10):
     # Return the limited number
     return transactions[:limit]
 
+# Route handlers
+@app.route('/')
+def index():
+    return send_from_directory('static', 'index.html')
+
+# HTML pages for each sale
+@app.route('/<string:sale_name>.html')
+def sale_page(sale_name):
+    return send_from_directory('static', f'{sale_name}.html')
+
+# API Endpoints for Lit Protocol (with caching)
+@app.route('/api/lit/total-investment', methods=['GET'])
+@cached('lit_total', 'lit_total_timestamp')
+def lit_total_investment():
+    # Get all deposits and sum them up
+    transfers = get_lit_usdc_deposits()
+    deposits_list = aggregate_lit_deposits(transfers)
+    total = sum(item["amount"] for item in deposits_list)
+    return jsonify({"total": total})
+
+@app.route('/api/lit/deposits', methods=['GET'])
+@cached('lit_deposits', 'lit_deposits_timestamp')
+def lit_deposits():
+    transfers = get_lit_usdc_deposits()
+    deposits_list = aggregate_lit_deposits(transfers)
+    
+    return jsonify({
+        "deposits": deposits_list,
+        "count": len(deposits_list)
+    })
+
+# API Endpoints for Lit Protocol Tier 1 (with caching)
+@app.route('/api/lit/tier1/deposits', methods=['GET'])
+@cached('lit_tier1_deposits', 'lit_tier1_deposits_timestamp')
+def lit_tier1_deposits():
+    transfers = get_lit_usdc_deposits(LIT_TIER1_CONTRACT)
+    deposits_list = aggregate_lit_deposits(transfers, tier=1)
+    
+    return jsonify({
+        "deposits": deposits_list,
+        "count": len(deposits_list)
+    })
+
+# API Endpoints for Lit Protocol Tier 2 (with caching)
+@app.route('/api/lit/tier2/deposits', methods=['GET'])
+@cached('lit_tier2_deposits', 'lit_tier2_deposits_timestamp')
+def lit_tier2_deposits():
+    transfers = get_lit_usdc_deposits(LIT_TIER2_CONTRACT)
+    deposits_list = aggregate_lit_deposits(transfers, tier=2)
+    
+    return jsonify({
+        "deposits": deposits_list,
+        "count": len(deposits_list)
+    })
+
+# API Endpoints for Lit Protocol Tier 3 (with caching)
+@app.route('/api/lit/tier3/deposits', methods=['GET'])
+@cached('lit_tier3_deposits', 'lit_tier3_deposits_timestamp')
+def lit_tier3_deposits():
+    transfers = get_lit_usdc_deposits(LIT_TIER3_CONTRACT)
+    deposits_list = aggregate_lit_deposits(transfers, tier=3)
+    
+    return jsonify({
+        "deposits": deposits_list,
+        "count": len(deposits_list)
+    })
+
+# Generic API Endpoints for all sales
+@app.route('/api/<string:sale_name>/total-investment', methods=['GET'])
+def sale_total_investment(sale_name):
+    if sale_name == 'lit':
+        return lit_total_investment()
+    
+    if sale_name in STATIC_DATA:
+        return jsonify({"total": STATIC_DATA[sale_name]['total']})
+    else:
+        return jsonify({"error": f"Sale {sale_name} not found"}), 404
+
 # New endpoint for the live feed
 @app.route('/api/live-feed', methods=['GET'])
 def live_feed():
@@ -213,8 +294,8 @@ def live_feed():
     limit = request.args.get('limit', default=10, type=int)
     limit = min(limit, 20)  # Max 20 transactions
     
-    # Get recent transactions for Skate (the active sale)
-    transactions = get_recent_skate_transactions(limit)
+    # Get recent transactions for Lit (the active sale)
+    transactions = get_recent_lit_transactions(limit)
     
     return jsonify({
         "transactions": transactions,
@@ -223,8 +304,8 @@ def live_feed():
 
 @app.route('/api/<string:sale_name>/deposits', methods=['GET'])
 def sale_deposits(sale_name):
-    if sale_name == 'skate':
-        return skate_deposits()
+    if sale_name == 'lit':
+        return lit_deposits()
     
     if sale_name in STATIC_DATA:
         return jsonify({
@@ -245,10 +326,10 @@ def sale_investors(sale_name):
     limit = min(limit, 500)  # Max 500 per page
     page = max(page, 1)      # Min page 1
     
-    if sale_name == 'skate':
-        # For Skate, fetch real-time data
-        transfers = get_skate_usdc_deposits()
-        deposits_list = aggregate_skate_deposits(transfers)
+    if sale_name == 'lit':
+        # For Lit, fetch real-time data
+        transfers = get_lit_usdc_deposits()
+        deposits_list = aggregate_lit_deposits(transfers)
     elif sale_name in STATIC_DATA:
         # For concluded sales, use static data
         deposits_list = STATIC_DATA[sale_name]['deposits']
@@ -272,26 +353,65 @@ def sale_investors(sale_name):
 @app.route('/api/<string:sale_name>/stats', methods=['GET'])
 def sale_stats(sale_name):
     """Return key statistics for a sale including highest and lowest allocations"""
-    if sale_name == 'skate':
-        # For Skate, fetch real-time data
-        transfers = get_skate_usdc_deposits()
-        deposits_list = aggregate_skate_deposits(transfers)
+    
+    if sale_name == 'lit':
+        # For Lit, fetch real-time data
+        transfers = get_lit_usdc_deposits()
+        deposits_list = aggregate_lit_deposits(transfers)
+        
+        # Add tier specific counts
+        tier1_transfers = get_lit_usdc_deposits(LIT_TIER1_CONTRACT)
+        tier1_deposits = aggregate_lit_deposits(tier1_transfers, tier=1)
+        
+        tier2_transfers = get_lit_usdc_deposits(LIT_TIER2_CONTRACT)
+        tier2_deposits = aggregate_lit_deposits(tier2_transfers, tier=2)
+        
+        tier3_transfers = get_lit_usdc_deposits(LIT_TIER3_CONTRACT)
+        tier3_deposits = aggregate_lit_deposits(tier3_transfers, tier=3)
+        
+        tier_stats = {
+            "tier1": {
+                "total_investors": len(tier1_deposits),
+                "total_investment": sum(item["amount"] for item in tier1_deposits) if tier1_deposits else 0
+            },
+            "tier2": {
+                "total_investors": len(tier2_deposits),
+                "total_investment": sum(item["amount"] for item in tier2_deposits) if tier2_deposits else 0
+            },
+            "tier3": {
+                "total_investors": len(tier3_deposits),
+                "total_investment": sum(item["amount"] for item in tier3_deposits) if tier3_deposits else 0
+            }
+        }
     elif sale_name in STATIC_DATA:
         # For concluded sales, use static data
         deposits_list = STATIC_DATA[sale_name]['deposits']
+        tier_stats = None  # No tier data for static sales
     else:
         return jsonify({"error": f"Sale {sale_name} not found"}), 404
     
     # Calculate stats
     if deposits_list:
-        total_investment = sum(deposit["amount"] for deposit in deposits_list)
-        total_investors = len(deposits_list)
-        highest_allocation = max(deposits_list, key=lambda x: x["amount"])
-        lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
-        average_allocation = total_investment / total_investors if total_investors > 0 else 0
-        
-        # Top 5 investors
-        top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
+        if sale_name == 'lit':
+            # Special handling for Lit with its structured deposits
+            total_investment = sum(item["amount"] for item in deposits_list)
+            total_investors = len(deposits_list)
+            highest_allocation = max(deposits_list, key=lambda x: x["amount"])
+            lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
+            average_allocation = total_investment / total_investors if total_investors > 0 else 0
+            
+            # Top 5 investors
+            top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
+        else:
+            # Standard handling for other sales
+            total_investment = sum(deposit["amount"] for deposit in deposits_list)
+            total_investors = len(deposits_list)
+            highest_allocation = max(deposits_list, key=lambda x: x["amount"])
+            lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
+            average_allocation = total_investment / total_investors if total_investors > 0 else 0
+            
+            # Top 5 investors
+            top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
     else:
         total_investment = 0
         total_investors = 0
@@ -300,16 +420,22 @@ def sale_stats(sale_name):
         average_allocation = 0
         top_investors = []
     
-    return jsonify({
+    response_data = {
         "total_investment": total_investment,
         "total_investors": total_investors,
         "highest_allocation": highest_allocation,
         "lowest_allocation": lowest_allocation,
         "average_allocation": average_allocation,
         "top_investors": top_investors
-    })
+    }
+    
+    # Add tier stats if available
+    if tier_stats:
+        response_data["tier_stats"] = tier_stats
+    
+    return jsonify(response_data)
 
-# Global stats endpoint with caching and improved Skate integration
+# Global stats endpoint with caching and improved integration
 @app.route('/api/global-stats', methods=['GET'])
 @cached('global_stats', 'global_stats_timestamp')
 def global_stats():
@@ -344,18 +470,14 @@ def global_stats():
                 investor_sales_count[address].add(sale_name)
                 investor_total_investments[address] += amount
     
-    # Process live Skate data - Force a fresh fetch for better accuracy
+    # Process live Lit Protocol data
     try:
-        # Clear Skate cache to ensure fresh data
-        cache['skate_deposits'] = None
-        cache['skate_deposits_timestamp'] = 0
+        # Get fresh Lit data
+        transfers = get_lit_usdc_deposits()
+        deposits_list = aggregate_lit_deposits(transfers)
         
-        # Get fresh Skate data
-        transfers = get_skate_usdc_deposits()
-        deposits_list = aggregate_skate_deposits(transfers)
-        
-        # Log the Skate data size to verify it's working
-        print(f"Processing {len(deposits_list)} Skate deposits for global stats")
+        # Log the Lit data size to verify it's working
+        print(f"Processing {len(deposits_list)} Lit deposits for global stats")
         
         for deposit in deposits_list:
             address = deposit['address'].lower()
@@ -374,10 +496,10 @@ def global_stats():
             if address not in investor_sales_count:
                 investor_sales_count[address] = set()
                 investor_total_investments[address] = 0
-            investor_sales_count[address].add('skate')
+            investor_sales_count[address].add('lit')
             investor_total_investments[address] += amount
     except Exception as e:
-        print(f"Error fetching Skate data for global stats: {str(e)}")
+        print(f"Error fetching Lit data for global stats: {str(e)}")
     
     # Calculate statistics
     total_investors = len(total_investors_set)
@@ -457,10 +579,10 @@ def top_investors():
                 # Update total invested amount
                 investors[address]['total_invested'] += amount
     
-    # Process live Skate data
+    # Process live Lit data
     try:
-        transfers = get_skate_usdc_deposits()
-        deposits_list = aggregate_skate_deposits(transfers)
+        transfers = get_lit_usdc_deposits()
+        deposits_list = aggregate_lit_deposits(transfers)
         
         for deposit in deposits_list:
             address = deposit['address'].lower()
@@ -474,18 +596,18 @@ def top_investors():
                     'sales': {}
                 }
             
-            # If this is the first time we're seeing this address for Skate
-            if 'skate' not in investors[address]['sales']:
+            # If this is the first time we're seeing this address for Lit
+            if 'lit' not in investors[address]['sales']:
                 investors[address]['sales_participated'] += 1
-                investors[address]['sales']['skate'] = amount
+                investors[address]['sales']['lit'] = amount
             else:
-                # Add to existing amount for Skate
-                investors[address]['sales']['skate'] += amount
+                # Add to existing amount for Lit
+                investors[address]['sales']['lit'] += amount
             
             # Update total invested amount
             investors[address]['total_invested'] += amount
     except Exception as e:
-        print(f"Error fetching Skate data: {str(e)}")
+        print(f"Error fetching Lit data: {str(e)}")
     
     # Convert to list for sorting
     investors_list = list(investors.values())
@@ -566,21 +688,22 @@ def investor_detail(address):
                     })
                     investor_data['total_invested'] += deposit['amount']
     
-    # Process live Skate data
+    # Process live Lit data
     try:
-        transfers = get_skate_usdc_deposits()
-        deposits_list = aggregate_skate_deposits(transfers)
+        transfers = get_lit_usdc_deposits()
+        deposits_list = aggregate_lit_deposits(transfers)
         
         for deposit in deposits_list:
             if deposit['address'].lower() == address:
                 # Add to sales list
                 investor_data['sales'].append({
-                    'sale': 'skate',
-                    'amount': deposit['amount']
+                    'sale': 'lit',
+                    'amount': deposit['amount'],
+                    'tiers': deposit.get('tiers', [])
                 })
                 investor_data['total_invested'] += deposit['amount']
     except Exception as e:
-        print(f"Error fetching Skate data: {str(e)}")
+        print(f"Error fetching Lit data: {str(e)}")
     
     # Remove duplicates and aggregate by sale
     sales_dict = {}
