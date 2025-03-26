@@ -18,7 +18,7 @@ except Exception as e:
     print(f"Error loading static data: {str(e)}")
     STATIC_DATA = {}
 
-# Cache for active sales (now only Lit Protocol)
+# Cache for active sales (Lit Protocol and Resolv)
 cache = {
     'lit_deposits': None,
     'lit_deposits_timestamp': 0,
@@ -30,6 +30,10 @@ cache = {
     'lit_tier2_deposits_timestamp': 0,
     'lit_tier3_deposits': None,
     'lit_tier3_deposits_timestamp': 0,
+    'resolv_deposits': None,
+    'resolv_deposits_timestamp': 0,
+    'resolv_total': None,
+    'resolv_total_timestamp': 0,
     'global_stats': None,
     'global_stats_timestamp': 0
 }
@@ -44,6 +48,12 @@ LIT_TIER1_CONTRACT = "0x5fdab714fe8bb9d40c8b1e5f7c2bacd8e7f869d8"
 LIT_TIER2_CONTRACT = "0x61a9c4fae2cf5f9fd88799a8423800cf33f951ef"
 LIT_TIER3_CONTRACT = "0x81ee48c2bb20b21bb20c95b24a36010f1dd9bce7"
 LIT_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"  # Arbitrum USDC contract
+
+# Constants for Resolv Protocol (Ethereum)
+RESOLV_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"  # Using the same API key
+RESOLV_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{RESOLV_ALCHEMY_API_KEY}"  # Ethereum endpoint
+RESOLV_CONTRACT = "0xd4f787FC73cB2d12559D0A3158Cb8B4d491Fbe7A"
+RESOLV_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # Ethereum USDC contract
 
 # Cache decorator
 def cached(cache_key, timestamp_key):
@@ -197,7 +207,118 @@ def get_recent_lit_transactions(limit=10):
             "amount": float(transfer["value"]),
             "hash": transfer.get("hash", ""),
             "timestamp": timestamp,
-            "tier": transfer.get("tier", 0)
+            "tier": transfer.get("tier", 0),
+            "sale": "lit"  # Add sale identifier
+        }
+        transactions.append(tx)
+    
+    # Sort by timestamp (most recent first)
+    if transactions and 'timestamp' in transactions[0] and transactions[0]['timestamp']:
+        transactions.sort(key=lambda x: x['timestamp'], reverse=True)
+    
+    # Return the limited number
+    return transactions[:limit]
+
+# Resolv Protocol Functions
+def get_resolv_usdc_deposits():
+    """Get all USDC transfers to the Resolv Protocol sale contract"""
+    
+    all_transfers = []
+    page_key = None
+    
+    print(f"Fetching USDC transfers to Resolv Protocol contract: {RESOLV_CONTRACT}")
+    
+    while True:
+        params = {
+            "fromBlock": "0x0",
+            "toBlock": "latest",
+            "toAddress": RESOLV_CONTRACT,
+            "contractAddresses": [RESOLV_USDC_CONTRACT],
+            "category": ["erc20"],
+            "withMetadata": True,
+            "excludeZeroValue": True,
+            "maxCount": "0x64"  # Hex for 100
+        }
+        
+        if page_key:
+            params["pageKey"] = page_key
+        
+        payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "alchemy_getAssetTransfers",
+            "params": [params]
+        }
+        
+        response = requests.post(RESOLV_ALCHEMY_URL, json=payload)
+        data = response.json()
+        
+        if "error" in data:
+            print(f"Error fetching transfers: {data['error']['message']}")
+            break
+        
+        if "result" in data and "transfers" in data["result"]:
+            transfers = data["result"]["transfers"]
+            all_transfers.extend(transfers)
+            
+            # Check if there are more pages
+            if "pageKey" in data["result"]:
+                page_key = data["result"]["pageKey"]
+                print(f"Fetched {len(transfers)} transfers, getting next page...")
+            else:
+                print(f"Fetched {len(transfers)} transfers, no more pages.")
+                break
+        else:
+            break
+    
+    print(f"Total transfers fetched: {len(all_transfers)}")
+    return all_transfers
+
+def aggregate_resolv_deposits(transfers):
+    """Aggregate deposits by address for Resolv Protocol"""
+    
+    deposits_by_address = {}
+    
+    for transfer in transfers:
+        # Check if it's a USDC transfer
+        if transfer.get("asset") in ["USDC", "USD Coin"]:
+            from_address = transfer["from"].lower()
+            amount = float(transfer["value"])
+            
+            if from_address in deposits_by_address:
+                deposits_by_address[from_address]["amount"] += amount
+            else:
+                deposits_by_address[from_address] = {
+                    "address": from_address,
+                    "amount": amount
+                }
+    
+    # Convert to a list for JSON
+    deposits_list = list(deposits_by_address.values())
+    
+    # Sort by amount in descending order
+    deposits_list.sort(key=lambda x: x["amount"], reverse=True)
+    
+    return deposits_list
+
+def get_recent_resolv_transactions(limit=10):
+    """Get recent USDC transfers to the Resolv Protocol sale contract"""
+    
+    # Get the transfers
+    transfers = get_resolv_usdc_deposits()
+    
+    # Convert to our format
+    transactions = []
+    for transfer in transfers:
+        # Extract timestamp if available
+        timestamp = transfer.get("metadata", {}).get("blockTimestamp", "")
+        
+        tx = {
+            "from": transfer["from"],
+            "amount": float(transfer["value"]),
+            "hash": transfer.get("hash", ""),
+            "timestamp": timestamp,
+            "sale": "resolv"  # Add sale identifier
         }
         transactions.append(tx)
     
@@ -275,18 +396,78 @@ def lit_tier3_deposits():
         "count": len(deposits_list)
     })
 
+# API Endpoints for Resolv Protocol (with caching)
+@app.route('/api/resolv/total-investment', methods=['GET'])
+@cached('resolv_total', 'resolv_total_timestamp')
+def resolv_total_investment():
+    # Get all deposits and sum them up
+    transfers = get_resolv_usdc_deposits()
+    deposits_list = aggregate_resolv_deposits(transfers)
+    total = sum(item["amount"] for item in deposits_list)
+    return jsonify({"total": total})
+
+@app.route('/api/resolv/deposits', methods=['GET'])
+@cached('resolv_deposits', 'resolv_deposits_timestamp')
+def resolv_deposits():
+    transfers = get_resolv_usdc_deposits()
+    deposits_list = aggregate_resolv_deposits(transfers)
+    
+    return jsonify({
+        "deposits": deposits_list,
+        "count": len(deposits_list)
+    })
+
+@app.route('/api/resolv/stats', methods=['GET'])
+def resolv_stats():
+    """Return key statistics for Resolv Protocol sale"""
+    
+    # Fetch real-time data
+    transfers = get_resolv_usdc_deposits()
+    deposits_list = aggregate_resolv_deposits(transfers)
+    
+    # Calculate stats
+    if deposits_list:
+        total_investment = sum(item["amount"] for item in deposits_list)
+        total_investors = len(deposits_list)
+        highest_allocation = max(deposits_list, key=lambda x: x["amount"])
+        lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
+        average_allocation = total_investment / total_investors if total_investors > 0 else 0
+        
+        # Top 5 investors
+        top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
+    else:
+        total_investment = 0
+        total_investors = 0
+        highest_allocation = {"address": "", "amount": 0}
+        lowest_allocation = {"address": "", "amount": 0}
+        average_allocation = 0
+        top_investors = []
+    
+    response_data = {
+        "total_investment": total_investment,
+        "total_investors": total_investors,
+        "highest_allocation": highest_allocation,
+        "lowest_allocation": lowest_allocation,
+        "average_allocation": average_allocation,
+        "top_investors": top_investors
+    }
+    
+    return jsonify(response_data)
+
 # Generic API Endpoints for all sales
 @app.route('/api/<string:sale_name>/total-investment', methods=['GET'])
 def sale_total_investment(sale_name):
     if sale_name == 'lit':
         return lit_total_investment()
+    elif sale_name == 'resolv':
+        return resolv_total_investment()
     
     if sale_name in STATIC_DATA:
         return jsonify({"total": STATIC_DATA[sale_name]['total']})
     else:
         return jsonify({"error": f"Sale {sale_name} not found"}), 404
 
-# New endpoint for the live feed
+# Updated live feed endpoint to include both Lit and Resolv transactions
 @app.route('/api/live-feed', methods=['GET'])
 def live_feed():
     """Return the most recent transactions for the live feed"""
@@ -294,8 +475,25 @@ def live_feed():
     limit = request.args.get('limit', default=10, type=int)
     limit = min(limit, 20)  # Max 20 transactions
     
-    # Get recent transactions for Lit (the active sale)
-    transactions = get_recent_lit_transactions(limit)
+    # Get optional sale parameter
+    sale_filter = request.args.get('sale', default=None, type=str)
+    
+    if sale_filter == 'lit':
+        # Only get Lit transactions if specifically requested
+        transactions = get_recent_lit_transactions(limit)
+    elif sale_filter == 'resolv':
+        # Only get Resolv transactions if specifically requested
+        transactions = get_recent_resolv_transactions(limit)
+    else:
+        # Get recent transactions for both active sales
+        lit_transactions = get_recent_lit_transactions(limit)
+        resolv_transactions = get_recent_resolv_transactions(limit)
+        
+        # Combine and sort by timestamp
+        transactions = lit_transactions + resolv_transactions
+        if transactions and 'timestamp' in transactions[0] and transactions[0]['timestamp']:
+            transactions.sort(key=lambda x: x['timestamp'], reverse=True)
+            transactions = transactions[:limit]  # Limit after combining
     
     return jsonify({
         "transactions": transactions,
@@ -306,6 +504,8 @@ def live_feed():
 def sale_deposits(sale_name):
     if sale_name == 'lit':
         return lit_deposits()
+    elif sale_name == 'resolv':
+        return resolv_deposits()
     
     if sale_name in STATIC_DATA:
         return jsonify({
@@ -330,6 +530,10 @@ def sale_investors(sale_name):
         # For Lit, fetch real-time data
         transfers = get_lit_usdc_deposits()
         deposits_list = aggregate_lit_deposits(transfers)
+    elif sale_name == 'resolv':
+        # For Resolv, fetch real-time data
+        transfers = get_resolv_usdc_deposits()
+        deposits_list = aggregate_resolv_deposits(transfers)
     elif sale_name in STATIC_DATA:
         # For concluded sales, use static data
         deposits_list = STATIC_DATA[sale_name]['deposits']
@@ -383,6 +587,11 @@ def sale_stats(sale_name):
                 "total_investment": sum(item["amount"] for item in tier3_deposits) if tier3_deposits else 0
             }
         }
+    elif sale_name == 'resolv':
+        # For Resolv, fetch real-time data
+        transfers = get_resolv_usdc_deposits()
+        deposits_list = aggregate_resolv_deposits(transfers)
+        tier_stats = None  # No tier data for Resolv
     elif sale_name in STATIC_DATA:
         # For concluded sales, use static data
         deposits_list = STATIC_DATA[sale_name]['deposits']
@@ -392,8 +601,8 @@ def sale_stats(sale_name):
     
     # Calculate stats
     if deposits_list:
-        if sale_name == 'lit':
-            # Special handling for Lit with its structured deposits
+        if sale_name == 'lit' or sale_name == 'resolv':
+            # Special handling for active sales
             total_investment = sum(item["amount"] for item in deposits_list)
             total_investors = len(deposits_list)
             highest_allocation = max(deposits_list, key=lambda x: x["amount"])
@@ -500,6 +709,37 @@ def global_stats():
             investor_total_investments[address] += amount
     except Exception as e:
         print(f"Error fetching Lit data for global stats: {str(e)}")
+    
+    # Process live Resolv Protocol data
+    try:
+        # Get fresh Resolv data
+        transfers = get_resolv_usdc_deposits()
+        deposits_list = aggregate_resolv_deposits(transfers)
+        
+        # Log the Resolv data size to verify it's working
+        print(f"Processing {len(deposits_list)} Resolv deposits for global stats")
+        
+        for deposit in deposits_list:
+            address = deposit['address'].lower()
+            amount = deposit['amount']
+            
+            # Add to total investment
+            total_investment += amount
+            
+            # Add investor to set
+            total_investors_set.add(address)
+            
+            # Track individual investment
+            all_investments.append(amount)
+            
+            # Track sales participation
+            if address not in investor_sales_count:
+                investor_sales_count[address] = set()
+                investor_total_investments[address] = 0
+            investor_sales_count[address].add('resolv')
+            investor_total_investments[address] += amount
+    except Exception as e:
+        print(f"Error fetching Resolv data for global stats: {str(e)}")
     
     # Calculate statistics
     total_investors = len(total_investors_set)
@@ -609,6 +849,36 @@ def top_investors():
     except Exception as e:
         print(f"Error fetching Lit data: {str(e)}")
     
+    # Process live Resolv data
+    try:
+        transfers = get_resolv_usdc_deposits()
+        deposits_list = aggregate_resolv_deposits(transfers)
+        
+        for deposit in deposits_list:
+            address = deposit['address'].lower()
+            amount = deposit['amount']
+            
+            if address not in investors:
+                investors[address] = {
+                    'address': address,
+                    'total_invested': 0,
+                    'sales_participated': 0,
+                    'sales': {}
+                }
+            
+            # If this is the first time we're seeing this address for Resolv
+            if 'resolv' not in investors[address]['sales']:
+                investors[address]['sales_participated'] += 1
+                investors[address]['sales']['resolv'] = amount
+            else:
+                # Add to existing amount for Resolv
+                investors[address]['sales']['resolv'] += amount
+            
+            # Update total invested amount
+            investors[address]['total_invested'] += amount
+    except Exception as e:
+        print(f"Error fetching Resolv data: {str(e)}")
+    
     # Convert to list for sorting
     investors_list = list(investors.values())
     
@@ -704,6 +974,22 @@ def investor_detail(address):
                 investor_data['total_invested'] += deposit['amount']
     except Exception as e:
         print(f"Error fetching Lit data: {str(e)}")
+    
+    # Process live Resolv data
+    try:
+        transfers = get_resolv_usdc_deposits()
+        deposits_list = aggregate_resolv_deposits(transfers)
+        
+        for deposit in deposits_list:
+            if deposit['address'].lower() == address:
+                # Add to sales list
+                investor_data['sales'].append({
+                    'sale': 'resolv',
+                    'amount': deposit['amount']
+                })
+                investor_data['total_invested'] += deposit['amount']
+    except Exception as e:
+        print(f"Error fetching Resolv data: {str(e)}")
     
     # Remove duplicates and aggregate by sale
     sales_dict = {}
