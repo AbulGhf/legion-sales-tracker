@@ -24,12 +24,6 @@ cache = {
     'lit_deposits_timestamp': 0,
     'lit_total': None,
     'lit_total_timestamp': 0,
-    'lit_tier1_deposits': None,
-    'lit_tier1_deposits_timestamp': 0,
-    'lit_tier2_deposits': None,
-    'lit_tier2_deposits_timestamp': 0,
-    'lit_tier3_deposits': None,
-    'lit_tier3_deposits_timestamp': 0,
     'resolv_deposits': None,
     'resolv_deposits_timestamp': 0,
     'resolv_total': None,
@@ -44,9 +38,12 @@ CACHE_EXPIRY = 900  # 15 minutes
 # Constants for Lit Protocol (Arbitrum)
 LIT_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
 LIT_ALCHEMY_URL = f"https://arb-mainnet.g.alchemy.com/v2/{LIT_ALCHEMY_API_KEY}"
-LIT_TIER1_CONTRACT = "0x5fdab714fe8bb9d40c8b1e5f7c2bacd8e7f869d8"
-LIT_TIER2_CONTRACT = "0x61a9c4fae2cf5f9fd88799a8423800cf33f951ef"
-LIT_TIER3_CONTRACT = "0x81ee48c2bb20b21bb20c95b24a36010f1dd9bce7"
+LIT_CONTRACTS = [
+    "0xE193d30421D6e60D61De1b7e097a66B595eA9B11",
+    "0x9A3475824A15933c207Dd8B661b9488169B25947",
+    "0xDB0a5509318614CfFe600BcEa9bC6C001c28C270",
+    "0x81A00dA473D1BfF1D1b894c8a9b4C88464F15F9D"
+]
 LIT_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"  # Arbitrum USDC contract
 
 # Constants for Resolv Protocol (Ethereum)
@@ -77,30 +74,22 @@ def cached(cache_key, timestamp_key):
     return decorator
 
 # Lit Protocol Functions
-def get_lit_usdc_deposits(contract_address=None):
+def get_lit_usdc_deposits():
     """Get all USDC transfers to the Lit Protocol sale contracts"""
     
     all_transfers = []
-    page_key = None
     
-    # If a specific contract is provided, only fetch for that contract
-    # Otherwise, fetch for all three tier contracts
-    if contract_address:
-        target_contracts = [contract_address]
-    else:
-        target_contracts = [LIT_TIER1_CONTRACT, LIT_TIER2_CONTRACT, LIT_TIER3_CONTRACT]
-    
-    for target_contract in target_contracts:
+    for contract_address in LIT_CONTRACTS:
+        page_key = None
         contract_transfers = []
-        contract_page_key = None
         
-        print(f"Fetching USDC transfers to Lit Protocol contract: {target_contract}")
+        print(f"Fetching USDC transfers to Lit Protocol contract: {contract_address}")
         
         while True:
             params = {
                 "fromBlock": "0x0",
                 "toBlock": "latest",
-                "toAddress": target_contract,
+                "toAddress": contract_address,
                 "contractAddresses": [LIT_USDC_CONTRACT],
                 "category": ["erc20"],
                 "withMetadata": True,
@@ -108,8 +97,8 @@ def get_lit_usdc_deposits(contract_address=None):
                 "maxCount": "0x64"  # Hex for 100
             }
             
-            if contract_page_key:
-                params["pageKey"] = contract_page_key
+            if page_key:
+                params["pageKey"] = page_key
             
             payload = {
                 "jsonrpc": "2.0",
@@ -127,59 +116,41 @@ def get_lit_usdc_deposits(contract_address=None):
             
             if "result" in data and "transfers" in data["result"]:
                 transfers = data["result"]["transfers"]
-                
-                # Add contract tier info to each transfer
-                for transfer in transfers:
-                    if target_contract == LIT_TIER1_CONTRACT:
-                        transfer["tier"] = 1
-                    elif target_contract == LIT_TIER2_CONTRACT:
-                        transfer["tier"] = 2
-                    elif target_contract == LIT_TIER3_CONTRACT:
-                        transfer["tier"] = 3
-                
                 contract_transfers.extend(transfers)
                 
                 # Check if there are more pages
                 if "pageKey" in data["result"]:
-                    contract_page_key = data["result"]["pageKey"]
-                    print(f"Fetched {len(transfers)} transfers for tier contract, getting next page...")
+                    page_key = data["result"]["pageKey"]
+                    print(f"Fetched {len(transfers)} transfers for contract, getting next page...")
                 else:
-                    print(f"Fetched {len(transfers)} transfers for tier contract, no more pages.")
+                    print(f"Fetched {len(transfers)} transfers for contract, no more pages.")
                     break
             else:
                 break
         
-        print(f"Total transfers fetched for contract {target_contract}: {len(contract_transfers)}")
+        print(f"Total transfers fetched for contract {contract_address}: {len(contract_transfers)}")
         all_transfers.extend(contract_transfers)
     
     print(f"Total transfers fetched across all contracts: {len(all_transfers)}")
     return all_transfers
 
-def aggregate_lit_deposits(transfers, tier=None):
-    """Aggregate deposits by address for Lit Protocol, optionally filtering by tier"""
+def aggregate_lit_deposits(transfers):
+    """Aggregate deposits by address for Lit Protocol"""
     
     deposits_by_address = {}
     
     for transfer in transfers:
-        # If tier is specified, only include transfers from that tier
-        if tier is not None and transfer.get("tier") != tier:
-            continue
-            
         # Check if it's a USDC transfer
         if transfer.get("asset") in ["USDC", "USD Coin"]:
             from_address = transfer["from"].lower()
             amount = float(transfer["value"])
-            tier_value = transfer.get("tier", 0)  # Default to 0 if no tier
             
             if from_address in deposits_by_address:
                 deposits_by_address[from_address]["amount"] += amount
-                if tier_value not in deposits_by_address[from_address]["tiers"]:
-                    deposits_by_address[from_address]["tiers"].append(tier_value)
             else:
                 deposits_by_address[from_address] = {
                     "address": from_address,
-                    "amount": amount,
-                    "tiers": [tier_value]
+                    "amount": amount
                 }
     
     # Convert to a list for JSON
@@ -207,7 +178,6 @@ def get_recent_lit_transactions(limit=10):
             "amount": float(transfer["value"]),
             "hash": transfer.get("hash", ""),
             "timestamp": timestamp,
-            "tier": transfer.get("tier", 0),
             "sale": "lit"  # Add sale identifier
         }
         transactions.append(tx)
@@ -354,42 +324,6 @@ def lit_total_investment():
 def lit_deposits():
     transfers = get_lit_usdc_deposits()
     deposits_list = aggregate_lit_deposits(transfers)
-    
-    return jsonify({
-        "deposits": deposits_list,
-        "count": len(deposits_list)
-    })
-
-# API Endpoints for Lit Protocol Tier 1 (with caching)
-@app.route('/api/lit/tier1/deposits', methods=['GET'])
-@cached('lit_tier1_deposits', 'lit_tier1_deposits_timestamp')
-def lit_tier1_deposits():
-    transfers = get_lit_usdc_deposits(LIT_TIER1_CONTRACT)
-    deposits_list = aggregate_lit_deposits(transfers, tier=1)
-    
-    return jsonify({
-        "deposits": deposits_list,
-        "count": len(deposits_list)
-    })
-
-# API Endpoints for Lit Protocol Tier 2 (with caching)
-@app.route('/api/lit/tier2/deposits', methods=['GET'])
-@cached('lit_tier2_deposits', 'lit_tier2_deposits_timestamp')
-def lit_tier2_deposits():
-    transfers = get_lit_usdc_deposits(LIT_TIER2_CONTRACT)
-    deposits_list = aggregate_lit_deposits(transfers, tier=2)
-    
-    return jsonify({
-        "deposits": deposits_list,
-        "count": len(deposits_list)
-    })
-
-# API Endpoints for Lit Protocol Tier 3 (with caching)
-@app.route('/api/lit/tier3/deposits', methods=['GET'])
-@cached('lit_tier3_deposits', 'lit_tier3_deposits_timestamp')
-def lit_tier3_deposits():
-    transfers = get_lit_usdc_deposits(LIT_TIER3_CONTRACT)
-    deposits_list = aggregate_lit_deposits(transfers, tier=3)
     
     return jsonify({
         "deposits": deposits_list,
@@ -562,40 +496,13 @@ def sale_stats(sale_name):
         # For Lit, fetch real-time data
         transfers = get_lit_usdc_deposits()
         deposits_list = aggregate_lit_deposits(transfers)
-        
-        # Add tier specific counts
-        tier1_transfers = get_lit_usdc_deposits(LIT_TIER1_CONTRACT)
-        tier1_deposits = aggregate_lit_deposits(tier1_transfers, tier=1)
-        
-        tier2_transfers = get_lit_usdc_deposits(LIT_TIER2_CONTRACT)
-        tier2_deposits = aggregate_lit_deposits(tier2_transfers, tier=2)
-        
-        tier3_transfers = get_lit_usdc_deposits(LIT_TIER3_CONTRACT)
-        tier3_deposits = aggregate_lit_deposits(tier3_transfers, tier=3)
-        
-        tier_stats = {
-            "tier1": {
-                "total_investors": len(tier1_deposits),
-                "total_investment": sum(item["amount"] for item in tier1_deposits) if tier1_deposits else 0
-            },
-            "tier2": {
-                "total_investors": len(tier2_deposits),
-                "total_investment": sum(item["amount"] for item in tier2_deposits) if tier2_deposits else 0
-            },
-            "tier3": {
-                "total_investors": len(tier3_deposits),
-                "total_investment": sum(item["amount"] for item in tier3_deposits) if tier3_deposits else 0
-            }
-        }
     elif sale_name == 'resolv':
         # For Resolv, fetch real-time data
         transfers = get_resolv_usdc_deposits()
         deposits_list = aggregate_resolv_deposits(transfers)
-        tier_stats = None  # No tier data for Resolv
     elif sale_name in STATIC_DATA:
         # For concluded sales, use static data
         deposits_list = STATIC_DATA[sale_name]['deposits']
-        tier_stats = None  # No tier data for static sales
     else:
         return jsonify({"error": f"Sale {sale_name} not found"}), 404
     
@@ -637,10 +544,6 @@ def sale_stats(sale_name):
         "average_allocation": average_allocation,
         "top_investors": top_investors
     }
-    
-    # Add tier stats if available
-    if tier_stats:
-        response_data["tier_stats"] = tier_stats
     
     return jsonify(response_data)
 
@@ -968,8 +871,7 @@ def investor_detail(address):
                 # Add to sales list
                 investor_data['sales'].append({
                     'sale': 'lit',
-                    'amount': deposit['amount'],
-                    'tiers': deposit.get('tiers', [])
+                    'amount': deposit['amount']
                 })
                 investor_data['total_invested'] += deposit['amount']
     except Exception as e:
