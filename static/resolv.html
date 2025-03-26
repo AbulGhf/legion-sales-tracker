@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lit Protocol Legion Sale Tracker</title>
+    <title>Resolv Legion Sale Tracker</title>
     <!-- Load React -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
@@ -20,9 +20,9 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        /* Lit Protocol orange color */
+        /* Resolv color */
         .neon-color {
-            color: #fd7244;
+            color: #6696ae;
         }
         
         /* Main container */
@@ -34,14 +34,14 @@
         
         /* Header card */
         .header-card {
-            background: linear-gradient(90deg, #e95a29 0%, #fd7244 100%);
+            background: linear-gradient(90deg, #4c7889 0%, #6696ae 100%);
             border-radius: 8px;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border: 1px solid rgba(253, 114, 68, 0.15);
+            border: 1px solid rgba(102, 150, 174, 0.15);
         }
         
         .header-title {
@@ -56,7 +56,7 @@
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 20px;
-            border: 1px solid rgba(253, 114, 68, 0.15);
+            border: 1px solid rgba(102, 150, 174, 0.15);
         }
         
         .card-title {
@@ -74,11 +74,11 @@
         .amount-display {
             font-size: 2rem;
             font-weight: bold;
-            color: #fd7244;
+            color: #6696ae;
             margin: 10px 0;
         }
         
-        /* Stats box */
+        /* Stats section */
         .stats-section {
             margin-top: 20px;
         }
@@ -94,7 +94,7 @@
         
         .stats-card {
             background-color: #121827;
-            border-left: 4px solid #fd7244;
+            border-left: 4px solid #6696ae;
             padding: 15px;
             margin-bottom: 10px;
         }
@@ -107,7 +107,7 @@
         .stats-value {
             font-size: 1.2rem;
             font-weight: bold;
-            color: #fd7244;
+            color: #6696ae;
         }
         
         /* Table */
@@ -124,7 +124,7 @@
         }
         
         .table-header {
-            background-color: rgba(233, 90, 41, 0.8);
+            background-color: rgba(102, 150, 174, 0.8);
             padding: 15px;
             text-align: left;
             font-weight: bold;
@@ -132,7 +132,7 @@
         
         .table-header th {
             padding: 12px 15px;
-            border-bottom: 1px solid rgba(253, 114, 68, 0.1);
+            border-bottom: 1px solid rgba(102, 150, 174, 0.1);
         }
         
         .table-header th:first-child {
@@ -145,7 +145,7 @@
         
         .table-row td {
             padding: 12px 15px;
-            border-bottom: 1px solid rgba(253, 114, 68, 0.05);
+            border-bottom: 1px solid rgba(102, 150, 174, 0.05);
         }
         
         .table-row:nth-child(odd) {
@@ -157,7 +157,7 @@
         }
         
         .table-row:hover {
-            background-color: rgba(233, 90, 41, 0.2);
+            background-color: rgba(102, 150, 174, 0.2);
         }
         
         /* Rank badge */
@@ -167,8 +167,8 @@
             justify-content: center;
             width: 28px;
             height: 28px;
-            background-color: #fd7244;
-            color: #000;
+            background-color: #6696ae;
+            color: #fff;
             font-weight: bold;
             border-radius: 50%;
         }
@@ -181,7 +181,7 @@
         
         .address-cell a:hover {
             text-decoration: underline;
-            color: #fd7244;
+            color: #6696ae;
         }
         
         /* Pagination */
@@ -194,8 +194,8 @@
         }
         
         .pagination-button {
-            background-color: #fd7244;
-            color: #000;
+            background-color: #6696ae;
+            color: #fff;
             border: none;
             padding: 8px 16px;
             border-radius: 4px;
@@ -205,12 +205,12 @@
         }
         
         .pagination-button:hover {
-            background-color: #fd8c66;
+            background-color: #7aa7bd;
         }
         
         .pagination-button:disabled {
-            background-color: #e95a29;
-            color: #ffd8cc;
+            background-color: #4c7889;
+            color: #d9e6ec;
             cursor: not-allowed;
         }
         
@@ -222,8 +222,8 @@
         
         /* Note box */
         .note-box {
-            background-color: rgba(253, 114, 68, 0.1);
-            border-left: 3px solid #fd7244;
+            background-color: rgba(102, 150, 174, 0.1);
+            border-left: 3px solid #6696ae;
             padding: 12px 16px;
             margin: 12px 0;
             font-size: 0.9rem;
@@ -264,7 +264,7 @@
         .timer-value {
             font-size: 2rem;
             font-weight: bold;
-            color: #fd7244;
+            color: #6696ae;
             background-color: rgba(30, 30, 30, 0.6);
             border-radius: 4px;
             padding: 8px;
@@ -278,54 +278,27 @@
             margin-top: 4px;
         }
         
-        /* Tab styling */
-        .tab-container {
-            display: flex;
-            border-bottom: 1px solid rgba(253, 114, 68, 0.3);
-            margin-bottom: 1rem;
-            overflow-x: auto;
-            scrollbar-width: thin;
-        }
-        
-        .tab {
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        
-        .tab.active {
-            border-color: #fd7244;
-            color: #fd7244;
-        }
-        
-        .tab:hover:not(.active) {
-            border-color: rgba(253, 114, 68, 0.3);
-            color: rgba(253, 114, 68, 0.7);
-        }
-        
         /* Live Feed Styling */
         .live-feed-card {
             background-color: #1a1a1a;
             border-radius: 8px;
             overflow: hidden;
             margin-bottom: 20px;
-            border: 1px solid rgba(253, 114, 68, 0.15);
+            border: 1px solid rgba(102, 150, 174, 0.15);
             display: flex;
             flex-direction: column;
         }
         
         .live-feed-header {
             padding: 15px;
-            border-bottom: 1px solid rgba(253, 114, 68, 0.15);
+            border-bottom: 1px solid rgba(102, 150, 174, 0.15);
         }
         
         .live-feed {
             max-height: 320px;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: #fd7244 #1a1a1a;
+            scrollbar-color: #6696ae #1a1a1a;
         }
         
         .live-feed::-webkit-scrollbar {
@@ -338,7 +311,7 @@
         }
         
         .live-feed::-webkit-scrollbar-thumb {
-            background-color: #fd7244;
+            background-color: #6696ae;
             border-radius: 3px;
         }
         
@@ -378,24 +351,12 @@
             text-decoration: underline;
         }
         
-        .tier-badge {
-            display: inline-block;
-            background: rgba(253, 114, 68, 0.2);
-            border: 1px solid rgba(253, 114, 68, 0.3);
-            color: #fd7244;
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.1rem 0.4rem;
-            border-radius: 4px;
-            margin-left: 0.5rem;
-        }
-        
         .feed-amount {
             font-weight: 700;
             margin-left: auto;
             margin-right: 10px;
             font-family: monospace;
-            color: #fd7244;
+            color: #6696ae;
         }
         
         .feed-time {
@@ -403,15 +364,6 @@
             font-size: 0.75rem;
             width: 60px;
             text-align: right;
-        }
-        
-        /* Tier stats styling */
-        .tier-card {
-            transition: transform 0.2s ease;
-        }
-        
-        .tier-card:hover {
-            transform: translateY(-3px);
         }
     </style>
 </head>
@@ -450,11 +402,11 @@
                 return `${days}d ago`;
             };
             
-            // Function to fetch live transactions
+            // Function to fetch live transactions (only for Resolv)
             const fetchLiveTransactions = React.useCallback(async () => {
                 try {
                     setLoading(true);
-                    const response = await fetch('/api/live-feed?sale=lit&limit=8'); 
+                    const response = await fetch('/api/live-feed?sale=resolv&limit=8'); 
                     if (!response.ok) {
                         throw new Error('Failed to fetch live transactions');
                     }
@@ -515,15 +467,14 @@
                         ) : (
                             transactions.map((tx, index) => (
                                 <div className="feed-item" key={index}>
-                                    <img src="lit.jpg" onError={(e) => e.target.src = 'lit.png'} className="feed-logo" alt="Lit" />
+                                    <img src="resolv.jpg" onError={(e) => e.target.src = 'resolv.png'} className="feed-logo" alt="Resolv" />
                                     <a 
-                                        href={`https://arbiscan.io/tx/${tx.hash}`} 
+                                        href={`https://etherscan.io/tx/${tx.hash}`} 
                                         target="_blank" 
                                         rel="noopener noreferrer" 
                                         className="feed-address"
                                     >
                                         {formatAddress(tx.from)}
-                                        {tx.tier && <span className="tier-badge">T{tx.tier}</span>}
                                     </a>
                                     <span className="feed-amount">+${tx.amount.toFixed(2)}</span>
                                     <span className="feed-time">{timeAgo(tx.timestamp)}</span>
@@ -531,143 +482,6 @@
                             ))
                         )}
                     </div>
-                </div>
-            );
-        }
-        
-        // TierStats component
-        function TierStats() {
-            const [tierStats, setTierStats] = React.useState({
-                tier1: { total_investors: 0, total_investment: 0 },
-                tier2: { total_investors: 0, total_investment: 0 },
-                tier3: { total_investors: 0, total_investment: 0 }
-            });
-            const [overallStats, setOverallStats] = React.useState({
-                total_investment: 0,
-                total_investors: 0
-            });
-            const [loading, setLoading] = React.useState(true);
-            const [error, setError] = React.useState(null);
-            
-            // Function to fetch tier stats
-            const fetchTierStats = React.useCallback(async () => {
-                try {
-                    setLoading(true);
-                    const response = await fetch('/api/lit/stats');
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch tier statistics');
-                    }
-                    
-                    const data = await response.json();
-                    if (data.tier_stats) {
-                        setTierStats(data.tier_stats);
-                    }
-                    
-                    // Set overall stats
-                    setOverallStats({
-                        total_investment: data.total_investment,
-                        total_investors: data.total_investors
-                    });
-                    
-                    setLoading(false);
-                } catch (error) {
-                    console.error('Error fetching tier stats:', error);
-                    setError(error.message);
-                    setLoading(false);
-                }
-            }, []);
-            
-            // Fetch tier stats on component mount
-            React.useEffect(() => {
-                fetchTierStats();
-                
-                // Poll for updated stats every 60 seconds
-                const interval = setInterval(fetchTierStats, 60000);
-                
-                // Clean up on unmount
-                return () => clearInterval(interval);
-            }, [fetchTierStats]);
-            
-            // Function to format currency
-            const formatAmount = (amount) => {
-                return amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            };
-            
-            return (
-                <div className="card p-6">
-                    <div className="card-title mb-4">Tier Statistics</div>
-                    
-                    {loading ? (
-                        <div className="text-center text-gray-500 py-2">
-                            <i className="fas fa-circle-notch fa-spin mr-2"></i>
-                            Loading tier statistics...
-                        </div>
-                    ) : error ? (
-                        <div className="text-center text-red-500 py-2">
-                            Error loading tier statistics: {error}
-                        </div>
-                    ) : (
-                        <div className="space-y-6">
-                            {/* Overall stats */}
-                            <div className="tier-card bg-opacity-20 rounded p-4 border bg-gradient-to-r from-orange-900 to-red-900 border-orange-600">
-                                <div className="text-xl font-bold text-orange-500 mb-3">Overall</div>
-                                <div className="flex justify-between mb-2">
-                                    <span className="text-gray-300">Total Investors:</span>
-                                    <span className="font-bold text-lg">{overallStats.total_investors.toLocaleString()}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-300">Total Invested:</span>
-                                    <span className="font-bold text-lg">{formatAmount(overallStats.total_investment)}</span>
-                                </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                                {/* Tier 1 */}
-                                <div className="tier-card bg-yellow-900 bg-opacity-20 rounded p-4 border border-yellow-600">
-                                    <div className="text-lg font-bold text-yellow-500 mb-2">Tier 1</div>
-                                    <div className="flex justify-between mb-2">
-                                        <span className="text-gray-400">Investors:</span>
-                                        <span className="font-bold">{tierStats.tier1.total_investors.toLocaleString()}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-400">Total:</span>
-                                        <span className="font-bold">{formatAmount(tierStats.tier1.total_investment)}</span>
-                                    </div>
-                                </div>
-                                
-                                {/* Tier 2 */}
-                                <div className="tier-card bg-gray-700 bg-opacity-20 rounded p-4 border border-gray-500">
-                                    <div className="text-lg font-bold text-gray-400 mb-2">Tier 2</div>
-                                    <div className="flex justify-between mb-2">
-                                        <span className="text-gray-400">Investors:</span>
-                                        <span className="font-bold">{tierStats.tier2.total_investors.toLocaleString()}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-400">Total:</span>
-                                        <span className="font-bold">{formatAmount(tierStats.tier2.total_investment)}</span>
-                                    </div>
-                                </div>
-                                
-                                {/* Tier 3 */}
-                                <div className="tier-card bg-yellow-800 bg-opacity-20 rounded p-4 border border-yellow-700">
-                                    <div className="text-lg font-bold text-yellow-600 mb-2">Tier 3</div>
-                                    <div className="flex justify-between mb-2">
-                                        <span className="text-gray-400">Investors:</span>
-                                        <span className="font-bold">{tierStats.tier3.total_investors.toLocaleString()}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-gray-400">Total:</span>
-                                        <span className="font-bold">{formatAmount(tierStats.tier3.total_investment)}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
             );
         }
@@ -737,13 +551,9 @@
         }
         
         // Main app component
-        function LegionTracker() {
+        function ResolvTracker() {
             // State hooks
             const [deposits, setDeposits] = React.useState([]);
-            const [tier1Deposits, setTier1Deposits] = React.useState([]);
-            const [tier2Deposits, setTier2Deposits] = React.useState([]);
-            const [tier3Deposits, setTier3Deposits] = React.useState([]);
-            const [activeTier, setActiveTier] = React.useState('all');
             const [totalInvestment, setTotalInvestment] = React.useState(0);
             const [loading, setLoading] = React.useState(true);
             const [error, setError] = React.useState(null);
@@ -756,12 +566,13 @@
                 lowest: 0
             });
             
-            // Set the sale launch date to today at 12:00 PM UTC
-            const today = new Date();
+            // Set the sale launch date to tomorrow at 12:00 PM UTC
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
             const saleDate = new Date(Date.UTC(
-                today.getUTCFullYear(),
-                today.getUTCMonth(),
-                today.getUTCDate(),
+                tomorrow.getUTCFullYear(),
+                tomorrow.getUTCMonth(),
+                tomorrow.getUTCDate(),
                 12, 0, 0
             ));
             const saleHasStarted = new Date() >= saleDate;
@@ -791,19 +602,14 @@
                 return () => clearInterval(updateInterval);
             }, []);
             
-            // Reset page when changing tier
-            React.useEffect(() => {
-                setCurrentPage(1);
-            }, [activeTier]);
-            
             // Function to fetch data from API
             const fetchData = async () => {
                 try {
                     console.log("Fetching data...");
                     setLoading(true);
                     
-                    // Fetch all deposits
-                    const depositsRes = await fetch('/api/lit/deposits');
+                    // Fetch deposits
+                    const depositsRes = await fetch('/api/resolv/deposits');
                     if (!depositsRes.ok) {
                         throw new Error('Failed to fetch deposits');
                     }
@@ -811,26 +617,6 @@
                     console.log("Deposits:", depositsData);
                     setDeposits(depositsData.deposits || []);
                     setTotalInvestment(depositsData.deposits.reduce((sum, d) => sum + d.amount, 0) || 0);
-                    
-                    // Fetch tier-specific deposits
-                    const tier1Res = await fetch('/api/lit/tier1/deposits');
-                    const tier2Res = await fetch('/api/lit/tier2/deposits');
-                    const tier3Res = await fetch('/api/lit/tier3/deposits');
-                    
-                    if (tier1Res.ok) {
-                        const tier1Data = await tier1Res.json();
-                        setTier1Deposits(tier1Data.deposits || []);
-                    }
-                    
-                    if (tier2Res.ok) {
-                        const tier2Data = await tier2Res.json();
-                        setTier2Deposits(tier2Data.deposits || []);
-                    }
-                    
-                    if (tier3Res.ok) {
-                        const tier3Data = await tier3Res.json();
-                        setTier3Deposits(tier3Data.deposits || []);
-                    }
                     
                     // Calculate statistics
                     if (depositsData.deposits && depositsData.deposits.length > 0) {
@@ -871,26 +657,13 @@
                 return address.substring(0, 6) + '...' + address.substring(address.length - 4);
             };
             
-            // Get the active deposits based on selected tier
-            const getActiveDeposits = () => {
-                switch(activeTier) {
-                    case 'tier1': return tier1Deposits;
-                    case 'tier2': return tier2Deposits;
-                    case 'tier3': return tier3Deposits;
-                    default: return deposits;
-                }
-            };
-            
-            // Get current active deposits
-            const activeDeposits = getActiveDeposits();
-            
             // Sort deposits based on current sort order
             const sortedDeposits = React.useMemo(() => {
-                if (!activeDeposits || !activeDeposits.length) return [];
-                return [...activeDeposits].sort((a, b) => {
+                if (!deposits || !deposits.length) return [];
+                return [...deposits].sort((a, b) => {
                     return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
                 });
-            }, [activeDeposits, sortOrder]);
+            }, [deposits, sortOrder]);
             
             // Toggle sort order
             const toggleSortOrder = () => {
@@ -909,7 +682,7 @@
                     <div className="flex items-center justify-center h-screen">
                         <div className="text-center p-8 card max-w-md">
                             <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                            <p className="mb-6">Loading Lit Protocol Sale Data...</p>
+                            <p className="mb-6">Loading Resolv Sale Data...</p>
                             <div className="note-box">
                                 <p className="text-sm text-gray-300">
                                     Note: This dashboard displays only the total amount successfully invested, 
@@ -958,8 +731,20 @@
                     
                     {/* Header */}
                     <div className="header-card">
-                        <div className="header-title">Lit Protocol</div>
-                        <img src="lit.jpg" onerror="this.src='lit.png'" alt="Lit Protocol Logo" className="h-16" />
+                        <div className="header-title">Resolv</div>
+                        <img 
+  src="resolv.svg" 
+  onError={(e) => {
+    console.log("Header logo error, trying fallback");
+    e.target.src = 'resolv.jpg';
+    e.target.onerror = () => {
+      console.log("Header second fallback failed");
+      e.target.src = 'resolv.png';
+    }
+  }}
+  alt="Resolv Logo" 
+  className="h-16" 
+/>
                     </div>
                     
                     {/* Note about data */}
@@ -971,9 +756,6 @@
                     
                     {/* Show timer if sale hasn't started yet */}
                     {!saleHasStarted && <CountdownTimer launchDate={saleDate} />}
-                    
-                    {/* Tier Statistics */}
-                    <TierStats />
                     
                     {/* Main Content Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -1023,34 +805,6 @@
                                     <div className="card-subtitle">Ranked by investment amount</div>
                                 </div>
                                 
-                                {/* Tier filter tabs */}
-                                <div className="tab-container">
-                                    <div 
-                                        className={`tab ${activeTier === 'all' ? 'active' : ''}`} 
-                                        onClick={() => setActiveTier('all')}
-                                    >
-                                        All Tiers
-                                    </div>
-                                    <div 
-                                        className={`tab ${activeTier === 'tier1' ? 'active' : ''}`} 
-                                        onClick={() => setActiveTier('tier1')}
-                                    >
-                                        <span className="text-yellow-500">Tier 1</span>
-                                    </div>
-                                    <div 
-                                        className={`tab ${activeTier === 'tier2' ? 'active' : ''}`} 
-                                        onClick={() => setActiveTier('tier2')}
-                                    >
-                                        <span className="text-gray-400">Tier 2</span>
-                                    </div>
-                                    <div 
-                                        className={`tab ${activeTier === 'tier3' ? 'active' : ''}`} 
-                                        onClick={() => setActiveTier('tier3')}
-                                    >
-                                        <span className="text-yellow-600">Tier 3</span>
-                                    </div>
-                                </div>
-                                
                                 <div className="table-container">
                                     <table className="data-table">
                                         <thead>
@@ -1060,7 +814,6 @@
                                                 <th className="cursor-pointer" onClick={toggleSortOrder}>
                                                     Amount {sortOrder === 'desc' ? '↓' : '↑'}
                                                 </th>
-                                                <th>Tiers</th>
                                                 <th className="text-right">% of Total</th>
                                             </tr>
                                         </thead>
@@ -1077,7 +830,7 @@
                                                         </td>
                                                         <td className="address-cell">
                                                             <a
-                                                                href={`https://debank.com/profile/${deposit.address}`}
+                                                                href={`https://etherscan.io/address/${deposit.address}`}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 title={deposit.address}
@@ -1088,15 +841,6 @@
                                                         <td className="text-right font-mono">
                                                             {formatAmount(deposit.amount)}
                                                         </td>
-                                                        <td>
-                                                            {deposit.tiers ? (
-                                                                deposit.tiers.map(tier => (
-                                                                    <span key={tier} className="tier-badge mr-1">T{tier}</span>
-                                                                ))
-                                                            ) : (
-                                                                <span className="text-gray-500">-</span>
-                                                            )}
-                                                        </td>
                                                         <td className="text-right">
                                                             {((deposit.amount / totalInvestment) * 100).toFixed(2)}%
                                                         </td>
@@ -1104,7 +848,7 @@
                                                 ))
                                             ) : (
                                                 <tr className="table-row">
-                                                    <td colSpan="5" className="text-center py-8">
+                                                    <td colSpan="4" className="text-center py-8">
                                                         {!saleHasStarted ? (
                                                             <div>
                                                                 <i className="fas fa-clock mr-2 text-yellow-500"></i>
@@ -1158,346 +902,8 @@
             );
         }
         
-        // TierTables component
-        function TierTables() {
-            const [activeTab, setActiveTab] = React.useState('all');
-            const [deposits, setDeposits] = React.useState({
-                all: [],
-                tier1: [],
-                tier2: [],
-                tier3: []
-            });
-            const [loading, setLoading] = React.useState({
-                all: true,
-                tier1: true,
-                tier2: true,
-                tier3: true
-            });
-            const [error, setError] = React.useState({
-                all: null,
-                tier1: null,
-                tier2: null,
-                tier3: null
-            });
-            const [sortOrder, setSortOrder] = React.useState('desc');
-            const [currentPage, setCurrentPage] = React.useState(1);
-            const depositsPerPage = 10;
-            
-            // Function to fetch deposits for all tiers
-            const fetchAllDeposits = React.useCallback(async () => {
-                try {
-                    setLoading(prev => ({ ...prev, all: true }));
-                    
-                    const response = await fetch('/api/lit/deposits');
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch all deposits');
-                    }
-                    
-                    const data = await response.json();
-                    setDeposits(prev => ({ ...prev, all: data.deposits || [] }));
-                    setLoading(prev => ({ ...prev, all: false }));
-                    setError(prev => ({ ...prev, all: null }));
-                } catch (err) {
-                    console.error("Error fetching all deposits:", err);
-                    setError(prev => ({ ...prev, all: err.message }));
-                    setLoading(prev => ({ ...prev, all: false }));
-                }
-            }, []);
-            
-            // Function to fetch deposits for tier 1
-            const fetchTier1Deposits = React.useCallback(async () => {
-                try {
-                    setLoading(prev => ({ ...prev, tier1: true }));
-                    
-                    const response = await fetch('/api/lit/tier1/deposits');
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch tier 1 deposits');
-                    }
-                    
-                    const data = await response.json();
-                    setDeposits(prev => ({ ...prev, tier1: data.deposits || [] }));
-                    setLoading(prev => ({ ...prev, tier1: false }));
-                    setError(prev => ({ ...prev, tier1: null }));
-                } catch (err) {
-                    console.error("Error fetching tier 1 deposits:", err);
-                    setError(prev => ({ ...prev, tier1: err.message }));
-                    setLoading(prev => ({ ...prev, tier1: false }));
-                }
-            }, []);
-            
-            // Function to fetch deposits for tier 2
-            const fetchTier2Deposits = React.useCallback(async () => {
-                try {
-                    setLoading(prev => ({ ...prev, tier2: true }));
-                    
-                    const response = await fetch('/api/lit/tier2/deposits');
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch tier 2 deposits');
-                    }
-                    
-                    const data = await response.json();
-                    setDeposits(prev => ({ ...prev, tier2: data.deposits || [] }));
-                    setLoading(prev => ({ ...prev, tier2: false }));
-                    setError(prev => ({ ...prev, tier2: null }));
-                } catch (err) {
-                    console.error("Error fetching tier 2 deposits:", err);
-                    setError(prev => ({ ...prev, tier2: err.message }));
-                    setLoading(prev => ({ ...prev, tier2: false }));
-                }
-            }, []);
-            
-            // Function to fetch deposits for tier 3
-            const fetchTier3Deposits = React.useCallback(async () => {
-                try {
-                    setLoading(prev => ({ ...prev, tier3: true }));
-                    
-                    const response = await fetch('/api/lit/tier3/deposits');
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch tier 3 deposits');
-                    }
-                    
-                    const data = await response.json();
-                    setDeposits(prev => ({ ...prev, tier3: data.deposits || [] }));
-                    setLoading(prev => ({ ...prev, tier3: false }));
-                    setError(prev => ({ ...prev, tier3: null }));
-                } catch (err) {
-                    console.error("Error fetching tier 3 deposits:", err);
-                    setError(prev => ({ ...prev, tier3: err.message }));
-                    setLoading(prev => ({ ...prev, tier3: false }));
-                }
-            }, []);
-            
-            // Fetch data on component mount
-            React.useEffect(() => {
-                // Fetch data for all tiers initially
-                fetchAllDeposits();
-                
-                // Poll for updates every 60 seconds
-                const allInterval = setInterval(fetchAllDeposits, 60000);
-                
-                return () => clearInterval(allInterval);
-            }, [fetchAllDeposits]);
-            
-            // Fetch data for specific tier when tab changes
-            React.useEffect(() => {
-                if (activeTab === 'tier1' && deposits.tier1.length === 0) {
-                    fetchTier1Deposits();
-                } else if (activeTab === 'tier2' && deposits.tier2.length === 0) {
-                    fetchTier2Deposits();
-                } else if (activeTab === 'tier3' && deposits.tier3.length === 0) {
-                    fetchTier3Deposits();
-                }
-            }, [activeTab, deposits, fetchTier1Deposits, fetchTier2Deposits, fetchTier3Deposits]);
-            
-            // Function to format currency
-            const formatAmount = (amount) => {
-                return amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            };
-            
-            // Format wallet address to shorter format
-            const formatAddress = (address) => {
-                if (!address) return '';
-                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
-            };
-            
-            // Get current deposits based on active tab
-            const currentDeposits = deposits[activeTab] || [];
-            
-            // Sort deposits based on current sort order
-            const sortedDeposits = React.useMemo(() => {
-                if (!currentDeposits.length) return [];
-                return [...currentDeposits].sort((a, b) => {
-                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
-                });
-            }, [currentDeposits, sortOrder]);
-            
-            // Toggle sort order
-            const toggleSortOrder = () => {
-                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            };
-            
-            // Pagination calculations
-            const indexOfLastDeposit = currentPage * depositsPerPage;
-            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
-            const paginatedDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
-            const totalPages = Math.max(1, Math.ceil(sortedDeposits.length / depositsPerPage));
-            
-            // Reset to page 1 when changing tabs
-            React.useEffect(() => {
-                setCurrentPage(1);
-            }, [activeTab]);
-            
-            // Get tier class for styling
-            const getTierClass = (tier) => {
-                switch(tier) {
-                    case 'tier1': return 'text-yellow-500';
-                    case 'tier2': return 'text-gray-400';
-                    case 'tier3': return 'text-yellow-600';
-                    default: return 'text-fd7244';
-                }
-            };
-            
-            // Get tier title
-            const getTierTitle = (tier) => {
-                switch(tier) {
-                    case 'tier1': return 'Tier 1';
-                    case 'tier2': return 'Tier 2';
-                    case 'tier3': return 'Tier 3';
-                    default: return 'All Tiers';
-                }
-            };
-            
-            return (
-                <div className="card mb-6">
-                    <div className="tab-container">
-                        <div 
-                            className={`tab ${activeTab === 'all' ? 'active' : ''}`} 
-                            onClick={() => setActiveTab('all')}
-                        >
-                            All Tiers
-                        </div>
-                        <div 
-                            className={`tab ${activeTab === 'tier1' ? 'active' : ''}`} 
-                            onClick={() => setActiveTab('tier1')}
-                        >
-                            <span className="text-yellow-500">Tier 1</span>
-                        </div>
-                        <div 
-                            className={`tab ${activeTab === 'tier2' ? 'active' : ''}`} 
-                            onClick={() => setActiveTab('tier2')}
-                        >
-                            <span className="text-gray-400">Tier 2</span>
-                        </div>
-                        <div 
-                            className={`tab ${activeTab === 'tier3' ? 'active' : ''}`} 
-                            onClick={() => setActiveTab('tier3')}
-                        >
-                            <span className="text-yellow-600">Tier 3</span>
-                        </div>
-                    </div>
-                    
-                    <div className="p-4 border-b border-gray-800">
-                        <div className="card-title">{getTierTitle(activeTab)} Investors</div>
-                        <div className="card-subtitle">Ranked by investment amount</div>
-                    </div>
-                    
-                    <div className="table-container">
-                        <table className="data-table">
-                            <thead>
-                                <tr className="table-header">
-                                    <th>Rank</th>
-                                    <th>Address</th>
-                                    <th className="cursor-pointer" onClick={toggleSortOrder}>
-                                        Amount {sortOrder === 'desc' ? '↓' : '↑'}
-                                    </th>
-                                    {activeTab === 'all' && <th>Tiers</th>}
-                                    <th className="text-right">% of {activeTab === 'all' ? 'Total' : getTierTitle(activeTab)}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {loading[activeTab] ? (
-                                    <tr className="table-row">
-                                        <td colSpan={activeTab === 'all' ? 5 : 4} className="text-center py-6">
-                                            <i className="fas fa-circle-notch fa-spin mr-2"></i>
-                                            Loading {getTierTitle(activeTab)} data...
-                                        </td>
-                                    </tr>
-                                ) : error[activeTab] ? (
-                                    <tr className="table-row">
-                                        <td colSpan={activeTab === 'all' ? 5 : 4} className="text-center py-6 text-red-500">
-                                            Error: {error[activeTab]}
-                                        </td>
-                                    </tr>
-                                ) : paginatedDeposits.length === 0 ? (
-                                    <tr className="table-row">
-                                        <td colSpan={activeTab === 'all' ? 5 : 4} className="text-center py-6">
-                                            No deposits found for {getTierTitle(activeTab)}.
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    paginatedDeposits.map((deposit, index) => {
-                                        // Calculate total investment for percentage
-                                        const tierTotal = deposits[activeTab].reduce((sum, d) => sum + d.amount, 0);
-                                        
-                                        return (
-                                            <tr key={deposit.address} className="table-row">
-                                                <td>
-                                                    {indexOfFirstDeposit + index + 1 <= 3 ? (
-                                                        <span className="rank-badge">{indexOfFirstDeposit + index + 1}</span>
-                                                    ) : (
-                                                        <span>#{indexOfFirstDeposit + index + 1}</span>
-                                                    )}
-                                                </td>
-                                                <td className="address-cell">
-                                                    <a
-                                                        href={`https://arbiscan.io/address/${deposit.address}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        title={deposit.address}
-                                                    >
-                                                        {formatAddress(deposit.address)}
-                                                    </a>
-                                                </td>
-                                                <td className="text-right font-mono">
-                                                    {formatAmount(deposit.amount)}
-                                                </td>
-                                                {activeTab === 'all' && (
-                                                    <td>
-                                                        {deposit.tiers ? (
-                                                            deposit.tiers.map(tier => (
-                                                                <span key={tier} className="tier-badge mr-1">T{tier}</span>
-                                                            ))
-                                                        ) : (
-                                                            <span className="text-gray-500">-</span>
-                                                        )}
-                                                    </td>
-                                                )}
-                                                <td className="text-right">
-                                                    {((deposit.amount / tierTotal) * 100).toFixed(2)}%
-                                                </td>
-                                            </tr>
-                                        );
-                                    })
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    {/* Pagination */}
-                    {!loading[activeTab] && !error[activeTab] && paginatedDeposits.length > 0 && totalPages > 1 && (
-                        <div className="pagination">
-                            <button
-                                onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                                disabled={currentPage === 1}
-                                className="pagination-button"
-                            >
-                                Previous
-                            </button>
-                            
-                            <div className="pagination-info">
-                                {currentPage} of {totalPages}
-                            </div>
-                            
-                            <button
-                                onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-                                disabled={currentPage === totalPages}
-                                className="pagination-button"
-                            >
-                                Next
-                            </button>
-                        </div>
-                    )}
-                </div>
-            );
-        }
-        
         // Render the app to the DOM
-        ReactDOM.render(<LegionTracker />, document.getElementById('app'));
+        ReactDOM.render(<ResolvTracker />, document.getElementById('app'));
     </script>
 </body>
 </html>

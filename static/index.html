@@ -570,17 +570,17 @@
         }
 
         .feed-item {
-            background: linear-gradient(90deg, rgba(29, 29, 40, 0.4) 0%, rgba(36, 36, 51, 0.4) 100%);
-            margin-bottom: 4px;
+            background: rgba(40, 40, 40, 0.6);
+            margin: 4px;
             border-radius: 4px;
-            padding: 0.75rem 1rem;
+            padding: 10px 15px;
             font-size: 0.9rem;
             display: flex;
             align-items: center;
         }
 
         .feed-item:hover {
-            background: linear-gradient(90deg, rgba(36, 36, 51, 0.7) 0%, rgba(42, 42, 61, 0.7) 100%);
+            background: rgba(50, 50, 50, 0.8);
         }
 
         .feed-item:last-child {
@@ -1405,11 +1405,11 @@ const sales = [
     { id: 'corn', name: 'corn', className: 'corn' },
     { id: 'enclave', name: 'Enclave', className: 'enclave' },
     { id: 'silencio', name: 'Silencio', className: 'silencio' },
-    { id: 'lit', name: 'Lit Protocol', className: 'lit', isActive: true }, // New active sale - Lit Protocol
-    // Add new upcoming sales
+    { id: 'lit', name: 'Lit Protocol', className: 'lit', isActive: true }, // Active sale
+    { id: 'resolv', name: 'Resolv', className: 'resolv', isActive: true }, // New active sale on Ethereum
+    // Other upcoming sales
     { id: 'session', name: 'Session', className: 'session', upcoming: true },
     { id: 'fragmetric', name: 'Fragmetric', className: 'fragmetric', upcoming: true },
-    { id: 'resolv', name: 'Resolv', className: 'resolv', upcoming: true },
     { id: 'hyperlane', name: 'Hyperlane', className: 'hyperlane', upcoming: true },
     { id: 'eoracle', name: 'eOracle', className: 'eoracle', upcoming: true },
     { id: 'overlay', name: 'Overlay', className: 'overlay', upcoming: true }
@@ -1428,10 +1428,10 @@ const chartColors = {
     nil: '#c9b6e4',
     silencio: '#284ee9',
     lit: '#fd7244', // Lit Protocol color
+    resolv: '#6696ae', // Resolv color
     // New colors for upcoming sales
     session: '#24f2d2',
     fragmetric: '#007d3a',
-    resolv: '#6696ae',
     hyperlane: '#2262c0',
     eoracle: '#1b6a58',
     overlay: '#545454'
@@ -1561,7 +1561,7 @@ async function fetchSaleData(sale) {
             highestAllocation: statsData.highest_allocation,
             lowestAllocation: statsData.lowest_allocation,
             tokenSalePrice: getTokenSalePrice(sale.id),
-            // For Lit, we're considering it the only active sale
+            // For active sales (Lit & Resolv)
             isActive: sale.isActive || false
         };
     } catch (error) {
@@ -1597,7 +1597,7 @@ async function fetchSaleData(sale) {
                 highestAllocation: { address: "Unknown", amount: 0 },
                 lowestAllocation: { address: "Unknown", amount: 0 },
                 tokenSalePrice: getTokenSalePrice(sale.id),
-                // For Lit, we're considering it the only active sale
+                // For active sales (Lit & Resolv)
                 isActive: sale.isActive || false
             };
         } catch (fallbackError) {
@@ -1729,6 +1729,11 @@ function updateTable(sortType = 'default') {
                 // Live sales first
                 if (a.isActive && !b.isActive) return -1;
                 if (!a.isActive && b.isActive) return 1;
+                
+                // If both are active, keep original order (Lit then Resolv)
+                if (a.isActive && b.isActive) {
+                    return sales.findIndex(s => s.id === a.id) - sales.findIndex(s => s.id === b.id);
+                }
                 
                 // Upcoming sales last
                 if (a.upcoming && !b.upcoming) return 1;
@@ -2065,19 +2070,27 @@ function updateLiveFeed(transactions) {
             feedItem.dataset.timestamp = tx.timestamp;
         }
         
-        // Add tier badge if available (for Lit Protocol)
+        // Determine the sale the transaction belongs to (default to lit if not specified)
+        const saleId = tx.sale || 'lit';
+        
+        // Add tier badge if available (only for Lit Protocol)
         let tierBadge = '';
-        if (tx.tier) {
+        if (saleId === 'lit' && tx.tier) {
             const tierClass = tx.tier === 1 ? 'bg-yellow-600' : 
                              tx.tier === 2 ? 'bg-gray-400' : 
                              tx.tier === 3 ? 'bg-yellow-700' : '';
             tierBadge = `<span class="text-xs font-bold ml-1 px-1 rounded ${tierClass}">T${tx.tier}</span>`;
         }
         
+        // Determine the correct blockchain explorer link based on the sale
+        const explorerUrl = saleId === 'resolv' 
+            ? `https://etherscan.io/tx/${tx.hash}` 
+            : `https://arbiscan.io/tx/${tx.hash}`;
+        
         feedItem.innerHTML = `
-            <img src="lit.jpg" onerror="this.src='lit.png'" class="feed-logo" alt="Lit">
-            <a href="https://arbiscan.io/tx/${tx.hash}" target="_blank" class="feed-address">${formatAddress(tx.from)}${tierBadge}</a>
-            <span class="feed-amount lit-color">+$${tx.amount.toFixed(2)}</span>
+            <img src="${saleId}.jpg" onerror="this.src='${saleId}.png'" class="feed-logo" alt="${saleId}">
+            <a href="${explorerUrl}" target="_blank" class="feed-address">${formatAddress(tx.from)}${tierBadge}</a>
+            <span class="feed-amount ${saleId}-color">+$${tx.amount.toFixed(2)}</span>
             <span class="feed-time">${timestamp}</span>
         `;
         liveFeed.appendChild(feedItem);
@@ -2132,30 +2145,37 @@ async function fetchAllSalesData() {
     // Fetch token prices from CoinGecko
     fetchTokenPrices();
     
-    // Set up auto-refresh for Lit data (active sale)
+    // Set up auto-refresh for active sales (Lit and Resolv)
     setInterval(refreshActiveData, 60000); // Every minute
     
     // Refresh token prices every 5 minutes
     setInterval(fetchTokenPrices, 300000); // Every 5 minutes
 }
 
-// Function to refresh active sale data (Lit Protocol)
+// Function to refresh active sale data (Lit Protocol and Resolv)
 async function refreshActiveData() {
     try {
-        // Only refresh the active sale (Lit Protocol)
+        // Only refresh the active sales (Lit Protocol and Resolv)
         const litIndex = salesData.findIndex(sale => sale.id === 'lit');
-        if (litIndex === -1) return;
+        const resolvIndex = salesData.findIndex(sale => sale.id === 'resolv');
         
-        // Fetch updated data
-        const updatedLit = await fetchSaleData(sales.find(sale => sale.id === 'lit'));
+        // Fetch updated data for Lit Protocol
+        if (litIndex !== -1) {
+            const updatedLit = await fetchSaleData(sales.find(sale => sale.id === 'lit'));
+            salesData[litIndex] = updatedLit;
+        }
         
-        // Update the data
-        salesData[litIndex] = updatedLit;
+        // Fetch updated data for Resolv
+        if (resolvIndex !== -1) {
+            const updatedResolv = await fetchSaleData(sales.find(sale => sale.id === 'resolv'));
+            salesData[resolvIndex] = updatedResolv;
+        }
         
         // Update UI components
         updateTable();
         updateOverallStats();
         updateCharts();
+        fetchLiveTransactions(); // Refresh the live feed with both sales data
     } catch (error) {
         console.error('Error refreshing active sale data:', error);
     }
