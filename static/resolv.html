@@ -244,39 +244,6 @@
         .back-button:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
-
-        /* Timer styling */
-        .countdown-timer {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-            font-family: monospace;
-        }
-
-        .timer-unit {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 70px;
-        }
-
-        .timer-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #6696ae;
-            background-color: rgba(30, 30, 30, 0.6);
-            border-radius: 4px;
-            padding: 8px;
-            min-width: 70px;
-            text-align: center;
-        }
-
-        .timer-label {
-            font-size: 0.8rem;
-            color: #b0b0b0;
-            margin-top: 4px;
-        }
         
         /* Live Feed Styling */
         .live-feed-card {
@@ -486,70 +453,6 @@
             );
         }
         
-        // Countdown Timer Component
-        function CountdownTimer({ launchDate }) {
-            const [timeLeft, setTimeLeft] = React.useState({
-                days: 0,
-                hours: 0,
-                minutes: 0,
-                seconds: 0
-            });
-
-            React.useEffect(() => {
-                const calculateTimeLeft = () => {
-                    const difference = new Date(launchDate) - new Date();
-                    
-                    if (difference > 0) {
-                        return {
-                            days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-                            hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-                            minutes: Math.floor((difference / 1000 / 60) % 60),
-                            seconds: Math.floor((difference / 1000) % 60)
-                        };
-                    } else {
-                        return {
-                            days: 0,
-                            hours: 0,
-                            minutes: 0,
-                            seconds: 0
-                        };
-                    }
-                };
-
-                setTimeLeft(calculateTimeLeft());
-                
-                const timer = setInterval(() => {
-                    setTimeLeft(calculateTimeLeft());
-                }, 1000);
-
-                return () => clearInterval(timer);
-            }, [launchDate]);
-
-            return (
-                <div className="card p-6 text-center">
-                    <div className="card-title mb-4">Sale Starts In</div>
-                    <div className="countdown-timer">
-                        <div className="timer-unit">
-                            <div className="timer-value">{String(timeLeft.days).padStart(2, '0')}</div>
-                            <div className="timer-label">Days</div>
-                        </div>
-                        <div className="timer-unit">
-                            <div className="timer-value">{String(timeLeft.hours).padStart(2, '0')}</div>
-                            <div className="timer-label">Hours</div>
-                        </div>
-                        <div className="timer-unit">
-                            <div className="timer-value">{String(timeLeft.minutes).padStart(2, '0')}</div>
-                            <div className="timer-label">Minutes</div>
-                        </div>
-                        <div className="timer-unit">
-                            <div className="timer-value">{String(timeLeft.seconds).padStart(2, '0')}</div>
-                            <div className="timer-label">Seconds</div>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        
         // Main app component
         function ResolvTracker() {
             // State hooks
@@ -566,36 +469,12 @@
                 lowest: 0
             });
             
-            // Set the sale launch date to tomorrow at 12:00 PM UTC
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const saleDate = new Date(Date.UTC(
-                tomorrow.getUTCFullYear(),
-                tomorrow.getUTCMonth(),
-                tomorrow.getUTCDate(),
-                12, 0, 0
-            ));
-            const saleHasStarted = new Date() >= saleDate;
-            
             // Constants
             const depositsPerPage = 10;
             
             // Fetch data on component mount
             React.useEffect(() => {
                 fetchData();
-                
-                // If the sale hasn't started yet, set up a timer to check periodically
-                if (!saleHasStarted) {
-                    const checkInterval = setInterval(() => {
-                        // Check if current time is past the sale start time
-                        if (new Date() >= saleDate) {
-                            fetchData();
-                            clearInterval(checkInterval);
-                        }
-                    }, 60000); // Check every minute
-                    
-                    return () => clearInterval(checkInterval);
-                }
                 
                 // Set up polling for updates
                 const updateInterval = setInterval(fetchData, 60000);
@@ -689,12 +568,6 @@
                                     not the amount being requested on the Legion website.
                                 </p>
                             </div>
-                            {!saleHasStarted && (
-                                <div className="mt-4">
-                                    <p className="mb-2">The sale will start at:</p>
-                                    <p className="text-lg font-bold neon-color">{saleDate.toLocaleString()}</p>
-                                </div>
-                            )}
                         </div>
                     </div>
                 );
@@ -753,9 +626,6 @@
                             <span className="font-bold neon-color">Note:</span> This dashboard shows only the total amount successfully invested, not the amount being requested on the Legion website.
                         </p>
                     </div>
-                    
-                    {/* Show timer if sale hasn't started yet */}
-                    {!saleHasStarted && <CountdownTimer launchDate={saleDate} />}
                     
                     {/* Main Content Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -849,17 +719,10 @@
                                             ) : (
                                                 <tr className="table-row">
                                                     <td colSpan="4" className="text-center py-8">
-                                                        {!saleHasStarted ? (
-                                                            <div>
-                                                                <i className="fas fa-clock mr-2 text-yellow-500"></i>
-                                                                No data yet. The sale has not started.
-                                                            </div>
-                                                        ) : (
-                                                            <div>
-                                                                <i className="fas fa-info-circle mr-2 text-yellow-500"></i>
-                                                                No investments detected yet.
-                                                            </div>
-                                                        )}
+                                                        <div>
+                                                            <i className="fas fa-info-circle mr-2 text-yellow-500"></i>
+                                                            No investments detected yet.
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             )}
