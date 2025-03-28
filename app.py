@@ -52,6 +52,9 @@ cache = {
 # Cache expiry time (30 minutes in seconds) - increased from 15 minutes
 CACHE_EXPIRY = 1800  # 30 minutes
 
+# Cache expiry time for live data (5 minutes in seconds)
+LIVE_CACHE_EXPIRY = 300  # 5 minutes
+
 # Constants for Lit Protocol (Arbitrum)
 LIT_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
 LIT_ALCHEMY_URL = f"https://arb-mainnet.g.alchemy.com/v2/{LIT_ALCHEMY_API_KEY}"
@@ -369,7 +372,6 @@ def sale_total_investment(sale_name):
 
 # Updated live feed endpoint to include both Lit and Resolv transactions with caching
 @app.route('/api/live-feed', methods=['GET'])
-@cached('live_feed', 'live_feed_timestamp')
 def live_feed():
     """Return the most recent transactions for the live feed"""
     # Get optional limit parameter
@@ -378,6 +380,21 @@ def live_feed():
     
     # Get optional sale parameter
     sale_filter = request.args.get('sale', default=None, type=str)
+    
+    # Check if we need to refresh the cache
+    current_time = time.time()
+    force_refresh = request.args.get('refresh') == '1'
+    
+    # If we have cached data and it's not expired, return it
+    if (not force_refresh and 
+        'live_feed' in cache and cache['live_feed'] is not None and 
+        'live_feed_timestamp' in cache and
+        current_time - cache['live_feed_timestamp'] < LIVE_CACHE_EXPIRY):
+        logger.info(f"Serving cached live feed data (age: {int(current_time - cache['live_feed_timestamp'])}s)")
+        return cache['live_feed']
+    
+    # Otherwise, fetch fresh data
+    logger.info("Fetching fresh live feed data")
     
     if sale_filter == 'lit':
         # Only get Lit transactions if specifically requested
@@ -482,10 +499,16 @@ def live_feed():
             transactions.sort(key=lambda x: x['timestamp'], reverse=True)
             transactions = transactions[:limit]  # Limit after combining
     
-    return jsonify({
+    response_data = {
         "transactions": transactions,
         "count": len(transactions)
-    })
+    }
+    
+    # Cache the response
+    cache['live_feed'] = response_data
+    cache['live_feed_timestamp'] = current_time
+    
+    return jsonify(response_data)
 
 @app.route('/api/<string:sale_name>/deposits', methods=['GET'])
 def sale_deposits(sale_name):
