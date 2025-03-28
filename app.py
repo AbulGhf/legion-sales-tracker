@@ -4,6 +4,14 @@ import requests
 import time
 from functools import wraps
 from flask_cors import CORS
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 # Create the Flask application
 app = Flask(__name__, static_url_path='', static_folder='static')
@@ -13,9 +21,9 @@ CORS(app)  # Enable CORS for all routes
 try:
     with open('static_data.json', 'r') as f:
         STATIC_DATA = json.load(f)
-    print(f"Loaded static data for {len(STATIC_DATA)} sales")
+    logger.info(f"Loaded static data for {len(STATIC_DATA)} sales")
 except Exception as e:
-    print(f"Error loading static data: {str(e)}")
+    logger.error(f"Error loading static data: {str(e)}")
     STATIC_DATA = {}
 
 # Cache for active sales (Lit Protocol and Resolv)
@@ -29,11 +37,13 @@ cache = {
     'resolv_total': None,
     'resolv_total_timestamp': 0,
     'global_stats': None,
-    'global_stats_timestamp': 0
+    'global_stats_timestamp': 0,
+    'live_feed': None,
+    'live_feed_timestamp': 0
 }
 
-# Cache expiry time (15 minutes in seconds)
-CACHE_EXPIRY = 900  # 15 minutes
+# Cache expiry time (30 minutes in seconds) - increased from 15 minutes
+CACHE_EXPIRY = 1800  # 30 minutes
 
 # Constants for Lit Protocol (Arbitrum)
 LIT_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
@@ -52,23 +62,26 @@ RESOLV_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{RESOLV_ALCHEMY_API_
 RESOLV_CONTRACT = "0xd4f787FC73cB2d12559D0A3158Cb8B4d491Fbe7A"
 RESOLV_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # Ethereum USDC contract
 
-# Cache decorator
+# Cache decorator with improved logging and forced cache flag
 def cached(cache_key, timestamp_key):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             # Check if we have valid cached data
             current_time = time.time()
-            if (cache[cache_key] is not None and 
+            force_refresh = request.args.get('refresh') == '1'
+            
+            if (not force_refresh and 
+                cache[cache_key] is not None and 
                 current_time - cache[timestamp_key] < CACHE_EXPIRY):
-                print(f"Serving cached data for {cache_key}")
+                logger.info(f"Serving cached data for {cache_key} (age: {int(current_time - cache[timestamp_key])}s)")
                 return cache[cache_key]
             
             # Otherwise, execute the function and cache the result
+            logger.info(f"Cache miss or force refresh for {cache_key}, fetching fresh data")
             result = f(*args, **kwargs)
             cache[cache_key] = result
             cache[timestamp_key] = current_time
-            print(f"Caching new data for {cache_key}")
             return result
         return decorated_function
     return decorator
@@ -83,7 +96,7 @@ def get_lit_usdc_deposits():
         page_key = None
         contract_transfers = []
         
-        print(f"Fetching USDC transfers to Lit Protocol contract: {contract_address}")
+        logger.info(f"Fetching USDC transfers to Lit Protocol contract: {contract_address}")
         
         while True:
             params = {
@@ -111,7 +124,7 @@ def get_lit_usdc_deposits():
             data = response.json()
             
             if "error" in data:
-                print(f"Error fetching transfers: {data['error']['message']}")
+                logger.error(f"Error fetching transfers: {data['error']['message']}")
                 break
             
             if "result" in data and "transfers" in data["result"]:
@@ -121,17 +134,17 @@ def get_lit_usdc_deposits():
                 # Check if there are more pages
                 if "pageKey" in data["result"]:
                     page_key = data["result"]["pageKey"]
-                    print(f"Fetched {len(transfers)} transfers for contract, getting next page...")
+                    logger.info(f"Fetched {len(transfers)} transfers for contract, getting next page...")
                 else:
-                    print(f"Fetched {len(transfers)} transfers for contract, no more pages.")
+                    logger.info(f"Fetched {len(transfers)} transfers for contract, no more pages.")
                     break
             else:
                 break
         
-        print(f"Total transfers fetched for contract {contract_address}: {len(contract_transfers)}")
+        logger.info(f"Total transfers fetched for contract {contract_address}: {len(contract_transfers)}")
         all_transfers.extend(contract_transfers)
     
-    print(f"Total transfers fetched across all contracts: {len(all_transfers)}")
+    logger.info(f"Total transfers fetched across all Lit contracts: {len(all_transfers)}")
     return all_transfers
 
 def aggregate_lit_deposits(transfers):
@@ -161,34 +174,6 @@ def aggregate_lit_deposits(transfers):
     
     return deposits_list
 
-def get_recent_lit_transactions(limit=10):
-    """Get recent USDC transfers to the Lit Protocol sale contracts"""
-    
-    # Get the transfers
-    transfers = get_lit_usdc_deposits()
-    
-    # Convert to our format
-    transactions = []
-    for transfer in transfers:
-        # Extract timestamp if available
-        timestamp = transfer.get("metadata", {}).get("blockTimestamp", "")
-        
-        tx = {
-            "from": transfer["from"],
-            "amount": float(transfer["value"]),
-            "hash": transfer.get("hash", ""),
-            "timestamp": timestamp,
-            "sale": "lit"  # Add sale identifier
-        }
-        transactions.append(tx)
-    
-    # Sort by timestamp (most recent first)
-    if transactions and 'timestamp' in transactions[0] and transactions[0]['timestamp']:
-        transactions.sort(key=lambda x: x['timestamp'], reverse=True)
-    
-    # Return the limited number
-    return transactions[:limit]
-
 # Resolv Protocol Functions
 def get_resolv_usdc_deposits():
     """Get all USDC transfers to the Resolv Protocol sale contract"""
@@ -196,7 +181,7 @@ def get_resolv_usdc_deposits():
     all_transfers = []
     page_key = None
     
-    print(f"Fetching USDC transfers to Resolv Protocol contract: {RESOLV_CONTRACT}")
+    logger.info(f"Fetching USDC transfers to Resolv Protocol contract: {RESOLV_CONTRACT}")
     
     while True:
         params = {
@@ -224,7 +209,7 @@ def get_resolv_usdc_deposits():
         data = response.json()
         
         if "error" in data:
-            print(f"Error fetching transfers: {data['error']['message']}")
+            logger.error(f"Error fetching transfers: {data['error']['message']}")
             break
         
         if "result" in data and "transfers" in data["result"]:
@@ -234,14 +219,14 @@ def get_resolv_usdc_deposits():
             # Check if there are more pages
             if "pageKey" in data["result"]:
                 page_key = data["result"]["pageKey"]
-                print(f"Fetched {len(transfers)} transfers, getting next page...")
+                logger.info(f"Fetched {len(transfers)} transfers, getting next page...")
             else:
-                print(f"Fetched {len(transfers)} transfers, no more pages.")
+                logger.info(f"Fetched {len(transfers)} transfers, no more pages.")
                 break
         else:
             break
     
-    print(f"Total transfers fetched: {len(all_transfers)}")
+    logger.info(f"Total Resolv transfers fetched: {len(all_transfers)}")
     return all_transfers
 
 def aggregate_resolv_deposits(transfers):
@@ -270,34 +255,6 @@ def aggregate_resolv_deposits(transfers):
     deposits_list.sort(key=lambda x: x["amount"], reverse=True)
     
     return deposits_list
-
-def get_recent_resolv_transactions(limit=10):
-    """Get recent USDC transfers to the Resolv Protocol sale contract"""
-    
-    # Get the transfers
-    transfers = get_resolv_usdc_deposits()
-    
-    # Convert to our format
-    transactions = []
-    for transfer in transfers:
-        # Extract timestamp if available
-        timestamp = transfer.get("metadata", {}).get("blockTimestamp", "")
-        
-        tx = {
-            "from": transfer["from"],
-            "amount": float(transfer["value"]),
-            "hash": transfer.get("hash", ""),
-            "timestamp": timestamp,
-            "sale": "resolv"  # Add sale identifier
-        }
-        transactions.append(tx)
-    
-    # Sort by timestamp (most recent first)
-    if transactions and 'timestamp' in transactions[0] and transactions[0]['timestamp']:
-        transactions.sort(key=lambda x: x['timestamp'], reverse=True)
-    
-    # Return the limited number
-    return transactions[:limit]
 
 # Route handlers
 @app.route('/')
@@ -352,6 +309,7 @@ def resolv_deposits():
     })
 
 @app.route('/api/resolv/stats', methods=['GET'])
+@cached('resolv_stats', 'resolv_stats_timestamp')
 def resolv_stats():
     """Return key statistics for Resolv Protocol sale"""
     
@@ -401,8 +359,9 @@ def sale_total_investment(sale_name):
     else:
         return jsonify({"error": f"Sale {sale_name} not found"}), 404
 
-# Updated live feed endpoint to include both Lit and Resolv transactions
+# Updated live feed endpoint to include both Lit and Resolv transactions with caching
 @app.route('/api/live-feed', methods=['GET'])
+@cached('live_feed', 'live_feed_timestamp')
 def live_feed():
     """Return the most recent transactions for the live feed"""
     # Get optional limit parameter
@@ -414,14 +373,100 @@ def live_feed():
     
     if sale_filter == 'lit':
         # Only get Lit transactions if specifically requested
-        transactions = get_recent_lit_transactions(limit)
+        try:
+            transfers = get_lit_usdc_deposits()
+            # Convert to our format
+            transactions = []
+            for transfer in transfers:
+                # Extract timestamp if available
+                timestamp = transfer.get("metadata", {}).get("blockTimestamp", "")
+                
+                tx = {
+                    "from": transfer["from"],
+                    "amount": float(transfer["value"]),
+                    "hash": transfer.get("hash", ""),
+                    "timestamp": timestamp,
+                    "sale": "lit"  # Add sale identifier
+                }
+                transactions.append(tx)
+            
+            # Sort by timestamp (most recent first)
+            if transactions and 'timestamp' in transactions[0] and transactions[0]['timestamp']:
+                transactions.sort(key=lambda x: x['timestamp'], reverse=True)
+                transactions = transactions[:limit]  # Limit after sorting
+            
+        except Exception as e:
+            logger.error(f"Error getting Lit transactions: {str(e)}")
+            transactions = []
+    
     elif sale_filter == 'resolv':
         # Only get Resolv transactions if specifically requested
-        transactions = get_recent_resolv_transactions(limit)
+        try:
+            transfers = get_resolv_usdc_deposits()
+            # Convert to our format
+            transactions = []
+            for transfer in transfers:
+                # Extract timestamp if available
+                timestamp = transfer.get("metadata", {}).get("blockTimestamp", "")
+                
+                tx = {
+                    "from": transfer["from"],
+                    "amount": float(transfer["value"]),
+                    "hash": transfer.get("hash", ""),
+                    "timestamp": timestamp,
+                    "sale": "resolv"  # Add sale identifier
+                }
+                transactions.append(tx)
+            
+            # Sort by timestamp (most recent first)
+            if transactions and 'timestamp' in transactions[0] and transactions[0]['timestamp']:
+                transactions.sort(key=lambda x: x['timestamp'], reverse=True)
+                transactions = transactions[:limit]  # Limit after sorting
+        
+        except Exception as e:
+            logger.error(f"Error getting Resolv transactions: {str(e)}")
+            transactions = []
+    
     else:
         # Get recent transactions for both active sales
-        lit_transactions = get_recent_lit_transactions(limit)
-        resolv_transactions = get_recent_resolv_transactions(limit)
+        lit_transactions = []
+        resolv_transactions = []
+        
+        try:
+            lit_transfers = get_lit_usdc_deposits()
+            # Convert to our format
+            for transfer in lit_transfers:
+                # Extract timestamp if available
+                timestamp = transfer.get("metadata", {}).get("blockTimestamp", "")
+                
+                tx = {
+                    "from": transfer["from"],
+                    "amount": float(transfer["value"]),
+                    "hash": transfer.get("hash", ""),
+                    "timestamp": timestamp,
+                    "sale": "lit"  # Add sale identifier
+                }
+                lit_transactions.append(tx)
+        except Exception as e:
+            logger.error(f"Error getting Lit transactions: {str(e)}")
+        
+        try:
+            resolv_transfers = get_resolv_usdc_deposits()
+            # Convert to our format
+            for transfer in resolv_transfers:
+                # Extract timestamp if available
+                timestamp = transfer.get("metadata", {}).get("blockTimestamp", "")
+                
+                tx = {
+                    "from": transfer["from"],
+                    "amount": float(transfer["value"]),
+                    "hash": transfer.get("hash", ""),
+                    "timestamp": timestamp,
+                    "sale": "resolv"  # Add sale identifier
+                }
+                resolv_transactions.append(tx)
+        except Exception as e:
+            logger.error(f"Error getting Resolv transactions: {str(e)}")
         
         # Combine and sort by timestamp
         transactions = lit_transactions + resolv_transactions
@@ -489,6 +534,7 @@ def sale_investors(sale_name):
 
 # New endpoint for sale statistics including highest and lowest allocations
 @app.route('/api/<string:sale_name>/stats', methods=['GET'])
+@cached('sale_stats', 'sale_stats_timestamp')
 def sale_stats(sale_name):
     """Return key statistics for a sale including highest and lowest allocations"""
     
@@ -589,7 +635,7 @@ def global_stats():
         deposits_list = aggregate_lit_deposits(transfers)
         
         # Log the Lit data size to verify it's working
-        print(f"Processing {len(deposits_list)} Lit deposits for global stats")
+        logger.info(f"Processing {len(deposits_list)} Lit deposits for global stats")
         
         for deposit in deposits_list:
             address = deposit['address'].lower()
@@ -611,7 +657,7 @@ def global_stats():
             investor_sales_count[address].add('lit')
             investor_total_investments[address] += amount
     except Exception as e:
-        print(f"Error fetching Lit data for global stats: {str(e)}")
+        logger.error(f"Error fetching Lit data for global stats: {str(e)}")
     
     # Process live Resolv Protocol data
     try:
@@ -620,7 +666,7 @@ def global_stats():
         deposits_list = aggregate_resolv_deposits(transfers)
         
         # Log the Resolv data size to verify it's working
-        print(f"Processing {len(deposits_list)} Resolv deposits for global stats")
+        logger.info(f"Processing {len(deposits_list)} Resolv deposits for global stats")
         
         for deposit in deposits_list:
             address = deposit['address'].lower()
@@ -642,7 +688,7 @@ def global_stats():
             investor_sales_count[address].add('resolv')
             investor_total_investments[address] += amount
     except Exception as e:
-        print(f"Error fetching Resolv data for global stats: {str(e)}")
+        logger.error(f"Error fetching Resolv data for global stats: {str(e)}")
     
     # Calculate statistics
     total_investors = len(total_investors_set)
@@ -667,7 +713,7 @@ def global_stats():
     most_active_sales = max(len(sales) for sales in investor_sales_count.values()) if investor_sales_count else 0
     
     # Log some stats to verify
-    print(f"Global Stats: {total_investors} investors, ${total_investment:,.2f} invested, ${average_investment:,.2f} average")
+    logger.info(f"Global Stats: {total_investors} investors, ${total_investment:,.2f} invested, ${average_investment:,.2f} average")
     
     return jsonify({
         "total_investment": total_investment,
@@ -681,6 +727,7 @@ def global_stats():
 
 # Top investors endpoint with modified ranking that preserves ranks during search
 @app.route('/api/top-investors', methods=['GET'])
+@cached('top_investors', 'top_investors_timestamp')
 def top_investors():
     """Return aggregated data for top investors across all sales"""
     # Get optional pagination parameters
@@ -750,7 +797,7 @@ def top_investors():
             # Update total invested amount
             investors[address]['total_invested'] += amount
     except Exception as e:
-        print(f"Error fetching Lit data: {str(e)}")
+        logger.error(f"Error fetching Lit data: {str(e)}")
     
     # Process live Resolv data
     try:
@@ -780,7 +827,7 @@ def top_investors():
             # Update total invested amount
             investors[address]['total_invested'] += amount
     except Exception as e:
-        print(f"Error fetching Resolv data: {str(e)}")
+        logger.error(f"Error fetching Resolv data: {str(e)}")
     
     # Convert to list for sorting
     investors_list = list(investors.values())
@@ -875,7 +922,7 @@ def investor_detail(address):
                 })
                 investor_data['total_invested'] += deposit['amount']
     except Exception as e:
-        print(f"Error fetching Lit data: {str(e)}")
+        logger.error(f"Error fetching Lit data: {str(e)}")
     
     # Process live Resolv data
     try:
@@ -891,7 +938,7 @@ def investor_detail(address):
                 })
                 investor_data['total_invested'] += deposit['amount']
     except Exception as e:
-        print(f"Error fetching Resolv data: {str(e)}")
+        logger.error(f"Error fetching Resolv data: {str(e)}")
     
     # Remove duplicates and aggregate by sale
     sales_dict = {}
