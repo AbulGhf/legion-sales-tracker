@@ -39,7 +39,14 @@ cache = {
     'global_stats': None,
     'global_stats_timestamp': 0,
     'live_feed': None,
-    'live_feed_timestamp': 0
+    'live_feed_timestamp': 0,
+    # Add these missing keys
+    'resolv_stats': None,
+    'resolv_stats_timestamp': 0,
+    'sale_stats': None,
+    'sale_stats_timestamp': 0,
+    'top_investors': None,
+    'top_investors_timestamp': 0
 }
 
 # Cache expiry time (30 minutes in seconds) - increased from 15 minutes
@@ -62,7 +69,6 @@ RESOLV_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{RESOLV_ALCHEMY_API_
 RESOLV_CONTRACT = "0xd4f787FC73cB2d12559D0A3158Cb8B4d491Fbe7A"
 RESOLV_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # Ethereum USDC contract
 
-# Cache decorator with improved logging and forced cache flag
 def cached(cache_key, timestamp_key):
     def decorator(f):
         @wraps(f)
@@ -71,8 +77,10 @@ def cached(cache_key, timestamp_key):
             current_time = time.time()
             force_refresh = request.args.get('refresh') == '1'
             
+            # Fix this line to handle missing keys
             if (not force_refresh and 
-                cache[cache_key] is not None and 
+                cache_key in cache and cache[cache_key] is not None and 
+                timestamp_key in cache and
                 current_time - cache[timestamp_key] < CACHE_EXPIRY):
                 logger.info(f"Serving cached data for {cache_key} (age: {int(current_time - cache[timestamp_key])}s)")
                 return cache[cache_key]
