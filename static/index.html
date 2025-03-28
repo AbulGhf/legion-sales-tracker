@@ -2353,111 +2353,117 @@ function getStaticLowest(saleId) {
 
 // Function to fetch live transactions
 async function fetchLiveTransactions() {
-    // Skip if user is inactive and this isn't essential
+    // Skip if user is inactive
     if (!shouldMakeRequest(false)) {
-        console.log("Skipping live transactions fetch, user inactive");
+        console.log("Skipping live feed update, user inactive");
         return;
     }
 
     try {
-        // Use controlledFetch instead of regular fetch
-        const response = await controlledFetch('/api/live-feed?limit=10');
-        if (!response.ok) {
-            throw new Error('Failed to fetch live transactions');
+        // Get the current sale filter
+        const activeFilter = document.querySelector('.filter-button.active');
+        const saleFilter = activeFilter ? activeFilter.getAttribute('data-sale') : null;
+        
+        // Build the URL with optional parameters
+        let url = '/api/live-feed';
+        const params = new URLSearchParams();
+        
+        // Add sale filter if active
+        if (saleFilter) {
+            params.append('sale', saleFilter);
         }
-
+        
+        // Add limit parameter
+        params.append('limit', '20');
+        
+        // Add timestamp to prevent caching
+        params.append('_t', Date.now());
+        
+        // Append parameters to URL if any exist
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+        
+        const response = await controlledFetch(url);
         const data = await response.json();
         
-        // Check if we got valid transactions
-        if (data.transactions && Array.isArray(data.transactions)) {
-            console.log("Received transactions:", data.transactions.length);
+        if (data && data.transactions) {
             updateLiveFeed(data.transactions);
-        } else {
-            console.warn("Invalid transactions data format from API");
-            // Just show empty state if no valid data
-            const liveFeed = document.getElementById('live-feed');
-            if (liveFeed) {
-                liveFeed.innerHTML = `
-                    <div class="text-center text-gray-500 py-2">
-                        No recent transactions available.
-                    </div>
-                `;
-            }
+            liveFeedLastUpdate = Date.now();
         }
-
-        // Update last fetch time
-        liveFeedLastUpdate = Date.now();
     } catch (error) {
-        if (error.message !== 'Skipped fetch due to user inactivity') {
-            console.error('Error fetching live transactions:', error);
-            // Show error state
-            const liveFeed = document.getElementById('live-feed');
-            if (liveFeed) {
-                liveFeed.innerHTML = `
-                    <div class="text-center text-gray-500 py-2">
-                        <i class="fas fa-exclamation-circle mr-2"></i>
-                        Error loading transactions. Retrying soon...
-                    </div>
-                `;
-            }
-        }
+        console.error('Error fetching live transactions:', error);
     }
 }
 
-        // Function to update the live feed
-        function updateLiveFeed(transactions) {
-            const liveFeed = document.getElementById('live-feed');
-            if (!liveFeed) return;
+// Function to update the live feed display
+function updateLiveFeed(transactions) {
+    const liveFeedContainer = document.getElementById('live-feed-container');
+    if (!liveFeedContainer) return;
 
-            // Clear existing content
-            liveFeed.innerHTML = '';
+    // Clear existing transactions
+    liveFeedContainer.innerHTML = '';
 
-            if (!transactions || transactions.length === 0) {
-                liveFeed.innerHTML = `
-                <div class="text-center text-gray-500 py-2">
-                    No recent transactions found.
+    // Add each transaction
+    transactions.forEach(tx => {
+        const txElement = document.createElement('div');
+        txElement.className = 'live-feed-item';
+        
+        // Format timestamp
+        const timestamp = new Date(tx.timestamp * 1000);
+        const timeAgo = getTimeAgo(timestamp);
+        
+        // Format amount
+        const amount = formatCurrency(tx.amount);
+        
+        // Create transaction HTML
+        txElement.innerHTML = `
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <span class="sale-badge ${tx.sale}-color">${tx.sale.toUpperCase()}</span>
+                    <span class="address">${formatAddress(tx.from)}</span>
                 </div>
-            `;
-                return;
-            }
+                <div class="flex items-center">
+                    <span class="amount">${amount}</span>
+                    <span class="time">${timeAgo}</span>
+                </div>
+            </div>
+        `;
+        
+        liveFeedContainer.appendChild(txElement);
+    });
+}
 
-            // Add transactions to feed
-            transactions.forEach(tx => {
-                const timestamp = tx.timestamp ? timeAgo(tx.timestamp) : 'Unknown';
+// Helper function to get time ago
+function getTimeAgo(date) {
+    const seconds = Math.floor((new Date() - date) / 1000);
+    
+    let interval = Math.floor(seconds / 31536000);
+    if (interval >= 1) return interval + 'y ago';
+    
+    interval = Math.floor(seconds / 2592000);
+    if (interval >= 1) return interval + 'mo ago';
+    
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) return interval + 'd ago';
+    
+    interval = Math.floor(seconds / 3600);
+    if (interval >= 1) return interval + 'h ago';
+    
+    interval = Math.floor(seconds / 60);
+    if (interval >= 1) return interval + 'm ago';
+    
+    return 'just now';
+}
 
-                const feedItem = document.createElement('div');
-                feedItem.className = 'feed-item';
-                // Store timestamp as data attribute for later updating
-                if (tx.timestamp) {
-                    feedItem.dataset.timestamp = tx.timestamp;
-                }
-
-                // Determine the sale the transaction belongs to (default to lit if not specified)
-                const saleId = tx.sale || 'lit';
-
-                // Add tier badge if available (only for Lit Protocol)
-                let tierBadge = '';
-                if (saleId === 'lit' && tx.tier) {
-                    const tierClass = tx.tier === 1 ? 'bg-yellow-600' :
-                        tx.tier === 2 ? 'bg-gray-400' :
-                            tx.tier === 3 ? 'bg-yellow-700' : '';
-                    tierBadge = `<span class="text-xs font-bold ml-1 px-1 rounded ${tierClass}">T${tx.tier}</span>`;
-                }
-
-                // Determine the correct blockchain explorer link based on the sale
-                const explorerUrl = saleId === 'resolv'
-                    ? `https://etherscan.io/tx/${tx.hash}`
-                    : `https://arbiscan.io/tx/${tx.hash}`;
-
-                feedItem.innerHTML = `
-                <img src="${saleId}.jpg" onerror="this.src='${saleId}.png'" class="feed-logo" alt="${saleId}">
-                <a href="${explorerUrl}" target="_blank" class="feed-address">${formatAddress(tx.from)}${tierBadge}</a>
-                <span class="feed-amount ${saleId}-color">+$${tx.amount.toFixed(2)}</span>
-                <span class="feed-time">${timestamp}</span>
-            `;
-                liveFeed.appendChild(feedItem);
-            });
-        }
+// Initialize live feed
+function initLiveFeed() {
+    // Initial fetch
+    fetchLiveTransactions();
+    
+    // Set up periodic refresh
+    setupControlledInterval(fetchLiveTransactions);
+}
 
         // Function to update times in the live feed
         function updateLiveFeedTimes() {
