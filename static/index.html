@@ -1461,6 +1461,7 @@ let salesData = [];
 let investmentChart = null;
 let investorChart = null;
 let liveFeedLastUpdate = 0;
+let appInitialized = false;  // ADD THIS LINE HERE
 
 // Format currency helper
 function formatCurrency(amount) {
@@ -1485,6 +1486,8 @@ function getTokenSalePrice(saleId) {
 
 // Function to fetch token prices from CoinGecko
 async function fetchTokenPrices() {
+    if (!appInitialized) return;
+    
     try {
         // Get all available CoinGecko IDs
         const ids = Object.values(coinGeckoIds).filter(id => id);
@@ -2028,6 +2031,9 @@ function timeAgo(date) {
 
 // Function to fetch live transactions
 async function fetchLiveTransactions() {
+    // Skip if app isn't initialized
+    if (!appInitialized) return;
+    
     try {
         const response = await fetch('/api/live-feed?limit=10');
         if (!response.ok) {
@@ -2156,6 +2162,8 @@ async function fetchAllSalesData() {
 
 // Function to refresh active sale data (Lit Protocol and Resolv)
 async function refreshActiveData() {
+    if (!appInitialized) return;
+    
     try {
         // Only refresh the active sales (Lit Protocol and Resolv)
         const litIndex = salesData.findIndex(sale => sale.id === 'lit');
@@ -2219,6 +2227,7 @@ function setupEventListeners() {
     window.addEventListener('resize', handleResize);
 }
 
+// Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     
@@ -2229,7 +2238,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clear the flag for next page load
         sessionStorage.removeItem('fromWelcome');
         
-        // Load data normally if coming from welcome page
+        // Set the flag to allow API calls
+        appInitialized = true;
+        
+        // Now it's safe to load data
         fetchAllSalesData();
     } else {
         // If loaded directly, redirect to welcome page
