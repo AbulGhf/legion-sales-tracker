@@ -1530,6 +1530,9 @@ function getMarketPrice(saleId) {
 
 // Function to fetch data for a sale
 async function fetchSaleData(sale) {
+    // Skip if page is not visible
+    if (document.visibilityState !== 'visible') return null;
+    
     // For upcoming sales, return placeholder data
     if (sale.upcoming) {
         return {
@@ -1574,12 +1577,18 @@ async function fetchSaleData(sale) {
         
         // Try the old endpoints as fallback
         try {
+            // Skip if page is not visible
+            if (document.visibilityState !== 'visible') return null;
+            
             // Fetch total investment
             const totalRes = await fetch(`/api/${sale.id}/total-investment`);
             if (!totalRes.ok) {
                 throw new Error(`Failed to fetch ${sale.id} investment data`);
             }
             const totalData = await totalRes.json();
+            
+            // Skip if page is not visible
+            if (document.visibilityState !== 'visible') return null;
             
             // Fetch deposits
             const depositsRes = await fetch(`/api/${sale.id}/deposits`);
@@ -2164,6 +2173,9 @@ function initLiveFeed() {
 
 // Function to fetch data for all sales
 async function fetchAllSalesData() {
+    // Skip if page is not visible
+    if (document.visibilityState !== 'visible') return;
+    
     // Clear existing data
     salesData = [];
     
@@ -2171,8 +2183,11 @@ async function fetchAllSalesData() {
     const promises = sales.map(sale => fetchSaleData(sale));
     const results = await Promise.all(promises);
     
+    // Filter out null results (from visibility checks)
+    const validResults = results.filter(result => result !== null);
+    
     // Update salesData with the results
-    salesData = results;
+    salesData = validResults;
     
     // Update UI components
     updateTable();
@@ -2195,6 +2210,8 @@ async function fetchAllSalesData() {
             refreshInterval = setInterval(refreshActiveData, 60000); // Every minute
             // Fetch token prices immediately when becoming visible
             fetchTokenPrices();
+            // Fetch all sales data immediately when becoming visible
+            fetchAllSalesData();
         } else {
             // Page is hidden, stop refresh interval
             if (refreshInterval) {
@@ -2252,6 +2269,9 @@ async function fetchAllSalesData() {
 async function refreshActiveData() {
     if (!appInitialized) return;
     
+    // Skip if page is not visible
+    if (document.visibilityState !== 'visible') return;
+    
     try {
         // Only refresh the active sales (Lit Protocol and Resolv)
         const litIndex = salesData.findIndex(sale => sale.id === 'lit');
@@ -2260,13 +2280,17 @@ async function refreshActiveData() {
         // Fetch updated data for Lit Protocol
         if (litIndex !== -1) {
             const updatedLit = await fetchSaleData(sales.find(sale => sale.id === 'lit'));
-            salesData[litIndex] = updatedLit;
+            if (updatedLit) {
+                salesData[litIndex] = updatedLit;
+            }
         }
         
         // Fetch updated data for Resolv
         if (resolvIndex !== -1) {
             const updatedResolv = await fetchSaleData(sales.find(sale => sale.id === 'resolv'));
-            salesData[resolvIndex] = updatedResolv;
+            if (updatedResolv) {
+                salesData[resolvIndex] = updatedResolv;
+            }
         }
         
         // Update UI components
