@@ -161,6 +161,10 @@ document.getElementById('startButton').addEventListener('click', function() {
     document.getElementById('startButton').style.display = 'none';
     document.getElementById('loadingIndicator').style.display = 'block';
     
+    // Set flags in localStorage to indicate dashboard is launched
+    localStorage.setItem('dashboardLaunched', 'true');
+    localStorage.setItem('dashboardLaunchTime', Date.now().toString());
+    
     // Set a flag in sessionStorage to indicate we're coming from welcome page
     sessionStorage.setItem('fromWelcome', 'true');
     

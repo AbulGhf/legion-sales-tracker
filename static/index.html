@@ -2034,6 +2034,9 @@ async function fetchLiveTransactions() {
     // Skip if app isn't initialized
     if (!appInitialized) return;
     
+    // Skip if page is not visible
+    if (document.visibilityState !== 'visible') return;
+    
     try {
         const response = await fetch('/api/live-feed?limit=10');
         if (!response.ok) {
@@ -2122,14 +2125,41 @@ function updateLiveFeedTimes() {
 
 // Function to initialize live feed with real data
 function initLiveFeed() {
-    // Fetch real transactions
-    fetchLiveTransactions();
+    let updateInterval = null;
+    let timeUpdateInterval = null;
     
-    // Set up polling for live feed (every 30 seconds)
-    setInterval(fetchLiveTransactions, 30000);
+    // Function to handle visibility change
+    function handleVisibilityChange() {
+        if (document.visibilityState === 'visible') {
+            // Page is visible, start polling
+            fetchLiveTransactions();
+            updateInterval = setInterval(fetchLiveTransactions, 30000);
+            timeUpdateInterval = setInterval(updateLiveFeedTimes, 60000);
+        } else {
+            // Page is hidden, stop polling
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+            if (timeUpdateInterval) {
+                clearInterval(timeUpdateInterval);
+                timeUpdateInterval = null;
+            }
+        }
+    }
     
-    // Update times every minute
-    setInterval(updateLiveFeedTimes, 60000);
+    // Add visibility change listener
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Initial setup
+    handleVisibilityChange();
+    
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        if (updateInterval) clearInterval(updateInterval);
+        if (timeUpdateInterval) clearInterval(timeUpdateInterval);
+    });
 }
 
 // Function to fetch data for all sales
@@ -2148,16 +2178,74 @@ async function fetchAllSalesData() {
     updateTable();
     updateOverallStats();
     updateCharts();
+    
+    // Initialize live feed
     initLiveFeed();
     
-    // Fetch token prices from CoinGecko
-    fetchTokenPrices();
+    // Fetch token prices immediately
+    await fetchTokenPrices();
     
     // Set up auto-refresh for active sales (Lit and Resolv)
-    setInterval(refreshActiveData, 60000); // Every minute
+    let refreshInterval = null;
     
-    // Refresh token prices every 5 minutes
-    setInterval(fetchTokenPrices, 300000); // Every 5 minutes
+    // Function to handle visibility change for refresh
+    function handleRefreshVisibilityChange() {
+        if (document.visibilityState === 'visible') {
+            // Page is visible, start refresh interval
+            refreshInterval = setInterval(refreshActiveData, 60000); // Every minute
+            // Fetch token prices immediately when becoming visible
+            fetchTokenPrices();
+        } else {
+            // Page is hidden, stop refresh interval
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                refreshInterval = null;
+            }
+        }
+    }
+    
+    // Add visibility change listener for refresh
+    document.addEventListener('visibilitychange', handleRefreshVisibilityChange);
+    
+    // Initial setup
+    handleRefreshVisibilityChange();
+    
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+        document.removeEventListener('visibilitychange', handleRefreshVisibilityChange);
+        if (refreshInterval) clearInterval(refreshInterval);
+    });
+    
+    // Refresh token prices every 5 minutes (only when visible)
+    let tokenPriceInterval = null;
+    
+    // Function to handle visibility change for token prices
+    function handleTokenPriceVisibilityChange() {
+        if (document.visibilityState === 'visible') {
+            // Page is visible, start token price interval
+            tokenPriceInterval = setInterval(fetchTokenPrices, 300000); // Every 5 minutes
+            // Fetch token prices immediately when becoming visible
+            fetchTokenPrices();
+        } else {
+            // Page is hidden, stop token price interval
+            if (tokenPriceInterval) {
+                clearInterval(tokenPriceInterval);
+                tokenPriceInterval = null;
+            }
+        }
+    }
+    
+    // Add visibility change listener for token prices
+    document.addEventListener('visibilitychange', handleTokenPriceVisibilityChange);
+    
+    // Initial setup
+    handleTokenPriceVisibilityChange();
+    
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+        document.removeEventListener('visibilitychange', handleTokenPriceVisibilityChange);
+        if (tokenPriceInterval) clearInterval(tokenPriceInterval);
+    });
 }
 
 // Function to refresh active sale data (Lit Protocol and Resolv)
@@ -2231,20 +2319,26 @@ function setupEventListeners() {
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     
-    // Check if coming from welcome page or direct load
-    const fromWelcome = sessionStorage.getItem('fromWelcome') === 'true';
+    // Check if dashboard is launched
+    const dashboardLaunched = localStorage.getItem('dashboardLaunched') === 'true';
+    const launchTime = parseInt(localStorage.getItem('dashboardLaunchTime') || '0');
+    const currentTime = Date.now();
     
-    if (fromWelcome) {
-        // Clear the flag for next page load
-        sessionStorage.removeItem('fromWelcome');
-        
-        // Set the flag to allow API calls
+    // If dashboard was launched more than 24 hours ago, reset the flag
+    if (launchTime && (currentTime - launchTime > 24 * 60 * 60 * 1000)) {
+        localStorage.removeItem('dashboardLaunched');
+        localStorage.removeItem('dashboardLaunchTime');
+        window.location.href = '/';
+        return;
+    }
+    
+    if (dashboardLaunched) {
+        // Set appInitialized to true before fetching data
         appInitialized = true;
-        
         // Now it's safe to load data
         fetchAllSalesData();
     } else {
-        // If loaded directly, redirect to welcome page
+        // If dashboard is not launched, redirect to welcome page
         window.location.href = '/';
     }
     

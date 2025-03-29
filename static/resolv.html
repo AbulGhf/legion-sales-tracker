@@ -345,6 +345,8 @@
             const [transactions, setTransactions] = React.useState([]);
             const [loading, setLoading] = React.useState(true);
             const [error, setError] = React.useState(null);
+            const [isVisible, setIsVisible] = React.useState(true);
+            const [updateInterval, setUpdateInterval] = React.useState(null);
             
             // Format address helper
             const formatAddress = (address) => {
@@ -369,8 +371,10 @@
                 return `${days}d ago`;
             };
             
-            // Function to fetch live transactions (only for Resolv)
+            // Function to fetch live transactions
             const fetchLiveTransactions = React.useCallback(async () => {
+                if (!isVisible) return; // Don't fetch if not visible
+                
                 try {
                     setLoading(true);
                     const response = await fetch('/api/live-feed?sale=resolv&limit=8'); 
@@ -386,28 +390,51 @@
                     setError(error.message);
                     setLoading(false);
                 }
-            }, []);
+            }, [isVisible]);
+            
+            // Handle visibility change
+            React.useEffect(() => {
+                const handleVisibilityChange = () => {
+                    const isPageVisible = document.visibilityState === 'visible';
+                    setIsVisible(isPageVisible);
+                    
+                    if (isPageVisible) {
+                        // Page is visible, start polling
+                        fetchLiveTransactions();
+                        const interval = setInterval(fetchLiveTransactions, 30000);
+                        setUpdateInterval(interval);
+                    } else {
+                        // Page is hidden, stop polling
+                        if (updateInterval) {
+                            clearInterval(updateInterval);
+                            setUpdateInterval(null);
+                        }
+                    }
+                };
+                
+                document.addEventListener('visibilitychange', handleVisibilityChange);
+                
+                // Initial setup
+                handleVisibilityChange();
+                
+                return () => {
+                    document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    if (updateInterval) {
+                        clearInterval(updateInterval);
+                    }
+                };
+            }, [fetchLiveTransactions]);
             
             // Update times every minute
             React.useEffect(() => {
-                // Set up a timer to refresh the "time ago" values
+                if (!isVisible) return;
+                
                 const timeUpdateInterval = setInterval(() => {
                     setTransactions(prevTransactions => [...prevTransactions]);
                 }, 60000);
                 
                 return () => clearInterval(timeUpdateInterval);
-            }, []);
-            
-            // Fetch transactions on component mount and set up polling
-            React.useEffect(() => {
-                fetchLiveTransactions();
-                
-                // Poll for new transactions every 30 seconds
-                const interval = setInterval(fetchLiveTransactions, 30000);
-                
-                // Clean up on unmount
-                return () => clearInterval(interval);
-            }, [fetchLiveTransactions]);
+            }, [isVisible]);
             
             return (
                 <div className="live-feed-card">
@@ -474,11 +501,24 @@
             
             // Fetch data on component mount
             React.useEffect(() => {
-                fetchData();
+                // Check if dashboard is launched
+                const dashboardLaunched = localStorage.getItem('dashboardLaunched') === 'true';
+                const launchTime = parseInt(localStorage.getItem('dashboardLaunchTime') || '0');
+                const currentTime = Date.now();
                 
-                // Set up polling for updates
-                const updateInterval = setInterval(fetchData, 60000);
-                return () => clearInterval(updateInterval);
+                // If dashboard was launched more than 24 hours ago, reset the flag
+                if (launchTime && (currentTime - launchTime > 24 * 60 * 60 * 1000)) {
+                    localStorage.removeItem('dashboardLaunched');
+                    localStorage.removeItem('dashboardLaunchTime');
+                    window.location.href = '/';
+                    return;
+                }
+                
+                if (dashboardLaunched) {
+                    fetchData();
+                } else {
+                    window.location.href = '/';
+                }
             }, []);
             
             // Function to fetch data from API
