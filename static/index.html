@@ -1463,6 +1463,21 @@ let investorChart = null;
 let liveFeedLastUpdate = 0;
 let appInitialized = false;  // ADD THIS LINE HERE
 
+// Add global state for visibility and updates
+let isPageVisible = true;
+let lastUpdateTime = 0;
+const UPDATE_COOLDOWN = 5000; // 5 seconds cooldown between updates
+
+// Function to check if we should update
+function shouldUpdate() {
+    const now = Date.now();
+    if (now - lastUpdateTime >= UPDATE_COOLDOWN) {
+        lastUpdateTime = now;
+        return true;
+    }
+    return false;
+}
+
 // Format currency helper
 function formatCurrency(amount) {
     return new Intl.NumberFormat('en-US', {
@@ -1941,12 +1956,23 @@ function updateCharts() {
                     }
                 },
                 tooltip: {
+                    titleFont: {
+                        size: 14,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    padding: 12,
                     callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
                         label: function(context) {
                             const value = context.raw;
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
                             const percentage = ((value / total) * 100).toFixed(1);
-                            return `${formatCurrency(value)} (${percentage}%)`;
+                            return `Amount: ${formatCurrency(value)} (${percentage}%)`;
                         }
                     }
                 }
@@ -1954,8 +1980,8 @@ function updateCharts() {
             cutout: '65%'
         }
     });
-    
-    // Create the investor count chart with larger text and bars
+
+    // Create the investor count chart
     investorChart = new Chart(ctx2, {
         type: 'bar',
         data: {
@@ -1977,42 +2003,50 @@ function updateCharts() {
                     display: false
                 },
                 tooltip: {
+                    titleFont: {
+                        size: 14,
+                        weight: 'bold'
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    padding: 12,
                     callbacks: {
+                        title: function(context) {
+                            return context[0].label;
+                        },
                         label: function(context) {
                             return `${context.raw.toLocaleString()} investors`;
                         }
-                    },
-                    titleFont: {
-                        size: window.innerWidth < 768 ? 12 : 14
-                    },
-                    bodyFont: {
-                        size: window.innerWidth < 768 ? 12 : 14
                     }
                 }
             },
             scales: {
                 x: {
                     grid: {
-                        display: false,
-                        color: '#333333'
+                        display: false
                     },
                     ticks: {
-                        color: '#888888',
+                        color: '#b0b0b0',
                         font: {
                             family: "'Rajdhani', sans-serif",
-                            size: window.innerWidth < 768 ? 10 : 12
+                            size: window.innerWidth < 768 ? 9 : 11
                         }
                     }
                 },
                 y: {
+                    beginAtZero: true,
                     grid: {
-                        color: '#333333'
+                        color: 'rgba(255, 255, 255, 0.1)'
                     },
                     ticks: {
-                        color: '#888888',
+                        color: '#b0b0b0',
                         font: {
                             family: "'Rajdhani', sans-serif",
-                            size: window.innerWidth < 768 ? 10 : 12
+                            size: window.innerWidth < 768 ? 9 : 11
+                        },
+                        callback: function(value) {
+                            return value.toLocaleString();
                         }
                     }
                 }
@@ -2132,49 +2166,23 @@ function updateLiveFeedTimes() {
     });
 }
 
-// Function to initialize live feed with real data
-function initLiveFeed() {
-    let updateInterval = null;
-    let timeUpdateInterval = null;
-    
-    // Function to handle visibility change
-    function handleVisibilityChange() {
-        if (document.visibilityState === 'visible') {
-            // Page is visible, start polling
-            fetchLiveTransactions();
-            updateInterval = setInterval(fetchLiveTransactions, 30000);
-            timeUpdateInterval = setInterval(updateLiveFeedTimes, 60000);
-        } else {
-            // Page is hidden, stop polling
-            if (updateInterval) {
-                clearInterval(updateInterval);
-                updateInterval = null;
-            }
-            if (timeUpdateInterval) {
-                clearInterval(timeUpdateInterval);
-                timeUpdateInterval = null;
-            }
-        }
-    }
-    
-    // Add visibility change listener
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    // Initial setup
-    handleVisibilityChange();
-    
-    // Clean up on page unload
-    window.addEventListener('beforeunload', () => {
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        if (updateInterval) clearInterval(updateInterval);
-        if (timeUpdateInterval) clearInterval(timeUpdateInterval);
-    });
+// Add debounce function at the top level
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 // Function to fetch data for all sales
 async function fetchAllSalesData() {
-    // Skip if page is not visible
-    if (document.visibilityState !== 'visible') return;
+    // Skip if page is not visible or if we shouldn't update
+    if (!isPageVisible || !shouldUpdate()) return;
     
     // Clear existing data
     salesData = [];
@@ -2202,65 +2210,45 @@ async function fetchAllSalesData() {
     
     // Set up auto-refresh for active sales (Lit and Resolv)
     let refreshInterval = null;
+    let tokenPriceInterval = null;
     
-    // Function to handle visibility change for refresh
-    function handleRefreshVisibilityChange() {
-        if (document.visibilityState === 'visible') {
-            // Page is visible, start refresh interval
+    // Consolidated visibility change handler
+    const handleVisibilityChange = () => {
+        isPageVisible = document.visibilityState === 'visible';
+        
+        if (isPageVisible) {
+            // Page is visible, start refresh intervals
             refreshInterval = setInterval(refreshActiveData, 60000); // Every minute
-            // Fetch token prices immediately when becoming visible
-            fetchTokenPrices();
-            // Fetch all sales data immediately when becoming visible
-            fetchAllSalesData();
+            tokenPriceInterval = setInterval(fetchTokenPrices, 300000); // Every 5 minutes
+            
+            // Fetch data immediately when becoming visible
+            if (shouldUpdate()) {
+                fetchTokenPrices();
+                refreshActiveData();
+            }
         } else {
-            // Page is hidden, stop refresh interval
+            // Page is hidden, stop all intervals
             if (refreshInterval) {
                 clearInterval(refreshInterval);
                 refreshInterval = null;
             }
-        }
-    }
-    
-    // Add visibility change listener for refresh
-    document.addEventListener('visibilitychange', handleRefreshVisibilityChange);
-    
-    // Initial setup
-    handleRefreshVisibilityChange();
-    
-    // Clean up on page unload
-    window.addEventListener('beforeunload', () => {
-        document.removeEventListener('visibilitychange', handleRefreshVisibilityChange);
-        if (refreshInterval) clearInterval(refreshInterval);
-    });
-    
-    // Refresh token prices every 5 minutes (only when visible)
-    let tokenPriceInterval = null;
-    
-    // Function to handle visibility change for token prices
-    function handleTokenPriceVisibilityChange() {
-        if (document.visibilityState === 'visible') {
-            // Page is visible, start token price interval
-            tokenPriceInterval = setInterval(fetchTokenPrices, 300000); // Every 5 minutes
-            // Fetch token prices immediately when becoming visible
-            fetchTokenPrices();
-        } else {
-            // Page is hidden, stop token price interval
             if (tokenPriceInterval) {
                 clearInterval(tokenPriceInterval);
                 tokenPriceInterval = null;
             }
         }
-    }
+    };
     
-    // Add visibility change listener for token prices
-    document.addEventListener('visibilitychange', handleTokenPriceVisibilityChange);
+    // Add visibility change listener
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     
     // Initial setup
-    handleTokenPriceVisibilityChange();
+    handleVisibilityChange();
     
     // Clean up on page unload
     window.addEventListener('beforeunload', () => {
-        document.removeEventListener('visibilitychange', handleTokenPriceVisibilityChange);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        if (refreshInterval) clearInterval(refreshInterval);
         if (tokenPriceInterval) clearInterval(tokenPriceInterval);
     });
 }
@@ -2269,8 +2257,8 @@ async function fetchAllSalesData() {
 async function refreshActiveData() {
     if (!appInitialized) return;
     
-    // Skip if page is not visible
-    if (document.visibilityState !== 'visible') return;
+    // Skip if page is not visible or if we shouldn't update
+    if (!isPageVisible || !shouldUpdate()) return;
     
     try {
         // Only refresh the active sales (Lit Protocol and Resolv)
@@ -2375,6 +2363,49 @@ document.addEventListener('DOMContentLoaded', () => {
         mobileScrollHint.style.display = window.innerWidth <= 768 ? 'block' : 'none';
     });
 });
+
+// Function to initialize live feed with real data
+function initLiveFeed() {
+    let updateInterval = null;
+    let timeUpdateInterval = null;
+    
+    // Consolidated visibility change handler
+    const handleVisibilityChange = () => {
+        isPageVisible = document.visibilityState === 'visible';
+        
+        if (isPageVisible) {
+            // Page is visible, start polling
+            if (shouldUpdate()) {
+                fetchLiveTransactions();
+            }
+            updateInterval = setInterval(fetchLiveTransactions, 30000);
+            timeUpdateInterval = setInterval(updateLiveFeedTimes, 60000);
+        } else {
+            // Page is hidden, stop polling
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+            if (timeUpdateInterval) {
+                clearInterval(timeUpdateInterval);
+                timeUpdateInterval = null;
+            }
+        }
+    };
+    
+    // Add visibility change listener
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Initial setup
+    handleVisibilityChange();
+    
+    // Clean up on page unload
+    window.addEventListener('beforeunload', () => {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        if (updateInterval) clearInterval(updateInterval);
+        if (timeUpdateInterval) clearInterval(timeUpdateInterval);
+    });
+}
     </script>
 </body>
 </html>
