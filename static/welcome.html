@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Legion Sale Trackers</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        
+        /* Modern background gradient for the entire page */
+        body {
+            background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .welcome-card {
+            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            padding: 2.5rem;
+            max-width: 90%;
+            width: 600px;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-logo {
+            height: 120px;
+            margin: 0 auto 1.5rem auto;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .welcome-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #e0e0e0;
+            text-shadow: 0 0 15px rgba(255, 87, 34, 0.4);
+            margin-bottom: 1rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 2.5rem;
+        }
+
+        .start-button {
+            background: linear-gradient(145deg, #FF5722 0%, #FF7043 100%);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 600;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4);
+        }
+
+        .start-button:hover {
+            background: linear-gradient(145deg, #FF7043 0%, #FF8A65 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 87, 34, 0.5);
+        }
+
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #FF5722;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.1rem;
+            color: #FF5722;
+        }
+
+        .background-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255, 87, 34, 0.2) 0%, rgba(255, 87, 34, 0) 70%);
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            opacity: 0.7;
+            animation: glow 8s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.5); }
+            100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-card">
+        <div class="background-glow"></div>
+        <img src="legion.png" alt="Legion" class="welcome-logo">
+        <h1 class="welcome-title">Legion Sale Trackers</h1>
+        <p class="welcome-subtitle">Track on-chain investments from the best crypto sales</p>
+        
+        <button id="startButton" class="start-button">
+            <i class="fas fa-rocket mr-2"></i> Launch Dashboard
+        </button>
+        
+        <div id="loadingIndicator" class="loading-indicator">
+            <div class="spinner"></div>
+            <p class="loading-text">Initializing data...</p>
+        </div>
+    </div>
+
+    <script>
+document.getElementById('startButton').addEventListener('click', function() {
+    // Show loading indicator
+    document.getElementById('startButton').style.display = 'none';
+    document.getElementById('loadingIndicator').style.display = 'block';
+    
+    // Set a flag in sessionStorage to indicate we're coming from welcome page
+    sessionStorage.setItem('fromWelcome', 'true');
+    
+    // Also set a cookie for server-side check
+    document.cookie = 'app_initialized=true; max-age=3600; path=/';
+    
+    // Redirect to main dashboard after small delay
+    setTimeout(function() {
+        window.location.href = '/dashboard';
+    }, 1500);
+});
+    </script>
+</body>
+</html>

@@ -301,19 +301,32 @@ def get_recent_resolv_transactions(limit=10):
 
 # Route handlers
 @app.route('/')
-def index():
-    return send_from_directory('static', 'index.html')
+def welcome():
+    return send_from_directory('static', 'welcome.html')
+
+@app.route('/dashboard')
+def dashboard():
+    # Create response object
+    response = send_from_directory('static', 'index.html')
+    
+    # Set cookie to indicate the app is initialized
+    response.set_cookie('app_initialized', 'true', max_age=3600)  # Cookie expires after 1 hour
+    
+    return response
 
 # HTML pages for each sale
 @app.route('/<string:sale_name>.html')
 def sale_page(sale_name):
     return send_from_directory('static', f'{sale_name}.html')
 
-# API Endpoints for Lit Protocol (with caching)
 @app.route('/api/lit/total-investment', methods=['GET'])
 @cached('lit_total', 'lit_total_timestamp')
 def lit_total_investment():
-    # Get all deposits and sum them up
+    # Check for initialized flag in cookies
+    if not request.cookies.get('app_initialized'):
+        return jsonify({"total": 0})
+    
+    # Original code...
     transfers = get_lit_usdc_deposits()
     deposits_list = aggregate_lit_deposits(transfers)
     total = sum(item["amount"] for item in deposits_list)
@@ -334,7 +347,11 @@ def lit_deposits():
 @app.route('/api/resolv/total-investment', methods=['GET'])
 @cached('resolv_total', 'resolv_total_timestamp')
 def resolv_total_investment():
-    # Get all deposits and sum them up
+    # Check for initialized flag in cookies
+    if not request.cookies.get('app_initialized'):
+        return jsonify({"total": 0})
+    
+    # Original code...
     transfers = get_resolv_usdc_deposits()
     deposits_list = aggregate_resolv_deposits(transfers)
     total = sum(item["amount"] for item in deposits_list)
@@ -405,6 +422,14 @@ def sale_total_investment(sale_name):
 @app.route('/api/live-feed', methods=['GET'])
 def live_feed():
     """Return the most recent transactions for the live feed"""
+    # Check for initialized flag in cookies
+    if not request.cookies.get('app_initialized'):
+        # Return empty data if not initialized
+        return jsonify({
+            "transactions": [],
+            "count": 0
+        })
+    
     # Get optional limit parameter
     limit = request.args.get('limit', default=10, type=int)
     limit = min(limit, 20)  # Max 20 transactions
