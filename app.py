@@ -301,7 +301,11 @@ def get_recent_resolv_transactions(limit=10):
 
 # Route handlers
 @app.route('/')
-def index():
+def welcome():
+    return send_from_directory('static', 'welcome.html')
+
+@app.route('/dashboard')
+def dashboard():
     return send_from_directory('static', 'index.html')
 
 # HTML pages for each sale

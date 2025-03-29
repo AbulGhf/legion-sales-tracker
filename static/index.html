@@ -2219,10 +2219,22 @@ function setupEventListeners() {
     window.addEventListener('resize', handleResize);
 }
 
-// Initialize the page
 document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
-    fetchAllSalesData();
+    
+    // Check if coming from welcome page or direct load
+    const fromWelcome = sessionStorage.getItem('fromWelcome') === 'true';
+    
+    if (fromWelcome) {
+        // Clear the flag for next page load
+        sessionStorage.removeItem('fromWelcome');
+        
+        // Load data normally if coming from welcome page
+        fetchAllSalesData();
+    } else {
+        // If loaded directly, redirect to welcome page
+        window.location.href = '/';
+    }
     
     // Add mobile scroll hint
     const mobileScrollHint = document.createElement('div');
