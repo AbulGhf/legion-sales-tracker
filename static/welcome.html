@@ -156,19 +156,22 @@
     </div>
 
     <script>
-        document.getElementById('startButton').addEventListener('click', function() {
-            // Show loading indicator
-            document.getElementById('startButton').style.display = 'none';
-            document.getElementById('loadingIndicator').style.display = 'block';
-            
-            // Set a flag in sessionStorage to indicate we're coming from welcome page
-            sessionStorage.setItem('fromWelcome', 'true');
-            
-            // Redirect to main dashboard after small delay
-            setTimeout(function() {
-                window.location.href = '/dashboard';
-            }, 1500);
-        });
+document.getElementById('startButton').addEventListener('click', function() {
+    // Show loading indicator
+    document.getElementById('startButton').style.display = 'none';
+    document.getElementById('loadingIndicator').style.display = 'block';
+    
+    // Set a flag in sessionStorage to indicate we're coming from welcome page
+    sessionStorage.setItem('fromWelcome', 'true');
+    
+    // Also set a cookie for server-side check
+    document.cookie = 'app_initialized=true; max-age=3600; path=/';
+    
+    // Redirect to main dashboard after small delay
+    setTimeout(function() {
+        window.location.href = '/dashboard';
+    }, 1500);
+});
     </script>
 </body>
 </html>
