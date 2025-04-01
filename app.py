@@ -49,7 +49,7 @@ LIT_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"  # Arbitrum USD
 # Constants for Resolv Protocol (Ethereum)
 RESOLV_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"  # Using the same API key
 RESOLV_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{RESOLV_ALCHEMY_API_KEY}"  # Ethereum endpoint
-RESOLV_CONTRACT = "0xd4f787FC73cB2d12559D0A3158Cb8B4d491Fbe7A"
+RESOLV_CONTRACT = "0xee6deedb6c1535E4912eE5db48E08b36FD2fAA8f"
 RESOLV_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # Ethereum USDC contract
 
 # Cache decorator
