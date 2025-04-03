@@ -49,8 +49,11 @@ LIT_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"  # Arbitrum USD
 # Constants for Resolv Protocol (Ethereum)
 RESOLV_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"  # Using the same API key
 RESOLV_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{RESOLV_ALCHEMY_API_KEY}"  # Ethereum endpoint
-RESOLV_CONTRACT = "0xee6deedb6c1535E4912eE5db48E08b36FD2fAA8f"
-RESOLV_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # Ethereum USDC contract
+RESOLV_CONTRACTS = [
+    "0xee6deedb6c1535E4912eE5db48E08b36FD2fAA8f",
+    "0x5Fdab714fe8BB9d40C8B1e5f7c2BacD8E7f869d8"
+]
+RESOLV_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
 
 # Cache decorator
 def cached(cache_key, timestamp_key):
@@ -191,55 +194,57 @@ def get_recent_lit_transactions(limit=10):
 
 # Resolv Protocol Functions
 def get_resolv_usdc_deposits():
-    """Get all USDC transfers to the Resolv Protocol sale contract"""
+    """Get all USDC transfers to the Resolv Protocol sale contracts"""
     
     all_transfers = []
-    page_key = None
     
-    print(f"Fetching USDC transfers to Resolv Protocol contract: {RESOLV_CONTRACT}")
-    
-    while True:
-        params = {
-            "fromBlock": "0x0",
-            "toBlock": "latest",
-            "toAddress": RESOLV_CONTRACT,
-            "contractAddresses": [RESOLV_USDC_CONTRACT],
-            "category": ["erc20"],
-            "withMetadata": True,
-            "excludeZeroValue": True,
-            "maxCount": "0x64"  # Hex for 100
-        }
+    # Fetch transfers for each contract
+    for contract in RESOLV_CONTRACTS:
+        page_key = None
+        print(f"Fetching USDC transfers to Resolv Protocol contract: {contract}")
         
-        if page_key:
-            params["pageKey"] = page_key
-        
-        payload = {
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "alchemy_getAssetTransfers",
-            "params": [params]
-        }
-        
-        response = requests.post(RESOLV_ALCHEMY_URL, json=payload)
-        data = response.json()
-        
-        if "error" in data:
-            print(f"Error fetching transfers: {data['error']['message']}")
-            break
-        
-        if "result" in data and "transfers" in data["result"]:
-            transfers = data["result"]["transfers"]
-            all_transfers.extend(transfers)
+        while True:
+            params = {
+                "fromBlock": "0x0",
+                "toBlock": "latest",
+                "toAddress": contract,
+                "contractAddresses": [RESOLV_USDC_CONTRACT],
+                "category": ["erc20"],
+                "withMetadata": True,
+                "excludeZeroValue": True,
+                "maxCount": "0x64"  # Hex for 100
+            }
             
-            # Check if there are more pages
-            if "pageKey" in data["result"]:
-                page_key = data["result"]["pageKey"]
-                print(f"Fetched {len(transfers)} transfers, getting next page...")
-            else:
-                print(f"Fetched {len(transfers)} transfers, no more pages.")
+            if page_key:
+                params["pageKey"] = page_key
+            
+            payload = {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "alchemy_getAssetTransfers",
+                "params": [params]
+            }
+            
+            response = requests.post(RESOLV_ALCHEMY_URL, json=payload)
+            data = response.json()
+            
+            if "error" in data:
+                print(f"Error fetching transfers: {data['error']['message']}")
                 break
-        else:
-            break
+            
+            if "result" in data and "transfers" in data["result"]:
+                transfers = data["result"]["transfers"]
+                all_transfers.extend(transfers)
+                
+                # Check if there are more pages
+                if "pageKey" in data["result"]:
+                    page_key = data["result"]["pageKey"]
+                    print(f"Fetched {len(transfers)} transfers, getting next page...")
+                else:
+                    print(f"Fetched {len(transfers)} transfers, no more pages.")
+                    break
+            else:
+                break
     
     print(f"Total transfers fetched: {len(all_transfers)}")
     return all_transfers

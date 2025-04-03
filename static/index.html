@@ -2368,18 +2368,26 @@ document.addEventListener('DOMContentLoaded', () => {
 function initLiveFeed() {
     let updateInterval = null;
     let timeUpdateInterval = null;
+    let lastFetchTime = 0;
+    const FETCH_COOLDOWN = 5000; // 5 seconds cooldown between fetches
     
     // Consolidated visibility change handler
     const handleVisibilityChange = () => {
         isPageVisible = document.visibilityState === 'visible';
         
         if (isPageVisible) {
-            // Page is visible, start polling
-            if (shouldUpdate()) {
+            // Page is visible, start polling with optimized intervals
+            if (Date.now() - lastFetchTime >= FETCH_COOLDOWN) {
                 fetchLiveTransactions();
+                lastFetchTime = Date.now();
             }
-            updateInterval = setInterval(fetchLiveTransactions, 30000);
-            timeUpdateInterval = setInterval(updateLiveFeedTimes, 60000);
+            updateInterval = setInterval(() => {
+                if (Date.now() - lastFetchTime >= FETCH_COOLDOWN) {
+                    fetchLiveTransactions();
+                    lastFetchTime = Date.now();
+                }
+            }, 10000); // Reduced from 30s to 10s for more responsive updates
+            timeUpdateInterval = setInterval(updateLiveFeedTimes, 30000); // Reduced from 60s to 30s
         } else {
             // Page is hidden, stop polling
             if (updateInterval) {
