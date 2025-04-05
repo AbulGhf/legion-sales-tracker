@@ -380,22 +380,25 @@
             // Function to fetch data from API
             const fetchData = async () => {
                 try {
+                    console.log("Starting to fetch data...");
                     setLoading(true);
                     
                     // Fetch total investment
                     const totalRes = await fetch('/api/fuel/total-investment');
                     if (!totalRes.ok) {
-                        throw new Error('Failed to fetch total investment');
+                        throw new Error(`Failed to fetch total investment: ${totalRes.status}`);
                     }
                     const totalData = await totalRes.json();
-                    setTotalInvestment(totalData.total);
+                    console.log("Total investment data:", totalData);
+                    setTotalInvestment(totalData.total || 0);
                     
                     // Fetch deposits
                     const depositsRes = await fetch('/api/fuel/deposits');
                     if (!depositsRes.ok) {
-                        throw new Error('Failed to fetch deposits');
+                        throw new Error(`Failed to fetch deposits: ${depositsRes.status}`);
                     }
                     const depositsData = await depositsRes.json();
+                    console.log("Deposits data:", depositsData);
                     setDeposits(depositsData.deposits || []);
                     
                     // Calculate statistics
@@ -414,10 +417,20 @@
                     }
                     
                     setLoading(false);
+                    setError(null);
                 } catch (err) {
                     console.error("Error fetching data:", err);
                     setError(err.message);
                     setLoading(false);
+                    // Set default values in case of error
+                    setTotalInvestment(0);
+                    setDeposits([]);
+                    setStats({
+                        average: 0,
+                        median: 0,
+                        highest: 0,
+                        lowest: 0
+                    });
                 }
             };
             
@@ -436,36 +449,30 @@
                     
                     const data = await response.json();
                     
-                    // Extract price data with fallback values
-                    const currentPrice = data.market_data?.current_price?.usd || 0;
-                    const athPrice = data.market_data?.ath?.usd || 0;
-                    const lowestPrice = data.market_data?.atl?.usd || 0;
+                    // Extract price data with fallback values using safe property access
+                    let currentPrice = 0;
+                    let athPrice = 0;
+                    let lowestPrice = 0;
+                    
+                    if (data && data.market_data) {
+                        if (data.market_data.current_price) {
+                            currentPrice = data.market_data.current_price.usd || 0;
+                        }
+                        if (data.market_data.ath) {
+                            athPrice = data.market_data.ath.usd || 0;
+                        }
+                        if (data.market_data.atl) {
+                            lowestPrice = data.market_data.atl.usd || 0;
+                        }
+                    }
+                    
                     const salePrice = 0.0133; // Fixed sale price for Fuel
                     
                     // Calculate ROIs with safety checks
                     const currentRoi = currentPrice > 0 ? ((currentPrice - salePrice) / salePrice) * 100 : 0;
                     const athRoi = athPrice > 0 ? ((athPrice - salePrice) / salePrice) * 100 : 0;
                     
-                    // Update DOM elements with error handling
-                    const elements = {
-                        'fuelCurrentPrice': currentPrice > 0 ? formatAmount(currentPrice, true) : 'N/A',
-                        'fuelATH': athPrice > 0 ? formatAmount(athPrice, true) : 'N/A',
-                        'fuelATL': lowestPrice > 0 ? formatAmount(lowestPrice, true) : 'N/A',
-                        'fuelROI': currentPrice > 0 ? `${currentRoi.toFixed(2)}%` : 'N/A',
-                        'fuelATHROI': athPrice > 0 ? `${athRoi.toFixed(2)}%` : 'N/A'
-                    };
-                    
-                    // Update all elements with error handling
-                    Object.entries(elements).forEach(([id, value]) => {
-                        const element = document.getElementById(id);
-                        if (element) {
-                            element.textContent = value;
-                            if (id.includes('ROI') && value !== 'N/A') {
-                                element.className = `font-bold ${value.includes('-') ? 'profit-negative' : 'profit-positive'}`;
-                            }
-                        }
-                    });
-                    
+                    // Update price data state
                     setPriceData({
                         salePrice,
                         currentPrice,
@@ -475,6 +482,27 @@
                         error: null
                     });
                     
+                    // Update DOM elements with error handling
+                    const updateElement = (id, value) => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.textContent = value;
+                            if (id.includes('ROI')) {
+                                const roiValue = parseFloat(value);
+                                if (!isNaN(roiValue)) {
+                                    element.className = `font-bold ${roiValue >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                                }
+                            }
+                        }
+                    };
+                    
+                    // Update all price-related elements
+                    updateElement('fuelCurrentPrice', currentPrice > 0 ? formatAmount(currentPrice, true) : 'N/A');
+                    updateElement('fuelATH', athPrice > 0 ? formatAmount(athPrice, true) : 'N/A');
+                    updateElement('fuelATL', lowestPrice > 0 ? formatAmount(lowestPrice, true) : 'N/A');
+                    updateElement('fuelROI', currentPrice > 0 ? `${currentRoi.toFixed(2)}%` : 'N/A');
+                    updateElement('fuelATHROI', athPrice > 0 ? `${athRoi.toFixed(2)}%` : 'N/A');
+                    
                 } catch (err) {
                     console.error("Error fetching token price data:", err);
                     setPriceData(prev => ({
@@ -483,14 +511,14 @@
                         error: err.message
                     }));
                     
-                    // Update DOM elements to show N/A instead of Error
+                    // Update DOM elements to show N/A on error
                     const elements = ['fuelCurrentPrice', 'fuelATH', 'fuelATL', 'fuelROI', 'fuelATHROI'];
                     elements.forEach(id => {
                         const element = document.getElementById(id);
                         if (element) {
                             element.textContent = 'N/A';
                             if (id.includes('ROI')) {
-                                element.className = 'font-bold text-gray-400';
+                                element.className = 'font-bold';
                             }
                         }
                     });

@@ -419,36 +419,30 @@
                     
                     const data = await response.json();
                     
-                    // Extract price data with fallback values
-                    const currentPrice = data.market_data?.current_price?.usd || 0;
-                    const athPrice = data.market_data?.ath?.usd || 0;
-                    const lowestPrice = data.market_data?.atl?.usd || 0;
-                    const salePrice = 0.02; // Fixed sale price for Corn
+                    // Extract price data with fallback values using safe property access
+                    let currentPrice = 0;
+                    let athPrice = 0;
+                    let lowestPrice = 0;
+                    
+                    if (data && data.market_data) {
+                        if (data.market_data.current_price) {
+                            currentPrice = data.market_data.current_price.usd || 0;
+                        }
+                        if (data.market_data.ath) {
+                            athPrice = data.market_data.ath.usd || 0;
+                        }
+                        if (data.market_data.atl) {
+                            lowestPrice = data.market_data.atl.usd || 0;
+                        }
+                    }
+                    
+                    const salePrice = 0.0714; // Fixed sale price for Corn
                     
                     // Calculate ROIs with safety checks
                     const currentRoi = currentPrice > 0 ? ((currentPrice - salePrice) / salePrice) * 100 : 0;
                     const athRoi = athPrice > 0 ? ((athPrice - salePrice) / salePrice) * 100 : 0;
                     
-                    // Update DOM elements with error handling
-                    const elements = {
-                        'cornCurrentPrice': currentPrice > 0 ? formatAmount(currentPrice, true) : 'N/A',
-                        'cornATH': athPrice > 0 ? formatAmount(athPrice, true) : 'N/A',
-                        'cornATL': lowestPrice > 0 ? formatAmount(lowestPrice, true) : 'N/A',
-                        'cornROI': currentPrice > 0 ? `${currentRoi.toFixed(2)}%` : 'N/A',
-                        'cornATHROI': athPrice > 0 ? `${athRoi.toFixed(2)}%` : 'N/A'
-                    };
-                    
-                    // Update all elements with error handling
-                    Object.entries(elements).forEach(([id, value]) => {
-                        const element = document.getElementById(id);
-                        if (element) {
-                            element.textContent = value;
-                            if (id.includes('ROI') && value !== 'N/A') {
-                                element.className = `font-bold ${value.includes('-') ? 'profit-negative' : 'profit-positive'}`;
-                            }
-                        }
-                    });
-                    
+                    // Update price data state
                     setPriceData({
                         salePrice,
                         currentPrice,
@@ -458,6 +452,27 @@
                         error: null
                     });
                     
+                    // Update DOM elements with error handling
+                    const updateElement = (id, value) => {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.textContent = value;
+                            if (id.includes('ROI')) {
+                                const roiValue = parseFloat(value);
+                                if (!isNaN(roiValue)) {
+                                    element.className = `font-bold ${roiValue >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                                }
+                            }
+                        }
+                    };
+                    
+                    // Update all price-related elements
+                    updateElement('cornCurrentPrice', currentPrice > 0 ? formatAmount(currentPrice, true) : 'N/A');
+                    updateElement('cornATH', athPrice > 0 ? formatAmount(athPrice, true) : 'N/A');
+                    updateElement('cornATL', lowestPrice > 0 ? formatAmount(lowestPrice, true) : 'N/A');
+                    updateElement('cornROI', currentPrice > 0 ? `${currentRoi.toFixed(2)}%` : 'N/A');
+                    updateElement('cornATHROI', athPrice > 0 ? `${athRoi.toFixed(2)}%` : 'N/A');
+                    
                 } catch (err) {
                     console.error("Error fetching token price data:", err);
                     setPriceData(prev => ({
@@ -466,14 +481,14 @@
                         error: err.message
                     }));
                     
-                    // Update DOM elements to show N/A instead of Error
+                    // Update DOM elements to show N/A on error
                     const elements = ['cornCurrentPrice', 'cornATH', 'cornATL', 'cornROI', 'cornATHROI'];
                     elements.forEach(id => {
                         const element = document.getElementById(id);
                         if (element) {
                             element.textContent = 'N/A';
                             if (id.includes('ROI')) {
-                                element.className = 'font-bold text-gray-400';
+                                element.className = 'font-bold';
                             }
                         }
                     });
