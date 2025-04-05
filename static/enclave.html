@@ -232,6 +232,93 @@
             padding: 8px 12px;
             border-radius: 4px;
         }
+        
+        /* Investor Modal Styles */
+        .investor-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .investor-modal-content {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .investor-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.2s;
+        }
+
+        .investor-modal-close:hover {
+            color: #fff;
+        }
+
+        .investor-details {
+            color: #fff;
+        }
+
+        .investor-details h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .investor-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .investor-stat {
+            background-color: #2a2a2a;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .investor-stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .investor-stat-label {
+            color: #888;
+            font-size: 0.875rem;
+        }
+
+        /* Update address cell to use handleInvestorClick */
+        .address-cell a {
+            color: #3b82f6;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .address-cell a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -256,19 +343,17 @@
                 lowest: 0
             });
             
+            // Add investor modal state
+            const [selectedInvestor, setSelectedInvestor] = React.useState(null);
+            const [showModal, setShowModal] = React.useState(false);
+            const [investorLoading, setInvestorLoading] = React.useState(false);
+            
             // Constants
             const depositsPerPage = 10;
             
             // Function to handle back navigation
             const handleBack = () => {
-                // Check if we came from the dashboard
-                const referrer = document.referrer;
-                if (referrer && referrer.includes('/index.html')) {
-                    window.history.back();
-                } else {
-                    // If not from dashboard, go to dashboard
-                    window.location.href = '/index.html';
-                }
+                window.location.href = '/dashboard';
             };
             
             // Fetch data on component mount
@@ -354,6 +439,55 @@
             const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
             const totalPages = Math.max(1, Math.ceil(deposits.length / depositsPerPage));
             
+            // Update the handleInvestorClick function
+            const handleInvestorClick = async (address) => {
+                try {
+                    setInvestorLoading(true);
+                    setShowModal(true);
+                    setSelectedInvestor(null);
+                    
+                    console.log("Fetching investor details for address:", address);
+                    const response = await fetch(`/api/investor/${address}`);
+                    console.log("Response status:", response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch investor details');
+                    }
+                    
+                    const data = await response.json();
+                    console.log("Investor data:", data);
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Filter sales to only show Enclave sales
+                    const enclaveSales = data.sales.filter(sale => sale.sale.toLowerCase() === 'enclave');
+                    if (enclaveSales.length === 0) {
+                        throw new Error('No Enclave sales found for this address');
+                    }
+
+                    setSelectedInvestor({
+                        address,
+                        total_invested: enclaveSales.reduce((sum, sale) => sum + sale.amount, 0),
+                        sales_participated: enclaveSales.length,
+                        sales: enclaveSales,
+                        ...data
+                    });
+                } catch (error) {
+                    console.error('Error:', error);
+                    setSelectedInvestor(null);
+                } finally {
+                    setInvestorLoading(false);
+                }
+            };
+
+            // Add closeModal function
+            const closeModal = () => {
+                setShowModal(false);
+                setSelectedInvestor(null);
+            };
+            
             // Show loading state
             if (loading) {
                 return (
@@ -387,15 +521,20 @@
             // Main component render
             return (
                 <div className="main-container">
+                    {/* Back to Home Button - Moved outside header */}
+                    <button onClick={handleBack} className="back-button">
+                        <i className="fas fa-arrow-left mr-2"></i>
+                        Back to Dashboard
+                    </button>
+
                     <div className="header-card">
-                        <button 
-                            className="back-button"
-                            onClick={handleBack}
-                        >
-                            <i className="fas fa-arrow-left"></i> Back to Dashboard
-                        </button>
-                        <h1>Enclave Tracker</h1>
-                        <p className="subtitle">Track your Enclave investments and performance</p>
+                        <div className="flex items-center">
+                            <img src="/static/enclave.jpg" alt="Enclave Logo" className="w-12 h-12 mr-4" />
+                            <div>
+                                <h1 className="text-3xl font-bold">Enclave</h1>
+                                <p className="text-gray-300 text-sm mt-1">A new class of secure computation.</p>
+                            </div>
+                        </div>
                     </div>
                     
                     {/* Main Content Grid */}
@@ -467,9 +606,11 @@
                                                     </td>
                                                     <td className="address-cell">
                                                         <a
-                                                            href={`https://debank.com/profile/${deposit.address}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
+                                                            href="#"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleInvestorClick(deposit.address);
+                                                            }}
                                                             title={deposit.address}
                                                         >
                                                             {formatAddress(deposit.address)}
@@ -514,6 +655,69 @@
                             </div>
                         </div>
                     </div>
+
+                    {/* Investor Modal */}
+                    {showModal && (
+                        <div className="investor-modal">
+                            <div className="investor-modal-content">
+                                <span className="investor-modal-close" onClick={closeModal}>&times;</span>
+                                <div className="investor-details">
+                                    <h2>Investor Details</h2>
+                                    {investorLoading ? (
+                                        <div className="flex items-center justify-center py-8">
+                                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                                        </div>
+                                    ) : selectedInvestor ? (
+                                        <div>
+                                            <div className="mb-4">
+                                                <div className="text-gray-400 text-sm mb-1">Full Address</div>
+                                                <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
+                                            </div>
+                                            <div className="mb-4">
+                                                <a 
+                                                    href={`https://debank.com/profile/${selectedInvestor.address}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                                                >
+                                                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                                    </svg>
+                                                    View on DeBank
+                                                </a>
+                                            </div>
+                                            <div className="investor-stats">
+                                                <div className="investor-stat">
+                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                                    <div className="investor-stat-label">Total Invested</div>
+                                                </div>
+                                                <div className="investor-stat">
+                                                    <div className="investor-stat-value">{selectedInvestor.sales_participated}</div>
+                                                    <div className="investor-stat-label">Sales Participated</div>
+                                                </div>
+                                            </div>
+                                            <div className="mt-6">
+                                                <h3 className="text-lg font-semibold mb-3">Investment History</h3>
+                                                <div className="space-y-2">
+                                                    {selectedInvestor.sales.map((sale, index) => (
+                                                        <div key={index} className="flex justify-between items-center p-2 bg-gray-800 rounded">
+                                                            <span className="capitalize">{sale.sale}</span>
+                                                            <span className="font-mono">{formatAmount(sale.amount)}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-red-500 text-center py-4">
+                                            Failed to load investor details
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         }
