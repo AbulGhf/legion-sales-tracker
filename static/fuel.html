@@ -430,7 +430,7 @@
             
             // New state for token price data
             const [priceData, setPriceData] = React.useState({
-                salePrice: 0.02, // Fixed sale price as mentioned
+                salePrice: 0.02, // Fixed sale price for Fuel
                 currentPrice: 0,
                 athPrice: 0,
                 lowestPrice: 0,
@@ -452,7 +452,7 @@
             // Constants
             const depositsPerPage = 15;
             const COINGECKO_API_KEY = 'CG-4Fnx2x1Ga65oHP6HufVGevXh';
-            const FUEL_TOKEN_ID = 'fuel-network';  // Updated to correct token ID
+            const FUEL_TOKEN_ID = 'fuel-network';  // Correct token ID
             
             // Function to handle back navigation
             const handleBack = () => {
@@ -527,8 +527,9 @@
                 try {
                     setPriceData(prev => ({ ...prev, loading: true, error: null }));
                     
-                    // CoinGecko API endpoint with API key
+                    // CoinGecko API endpoint
                     const apiUrl = `https://api.coingecko.com/api/v3/coins/${FUEL_TOKEN_ID}?x_cg_demo_api_key=${COINGECKO_API_KEY}`;
+                    console.log("Fetching Fuel price data from:", apiUrl);
                     const response = await fetch(apiUrl);
                     
                     if (!response.ok) {
@@ -536,6 +537,7 @@
                     }
                     
                     const data = await response.json();
+                    console.log("Received Fuel price data:", data);
                     
                     // Extract price data with fallback values using safe property access
                     let currentPrice = 0;
@@ -543,18 +545,18 @@
                     let lowestPrice = 0;
                     
                     if (data && data.market_data) {
-                        if (data.market_data.current_price) {
-                            currentPrice = data.market_data.current_price.usd || 0;
+                        if (data.market_data.current_price && data.market_data.current_price.usd) {
+                            currentPrice = data.market_data.current_price.usd;
                         }
-                        if (data.market_data.ath) {
-                            athPrice = data.market_data.ath.usd || 0;
+                        if (data.market_data.ath && data.market_data.ath.usd) {
+                            athPrice = data.market_data.ath.usd;
                         }
-                        if (data.market_data.atl) {
-                            lowestPrice = data.market_data.atl.usd || 0;
+                        if (data.market_data.atl && data.market_data.atl.usd) {
+                            lowestPrice = data.market_data.atl.usd;
                         }
                     }
                     
-                    const salePrice = 0.0133; // Fixed sale price for Fuel
+                    const salePrice = 0.02; // Fixed sale price for Fuel
                     
                     // Calculate ROIs with safety checks
                     const currentRoi = currentPrice > 0 ? ((currentPrice - salePrice) / salePrice) * 100 : 0;
@@ -740,7 +742,7 @@
             
             const getAthPnLPercent = () => {
                 if (priceData.loading || priceData.error) return null;
-                return ((priceData.athPrice - priceData.salePrice) / priceData.salePrice) * 100;
+                return ((priceData.salePrice - priceData.salePrice) / priceData.salePrice) * 100;
             };
             
             // Update the handleInvestorClick function
@@ -806,57 +808,61 @@
             // Main component render
             return (
                 <div className="main-container">
-                    <div class="back-button mb-4">
-                        <a href="index.html" class="text-white hover:text-gray-300">
-                            <i class="fas fa-arrow-left mr-2"></i>Back
-                        </a>
-                    </div>
-
-                    <div class="header-card mb-4">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center">
-                                <img src="/fuel.png" alt="Fuel Logo" class="h-8 mr-3" onerror="this.style.display='none'" />
-                                <h1 class="text-2xl font-bold text-white">FUEL</h1>
+                    {/* Back to Home Button */}
+                    <a href="/dashboard" className="back-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                            <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        </svg>
+                        Back to Dashboard
+                    </a>
+                    
+                    {/* Header */}
+                    <div className="header-card mb-4">
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center">
+                                <img src="/static/fuel.png" alt="Fuel Logo" className="h-8 mr-3" onerror="this.style.display='none'" />
+                                <h1 className="text-2xl font-bold text-white">FUEL</h1>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card p-4 mb-4">
-                        <div class="flex items-center space-x-8">
-                            <div class="flex items-center">
-                                <img src="fuel.png" alt="Fuel Logo" class="h-8 mr-3" onerror="this.style.display='none'" />
-                                <span class="text-lg font-semibold text-white">Fuel Price Stats</span>
+                    {/* Token Price Stats Card */}
+                    <div className="card p-4 mb-4">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                            <div className="flex items-center mb-4 md:mb-0">
+                                <img src="/static/fuel.png" alt="Fuel Logo" className="w-8 h-8 mr-3" onerror="this.style.display='none'" />
+                                <span className="text-lg font-semibold">Fuel Price Stats</span>
                             </div>
-                            <div class="flex-1 flex justify-between items-center">
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">Sale Price</div>
-                                    <div class="font-bold text-white">$0.0133</div>
+                            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Sale Price</div>
+                                    <div className="font-bold">$0.02</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">Current Price</div>
-                                    <div class="font-bold text-white" id="fuelCurrentPrice">Loading...</div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Current Price</div>
+                                    <div className="font-bold" id="fuelCurrentPrice">Loading...</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">All-Time High</div>
-                                    <div class="font-bold text-white" id="fuelATH">Loading...</div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">All-Time High</div>
+                                    <div className="font-bold" id="fuelATH">Loading...</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">All-Time Low</div>
-                                    <div class="font-bold text-white" id="fuelATL">Loading...</div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">All-Time Low</div>
+                                    <div className="font-bold" id="fuelATL">Loading...</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">Current ROI</div>
-                                    <div class="font-bold" id="fuelROI">Loading...</div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Current ROI</div>
+                                    <div className="font-bold" id="fuelROI">Loading...</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">ATH ROI</div>
-                                    <div class="font-bold" id="fuelATHROI">Loading...</div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">ATH ROI</div>
+                                    <div className="font-bold" id="fuelATHROI">Loading...</div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Left Column - Stats */}
                         <div className="md:col-span-1">
                             {/* Total USDC Card */}
@@ -1013,7 +1019,7 @@
                         
                         {/* Right Column - Investors Table */}
                         <div className="md:col-span-2">
-                            <div className="card h-full">
+                            <div className="card">
                                 <div className="p-4 border-b border-green-800">
                                     <div className="card-title">Top Investors</div>
                                     <div className="card-subtitle">Ranked by investment amount</div>
@@ -1095,63 +1101,49 @@
                     
                     {/* Investor Modal */}
                     {showModal && (
-                        <div className="investor-modal" style={{ display: 'flex' }}>
+                        <div className="investor-modal">
                             <div className="investor-modal-content">
-                                <span className="investor-modal-close" onClick={() => setShowModal(false)}>&times;</span>
-                                <div className="investor-details">
-                                    <h2>Investor Details</h2>
-                                    {investorLoading ? (
-                                        <div className="flex items-center justify-center py-8">
-                                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                                <div className="investor-modal-close" onClick={() => setShowModal(false)}>×</div>
+                                
+                                {investorLoading ? (
+                                    <div className="text-center p-8">
+                                        <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
+                                        <p>Loading investor details...</p>
+                                    </div>
+                                ) : selectedInvestor ? (
+                                    <div className="investor-details">
+                                        <h2>Investor Details</h2>
+                                        
+                                        <div className="investor-stats">
+                                            <div className="investor-stat">
+                                                <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                                <div className="investor-stat-label">Total Invested</div>
+                                            </div>
+                                            <div className="investor-stat">
+                                                <div className="investor-stat-value">{selectedInvestor.sales_participated}</div>
+                                                <div className="investor-stat-label">Sales Participated</div>
+                                            </div>
                                         </div>
-                                    ) : selectedInvestor ? (
-                                        <div>
-                                            <div className="mb-4">
-                                                <div className="text-gray-400 text-sm mb-1">Full Address</div>
-                                                <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
-                                            </div>
-                                            <div className="mb-4">
-                                                <a 
-                                                    href={`https://debank.com/profile/${selectedInvestor.address}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                                >
-                                                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
-                                                    </svg>
-                                                    View on DeBank
-                                                </a>
-                                            </div>
-                                            <div className="investor-stats">
-                                                <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
-                                                    <div className="investor-stat-label">Total Invested</div>
-                                                </div>
-                                                <div className="investor-stat">
-                                                    <div className="investor-stat-value">{selectedInvestor.sales_participated}</div>
-                                                    <div className="investor-stat-label">Sales Participated</div>
-                                                </div>
-                                            </div>
-                                            <div className="mt-6">
-                                                <h3 className="text-lg font-semibold mb-3">Investment History</h3>
-                                                <div className="space-y-2">
-                                                    {selectedInvestor.sales.map((sale, index) => (
-                                                        <div key={index} className="flex justify-between items-center p-2 bg-gray-800 rounded">
+                                        
+                                        <div className="mt-6">
+                                            <h3 className="text-lg font-semibold mb-4">Investment History</h3>
+                                            <div className="space-y-4">
+                                                {selectedInvestor.sales.map((sale, index) => (
+                                                    <div key={index} className="bg-opacity-30 bg-black p-4 rounded">
+                                                        <div className="flex justify-between">
                                                             <span className="capitalize">{sale.sale}</span>
-                                                            <span className="font-mono">{formatAmount(sale.amount)}</span>
+                                                            <span className="font-medium">{formatAmount(sale.amount)}</span>
                                                         </div>
-                                                    ))}
-                                                </div>
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
-                                    ) : (
-                                        <div className="text-red-500 text-center py-4">
-                                            Failed to load investor details
-                                        </div>
-                                    )}
-                                </div>
+                                    </div>
+                                ) : (
+                                    <div className="text-center p-8 text-red-400">
+                                        Failed to load investor details
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

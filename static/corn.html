@@ -308,6 +308,114 @@
         .profit-negative {
             color: #ff6b6b;
         }
+        
+        /* Note box */
+        .note-box {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 3px solid #ffffff;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Investor Modal Styles */
+        .investor-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .investor-modal-content {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .investor-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #ffffff;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .investor-modal-close:hover {
+            opacity: 1;
+        }
+
+        .investor-details h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .investor-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .investor-stat {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .investor-stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 4px;
+        }
+
+        .investor-stat-label {
+            font-size: 0.875rem;
+            color: #b0b0b0;
+        }
+
+        /* Token Price Card */
+        .token-price-card {
+            margin-bottom: 20px;
+        }
+
+        .token-price-card .flex {
+            flex-wrap: wrap;
+        }
+
+        .token-price-card .flex .flex {
+            flex-direction: column;
+        }
+
+        .token-price-card .flex .flex .price-stat {
+            margin-bottom: 10px;
+        }
+
+        .token-price-card .flex .flex .price-stat .text-sm {
+            margin-bottom: 4px;
+        }
+
+        .token-price-card .flex .flex .price-stat .text-lg {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -334,7 +442,7 @@
             
             // New state for token price data
             const [priceData, setPriceData] = React.useState({
-                salePrice: 0.0714, // Set corn sale price
+                salePrice: 0.0714, // Fixed sale price for Corn
                 currentPrice: 0,
                 athPrice: 0,
                 lowestPrice: 0,
@@ -348,16 +456,20 @@
             const [calculationResult, setCalculationResult] = React.useState(null);
             const [calculatorLoading, setCalculatorLoading] = React.useState(false);
             
+            // Add new state for investor modal
+            const [selectedInvestor, setSelectedInvestor] = React.useState(null);
+            const [showModal, setShowModal] = React.useState(false);
+            const [investorLoading, setInvestorLoading] = React.useState(false);
+            
             // Constants
             const depositsPerPage = 15;
             const COINGECKO_API_KEY = 'CG-4Fnx2x1Ga65oHP6HufVGevXh';
-            const CORN_TOKEN_ID = 'corn-3';
+            const CORN_TOKEN_ID = 'corn-3';  // Correct token ID
             
             // Fetch data on component mount
             React.useEffect(() => {
                 fetchData();
                 fetchTokenPriceData();
-                fetchOtherTokenPrices();
             }, []);
             
             // Function to fetch data from API
@@ -409,8 +521,9 @@
                 try {
                     setPriceData(prev => ({ ...prev, loading: true, error: null }));
                     
-                    // CoinGecko API endpoint with API key
+                    // CoinGecko API endpoint
                     const apiUrl = `https://api.coingecko.com/api/v3/coins/${CORN_TOKEN_ID}?x_cg_demo_api_key=${COINGECKO_API_KEY}`;
+                    console.log("Fetching Corn price data from:", apiUrl);
                     const response = await fetch(apiUrl);
                     
                     if (!response.ok) {
@@ -418,6 +531,7 @@
                     }
                     
                     const data = await response.json();
+                    console.log("Received Corn price data:", data);
                     
                     // Extract price data with fallback values using safe property access
                     let currentPrice = 0;
@@ -425,14 +539,14 @@
                     let lowestPrice = 0;
                     
                     if (data && data.market_data) {
-                        if (data.market_data.current_price) {
-                            currentPrice = data.market_data.current_price.usd || 0;
+                        if (data.market_data.current_price && data.market_data.current_price.usd) {
+                            currentPrice = data.market_data.current_price.usd;
                         }
-                        if (data.market_data.ath) {
-                            athPrice = data.market_data.ath.usd || 0;
+                        if (data.market_data.ath && data.market_data.ath.usd) {
+                            athPrice = data.market_data.ath.usd;
                         }
-                        if (data.market_data.atl) {
-                            lowestPrice = data.market_data.atl.usd || 0;
+                        if (data.market_data.atl && data.market_data.atl.usd) {
+                            lowestPrice = data.market_data.atl.usd;
                         }
                     }
                     
@@ -522,10 +636,12 @@
             const calculatePnL = (investmentAmount) => {
                 const tokensReceived = investmentAmount / priceData.salePrice;
                 
+                // Calculate values using correct prices
                 const currentValue = tokensReceived * priceData.currentPrice;
                 const athValue = tokensReceived * priceData.athPrice;
                 const lowestValue = tokensReceived * priceData.lowestPrice;
                 
+                // Calculate PnL and percentages
                 const currentPnL = currentValue - investmentAmount;
                 const currentPnLPercent = (currentPnL / investmentAmount) * 100;
                 
@@ -645,7 +761,52 @@
             
             const getAthPnLPercent = () => {
                 if (priceData.loading || priceData.error) return null;
-                return ((priceData.athPrice - priceData.salePrice) / priceData.salePrice) * 100;
+                return ((priceData.currentPrice - priceData.salePrice) / priceData.salePrice) * 100;
+            };
+            
+            // Add handleInvestorClick function
+            const handleInvestorClick = async (address) => {
+                try {
+                    setInvestorLoading(true);
+                    setShowModal(true);
+                    setSelectedInvestor(null);
+                    
+                    console.log(`Fetching investor details for address: ${address}`);
+                    const response = await fetch(`/api/investor/${address}`);
+                    console.log('Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Error response:', errorText);
+                        throw new Error(`Failed to fetch investor details: ${response.status} ${errorText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Received data:', data);
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Filter sales to only show Corn sales
+                    const cornSales = data.sales.filter(sale => sale.sale.toLowerCase() === 'corn');
+                    
+                    if (cornSales.length === 0) {
+                        throw new Error('No Corn sales found for this address');
+                    }
+
+                    setSelectedInvestor({
+                        address,
+                        total_invested: cornSales.reduce((sum, sale) => sum + sale.amount, 0),
+                        sales_participated: cornSales.length,
+                        sales: cornSales
+                    });
+                } catch (error) {
+                    console.error('Error in handleInvestorClick:', error);
+                    setSelectedInvestor(null);
+                } finally {
+                    setInvestorLoading(false);
+                }
             };
             
             // Show loading state
@@ -682,7 +843,7 @@
             return (
                 <div className="main-container">
                     {/* Back to Home Button */}
-                    <a href="/index.html" className="back-button">
+                    <a href="/dashboard" className="back-button">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                             <path d="M19 12H5M12 19l-7-7 7-7"/>
                         </svg>
@@ -690,64 +851,63 @@
                     </a>
                     
                     {/* Header */}
-                    <div class="header-card mb-4">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center">
-                                <img src="/corn.png" alt="Corn Logo" class="h-8 mr-3" onerror="this.style.display='none'" />
-                                <h1 class="text-2xl font-bold text-white">CORN</h1>
+                    <div className="header-card mb-4">
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center">
+                                <img src="/static/corn.png" alt="Corn Logo" className="h-8 mr-3" onerror="this.style.display='none'" />
+                                <h1 className="text-2xl font-bold text-white">CORN</h1>
                             </div>
                         </div>
                     </div>
 
                     {/* Token Price Stats Card */}
-                    <div class="card p-4 mb-4">
-                        <div class="flex items-center space-x-8">
-                            <div class="flex items-center">
-                                <img src="corn.png" alt="Corn Logo" class="h-8 mr-3" onerror="this.style.display='none'" />
-                                <span class="text-lg font-semibold text-white">Corn Price Stats</span>
+                    <div className="card p-4 mb-4">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                            <div className="flex items-center mb-4 md:mb-0">
+                                <img src="/static/corn.png" alt="Corn Logo" className="w-8 h-8 mr-3" onerror="this.style.display='none'" />
+                                <span className="text-lg font-semibold">Corn Price Stats</span>
                             </div>
-                            <div class="flex-1 flex justify-between items-center">
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">Sale Price</div>
-                                    <div class="font-bold text-white">$0.0133</div>
+                            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Sale Price</div>
+                                    <div className="font-bold">$0.0714</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">Current Price</div>
-                                    <div class="font-bold text-white" id="cornCurrentPrice">Loading...</div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Current Price</div>
+                                    <div className="font-bold" id="cornCurrentPrice">Loading...</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">All-Time High</div>
-                                    <div class="font-bold text-white" id="cornATH">Loading...</div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">All-Time High</div>
+                                    <div className="font-bold" id="cornATH">Loading...</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">All-Time Low</div>
-                                    <div class="font-bold text-white" id="cornATL">Loading...</div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">All-Time Low</div>
+                                    <div className="font-bold" id="cornATL">Loading...</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">Current ROI</div>
-                                    <div class="font-bold" id="cornROI">Loading...</div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Current ROI</div>
+                                    <div className="font-bold" id="cornROI">Loading...</div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="text-gray-400 text-sm">ATH ROI</div>
-                                    <div class="font-bold" id="cornATHROI">Loading...</div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">ATH ROI</div>
+                                    <div className="font-bold" id="cornATHROI">Loading...</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    {/* Main Content Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Left Column - Stats */}
                         <div className="md:col-span-1">
                             {/* Total USDC Card */}
-                            <div className="card p-6 text-center">
+                            <div className="card p-4 text-center">
                                 <div className="card-title">Total USDC Invested</div>
                                 <div className="amount-display">{formatAmount(totalInvestment)}</div>
                                 <div className="text-gray-400 text-sm">{deposits.length} unique addresses</div>
                             </div>
                             
                             {/* Stats section */}
-                            <div className="card p-6 mt-6">
+                            <div className="card p-4 mt-4">
                                 <div className="stats-title">Investment Stats</div>
                                 
                                 <div className="stats-card">
@@ -772,11 +932,8 @@
                             </div>
                             
                             {/* Investment Calculator */}
-                            <div className="card p-6 mt-6">
-                                <div className="stats-title">
-                                    <span>ROI Calculator</span>
-                                    <i className="fas fa-calculator"></i>
-                                </div>
+                            <div className="card p-4 mt-4">
+                                <div className="stats-title mb-4">ROI Calculator</div>
                                 <div className="card-subtitle mb-4">Calculate your investment performance</div>
                                 
                                 <div className="flex mb-4">
@@ -926,9 +1083,11 @@
                                                     </td>
                                                     <td className="address-cell">
                                                         <a
-                                                            href={`https://debank.com/profile/${deposit.address}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
+                                                            href="#"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleInvestorClick(deposit.address);
+                                                            }}
                                                             title={deposit.address}
                                                         >
                                                             {formatAddress(deposit.address)}
@@ -973,6 +1132,55 @@
                             </div>
                         </div>
                     </div>
+
+                    {/* Investor Modal */}
+                    {showModal && (
+                        <div className="investor-modal">
+                            <div className="investor-modal-content">
+                                <div className="investor-modal-close" onClick={() => setShowModal(false)}>×</div>
+                                
+                                {investorLoading ? (
+                                    <div className="text-center p-8">
+                                        <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
+                                        <p>Loading investor details...</p>
+                                    </div>
+                                ) : selectedInvestor ? (
+                                    <div className="investor-details">
+                                        <h2>Investor Details</h2>
+                                        
+                                        <div className="investor-stats">
+                                            <div className="investor-stat">
+                                                <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                                <div className="investor-stat-label">Total Invested</div>
+                                            </div>
+                                            <div className="investor-stat">
+                                                <div className="investor-stat-value">{selectedInvestor.sales_participated}</div>
+                                                <div className="investor-stat-label">Sales Participated</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="mt-6">
+                                            <h3 className="text-lg font-semibold mb-4">Investment History</h3>
+                                            <div className="space-y-4">
+                                                {selectedInvestor.sales.map((sale, index) => (
+                                                    <div key={index} className="bg-opacity-30 bg-black p-4 rounded">
+                                                        <div className="flex justify-between">
+                                                            <span className="capitalize">{sale.sale}</span>
+                                                            <span className="font-medium">{formatAmount(sale.amount)}</span>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="text-center p-8 text-red-400">
+                                        Failed to load investor details
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         }

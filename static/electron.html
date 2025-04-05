@@ -182,9 +182,14 @@
             color: #fff;
         }
         
+        .address-cell a {
+            color: #3b82f6;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
         .address-cell a:hover {
             text-decoration: underline;
-            color: #92c2ff;
         }
         
         /* Pagination */
@@ -266,6 +271,82 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
+        
+        /* Investor Modal Styles */
+        .investor-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .investor-modal-content {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 2rem;
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .investor-modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.2s;
+        }
+
+        .investor-modal-close:hover {
+            color: #fff;
+        }
+
+        .investor-details {
+            color: #fff;
+        }
+
+        .investor-details h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .investor-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .investor-stat {
+            background-color: #2a2a2a;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .investor-stat-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .investor-stat-label {
+            color: #888;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 <body>
@@ -290,6 +371,11 @@
                 lowest: 0
             });
             
+            // Add investor modal state
+            const [selectedInvestor, setSelectedInvestor] = React.useState(null);
+            const [showModal, setShowModal] = React.useState(false);
+            const [investorLoading, setInvestorLoading] = React.useState(false);
+            
             // Constants
             const SALE_NAME = "Electron";
             const CONTRACT_ADDRESS = "0x053D22B589890d8b54Ad20fc65f833D8cDbb1FdC";
@@ -299,14 +385,8 @@
             
             // Function to handle back navigation
             const handleBack = () => {
-                // Check if we came from the dashboard
-                const referrer = document.referrer;
-                if (referrer && referrer.includes('/index.html')) {
-                    window.history.back();
-                } else {
-                    // If not from dashboard, go to dashboard
-                    window.location.href = '/index.html';
-                }
+                // Go to dashboard
+                window.location.href = '/dashboard';
             };
             
             // Fetch data on component mount
@@ -401,6 +481,51 @@
             const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
             const totalPages = Math.max(1, Math.ceil(deposits.length / depositsPerPage));
             
+            // Add handleInvestorClick function
+            const handleInvestorClick = async (address) => {
+                try {
+                    setInvestorLoading(true);
+                    setShowModal(true);
+                    setSelectedInvestor(null);
+                    
+                    console.log(`Fetching investor details for address: ${address}`);
+                    const response = await fetch(`/api/investor/${address}`);
+                    console.log('Response status:', response.status);
+                    
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        console.error('Error response:', errorText);
+                        throw new Error(`Failed to fetch investor details: ${response.status} ${errorText}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Received data:', data);
+                    
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+
+                    // Filter sales to only show Electron sales
+                    const electronSales = data.sales.filter(sale => sale.sale.toLowerCase() === 'electron');
+                    
+                    if (electronSales.length === 0) {
+                        throw new Error('No Electron sales found for this address');
+                    }
+
+                    setSelectedInvestor({
+                        address,
+                        total_invested: electronSales.reduce((sum, sale) => sum + sale.amount, 0),
+                        sales_participated: electronSales.length,
+                        sales: electronSales
+                    });
+                } catch (error) {
+                    console.error('Error in handleInvestorClick:', error);
+                    setSelectedInvestor(null);
+                } finally {
+                    setInvestorLoading(false);
+                }
+            };
+
             // Show loading state
             if (loading) {
                 return (
@@ -435,15 +560,21 @@
             // Main component render
             return (
                 <div className="main-container">
+                    {/* Back to Home Button */}
+                    <button onClick={handleBack} className="back-button">
+                        <i className="fas fa-arrow-left mr-2"></i>
+                        Back to Dashboard
+                    </button>
+                    
+                    {/* Header */}
                     <div className="header-card">
-                        <button 
-                            className="back-button"
-                            onClick={handleBack}
-                        >
-                            <i className="fas fa-arrow-left"></i> Back to Dashboard
-                        </button>
-                        <h1>Electron Tracker</h1>
-                        <p className="subtitle">Track your Electron investments and performance</p>
+                        <div className="flex items-center">
+                            <img src="/static/electron.jpg" alt="Electron Logo" className="w-12 h-12 mr-4" />
+                            <div>
+                                <h1 className="text-3xl font-bold">Electron</h1>
+                                <p className="text-gray-300 text-sm mt-1">Reducing TEE and ZK verification costs by 95%.</p>
+                            </div>
+                        </div>
                     </div>
                     
                     {/* Main Content Grid */}
@@ -455,7 +586,6 @@
                                 <div className="card-title">Total USDC Invested</div>
                                 <div className="amount-display">{formatAmount(totalInvestment)}</div>
                                 <div className="text-gray-400 text-sm">{deposits.length} unique addresses</div>
-
                             </div>
                             
                             {/* Stats section */}
@@ -487,7 +617,7 @@
                         {/* Right Column - Investors Table */}
                         <div className="md:col-span-2">
                             <div className="card">
-                                <div className="p-4 border-b border-gray-700">
+                                <div className="p-4 border-b border-gray-800">
                                     <div className="card-title">Top Investors</div>
                                     <div className="card-subtitle">Ranked by investment amount</div>
                                 </div>
@@ -516,18 +646,18 @@
                                                     </td>
                                                     <td className="address-cell">
                                                         <a
-                                                            href={getExplorerUrl(deposit.address)}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
+                                                            href="#"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleInvestorClick(deposit.address);
+                                                            }}
                                                             title={deposit.address}
                                                         >
                                                             {formatAddress(deposit.address)}
                                                         </a>
                                                     </td>
                                                     <td className="text-right font-mono">
-                                                        <span className={indexOfFirstDeposit + index + 1 <= 3 ? "neon-color" : ""}>
-                                                            {formatAmount(deposit.amount)}
-                                                        </span>
+                                                        {formatAmount(deposit.amount)}
                                                     </td>
                                                     <td className="text-right">
                                                         {((deposit.amount / totalInvestment) * 100).toFixed(2)}%
@@ -566,9 +696,68 @@
                         </div>
                     </div>
                     
-                    <div className="text-center text-gray-500 text-sm mt-6">
-                        Last updated: {new Date().toLocaleString()}
-                    </div>
+                    {/* Investor Modal */}
+                    {showModal && (
+                        <div className="investor-modal" style={{ display: 'flex' }}>
+                            <div className="investor-modal-content">
+                                <span className="investor-modal-close" onClick={() => setShowModal(false)}>&times;</span>
+                                <div className="investor-details">
+                                    <h2>Investor Details</h2>
+                                    {investorLoading ? (
+                                        <div className="flex items-center justify-center py-8">
+                                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                                        </div>
+                                    ) : selectedInvestor ? (
+                                        <div>
+                                            <div className="mb-4">
+                                                <div className="text-gray-400 text-sm mb-1">Full Address</div>
+                                                <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
+                                            </div>
+                                            <div className="mb-4">
+                                                <a 
+                                                    href={`https://debank.com/profile/${selectedInvestor.address}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                                                >
+                                                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                                    </svg>
+                                                    View on DeBank
+                                                </a>
+                                            </div>
+                                            <div className="investor-stats">
+                                                <div className="investor-stat">
+                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                                    <div className="investor-stat-label">Total Invested</div>
+                                                </div>
+                                                <div className="investor-stat">
+                                                    <div className="investor-stat-value">{selectedInvestor.sales_participated}</div>
+                                                    <div className="investor-stat-label">Sales Participated</div>
+                                                </div>
+                                            </div>
+                                            <div className="mt-6">
+                                                <h3 className="text-lg font-semibold mb-3">Investment History</h3>
+                                                <div className="space-y-2">
+                                                    {selectedInvestor.sales.map((sale, index) => (
+                                                        <div key={index} className="flex justify-between items-center p-2 bg-gray-800 rounded">
+                                                            <span className="capitalize">{sale.sale}</span>
+                                                            <span className="font-mono">{formatAmount(sale.amount)}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-red-500 text-center py-4">
+                                            Failed to load investor details
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         }

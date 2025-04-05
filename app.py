@@ -1001,5 +1001,58 @@ def investor_detail(address):
     
     return jsonify(investor_data)
 
+@app.route('/api/investor/<address>')
+def get_investor_details(address):
+    try:
+        # Get all deposits for this investor from static data
+        investor_data = {
+            'total_investment': 0,
+            'current_value': 0,
+            'profit_loss': 0,
+            'roi': 0
+        }
+        
+        # Check static data first
+        if 'silencio' in STATIC_DATA:
+            for deposit in STATIC_DATA['silencio']['deposits']:
+                if deposit['address'].lower() == address.lower():
+                    investor_data['total_investment'] += deposit['amount']
+        
+        # Get current token price from CoinGecko
+        try:
+            api_url = f"https://api.coingecko.com/api/v3/coins/silencio?x_cg_demo_api_key=CG-4Fnx2x1Ga65oHP6HufVGevXh"
+            response = requests.get(api_url)
+            
+            if response.status_code == 200:
+                data = response.json()
+                current_price = data.get('market_data', {}).get('current_price', {}).get('usd', 0)
+            else:
+                print(f"Error fetching token price: {response.status_code}")
+                current_price = 0
+        except Exception as e:
+            print(f"Error fetching token price: {str(e)}")
+            current_price = 0
+            
+        if not current_price:
+            return jsonify({'error': 'Failed to fetch current token price'}), 500
+            
+        # Calculate current value and profit/loss
+        sale_price = 0.0006  # Fixed sale price for Silencio
+        total_tokens = investor_data['total_investment'] / sale_price
+        current_value = total_tokens * current_price
+        profit_loss = current_value - investor_data['total_investment']
+        roi = (profit_loss / investor_data['total_investment'] * 100) if investor_data['total_investment'] > 0 else 0
+        
+        return jsonify({
+            'total_investment': investor_data['total_investment'],
+            'current_value': current_value,
+            'profit_loss': profit_loss,
+            'roi': roi
+        })
+        
+    except Exception as e:
+        print(f"Error fetching investor details: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
