@@ -1150,7 +1150,7 @@
     <header class="main-header">
         <div class="container mx-auto px-4">
             <div class="header-content">
-                <img src="legion.png" alt="Legion" class="header-logo-image">
+                <img src="/legion.png" alt="Legion" class="header-logo-image">
                 <h1 class="header-title">LEGION SALE TRACKERS</h1>
                 <div class="header-nav">
                     <a href="/top-investors.html" class="nav-button">
@@ -1405,7 +1405,7 @@ const sales = [
     { id: 'corn', name: 'corn', className: 'corn' },
     { id: 'enclave', name: 'Enclave', className: 'enclave' },
     { id: 'silencio', name: 'Silencio', className: 'silencio' },
-    { id: 'lit', name: 'Lit Protocol', className: 'lit', isActive: true }, // Active sale
+    { id: 'lit', name: 'Lit Protocol', className: 'lit' }, // Removed isActive flag
     { id: 'resolv', name: 'Resolv', className: 'resolv', isActive: true }, // Active sale on Ethereum
     // Other upcoming sales
     { id: 'session', name: 'Session', className: 'session', upcoming: true },
@@ -1669,8 +1669,8 @@ function createSaleRow(sale) {
     row.innerHTML = `
         <div class="logo-container">
             <img 
-                src="${sale.id}.jpg" 
-                onerror="this.onerror=null; this.src='${sale.id}.png';" 
+                src="/${sale.id}.jpg" 
+                onerror="this.onerror=null; this.src='/${sale.id}.png';" 
                 alt="${sale.name} Logo" 
                 class="sale-logo"
             >
@@ -1681,7 +1681,7 @@ function createSaleRow(sale) {
         <div class="token-sale-price ${sale.className}-color">${sale.tokenSalePrice}</div>
         <div class="token-price ${sale.className}-color">${sale.upcoming ? 'Not Live' : getMarketPrice(sale.id)}</div>
         <div>
-            <a href="${sale.upcoming ? 'https://legion.cc/app/invest' : `/${sale.id}.html`}" target="_blank" class="action-button ${sale.className}-button">${sale.upcoming ? 'Upcoming' : 'View Details'}</a>
+            <a href="${sale.upcoming ? 'https://legion.cc/app/invest' : `/${sale.id}`}" target="_blank" class="action-button ${sale.className}-button">${sale.upcoming ? 'Upcoming' : 'View Details'}</a>
         </div>
     `;
     
@@ -2142,7 +2142,7 @@ function updateLiveFeed(transactions) {
             : `https://arbiscan.io/tx/${tx.hash}`;
         
         feedItem.innerHTML = `
-            <img src="${saleId}.jpg" onerror="this.src='${saleId}.png'" class="feed-logo" alt="${saleId}">
+            <img src="/${saleId}.jpg" onerror="this.src='/${saleId}.png'" class="feed-logo" alt="${saleId}">
             <a href="${explorerUrl}" target="_blank" class="feed-address">${formatAddress(tx.from)}${tierBadge}</a>
             <span class="feed-amount ${saleId}-color">+$${tx.amount.toFixed(2)}</span>
             <span class="feed-time">${timestamp}</span>

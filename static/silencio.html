@@ -436,7 +436,7 @@
                     setPriceData(prev => ({ ...prev, loading: true, error: null }));
                     
                     // CoinGecko API endpoint with API key
-                    const apiUrl = `https://api.coingecko.com/api/v3/coins/${SILENCIO_TOKEN_ID}?x_cg_demo_api_key=${COINGECKO_API_KEY}`;
+                    const apiUrl = `https://api.coingecko.com/api/v3/coins/silencio?x_cg_demo_api_key=${COINGECKO_API_KEY}`;
                     const response = await fetch(apiUrl);
                     
                     if (!response.ok) {
@@ -449,9 +449,25 @@
                     const currentPrice = data.market_data.current_price.usd;
                     const athPrice = data.market_data.ath.usd;
                     const lowestPrice = data.market_data.atl.usd;
+                    const salePrice = 0.0006; // Fixed sale price for Silencio
+                    
+                    // Calculate ROIs
+                    const currentRoi = ((currentPrice - salePrice) / salePrice) * 100;
+                    const athRoi = ((athPrice - salePrice) / salePrice) * 100;
+                    
+                    // Update DOM elements
+                    document.getElementById('silencioCurrentPrice').textContent = formatAmount(currentPrice, true);
+                    document.getElementById('silencioATH').textContent = formatAmount(athPrice, true);
+                    document.getElementById('silencioATL').textContent = formatAmount(lowestPrice, true);
+                    document.getElementById('silencioROI').textContent = `${currentRoi.toFixed(2)}%`;
+                    document.getElementById('silencioATHROI').textContent = `${athRoi.toFixed(2)}%`;
+                    
+                    // Update color classes for ROI values
+                    document.getElementById('silencioROI').className = `font-bold ${currentRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                    document.getElementById('silencioATHROI').className = `font-bold ${athRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
                     
                     setPriceData({
-                        salePrice: 0.0006, // Fixed sale price
+                        salePrice,
                         currentPrice,
                         athPrice,
                         lowestPrice,
@@ -466,6 +482,15 @@
                         loading: false,
                         error: err.message
                     }));
+                    
+                    // Update DOM elements to show error
+                    const elements = ['silencioCurrentPrice', 'silencioATH', 'silencioATL', 'silencioROI', 'silencioATHROI'];
+                    elements.forEach(id => {
+                        document.getElementById(id).textContent = 'Error';
+                        if (id.includes('ROI')) {
+                            document.getElementById(id).className = 'font-bold text-red-500';
+                        }
+                    });
                 }
             };
             
@@ -632,31 +657,68 @@
             // Main component render
             return (
                 <div className="main-container">
-                    {/* Back button */}
-                    <button onClick={handleBack} className="back-button">
-                        <i className="fas fa-arrow-left mr-2"></i>
-                        Back to Dashboard
-                    </button>
-                    
-                    {/* Header */}
-                    <div className="header-card">
-                        <div className="header-title">Silencio</div>
-                        <img src="silencio.png" alt="Silencio Logo" className="h-16" onerror="this.src='silencio.png';" />
+                    <div class="back-button mb-4">
+                        <a href="index.html" class="text-white hover:text-gray-300">
+                            <i class="fas fa-arrow-left mr-2"></i>Back
+                        </a>
                     </div>
-                    
-                    {/* Main Content Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <div class="header-card mb-4">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <img src="/silencio.png" alt="Silencio Logo" class="h-8 mr-3" onerror="this.style.display='none'" />
+                                <h1 class="text-2xl font-bold text-white">SILENCIO</h1>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card p-4 mb-4">
+                        <div class="flex items-center space-x-8">
+                            <div class="flex items-center">
+                                <img src="silencio.png" alt="Silencio Logo" class="h-8 mr-3" onerror="this.style.display='none'" />
+                                <span class="text-lg font-semibold text-white">Silencio Price Stats</span>
+                            </div>
+                            <div class="flex-1 flex justify-between items-center">
+                                <div class="text-center">
+                                    <div class="text-gray-400 text-sm">Sale Price</div>
+                                    <div class="font-bold text-white">$0.0006</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400 text-sm">Current Price</div>
+                                    <div class="font-bold text-white" id="silencioCurrentPrice">Loading...</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400 text-sm">All-Time High</div>
+                                    <div class="font-bold text-white" id="silencioATH">Loading...</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400 text-sm">All-Time Low</div>
+                                    <div class="font-bold text-white" id="silencioATL">Loading...</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400 text-sm">Current ROI</div>
+                                    <div class="font-bold" id="silencioROI">Loading...</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-gray-400 text-sm">ATH ROI</div>
+                                    <div class="font-bold" id="silencioATHROI">Loading...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Left Column - Stats */}
                         <div className="md:col-span-1">
                             {/* Total USDC Card */}
-                            <div className="card p-6 text-center">
+                            <div className="card p-4 text-center">
                                 <div className="card-title">Total USDC Invested</div>
                                 <div className="amount-display">{formatAmount(totalInvestment)}</div>
                                 <div className="text-gray-400 text-sm">{deposits.length} unique addresses</div>
                             </div>
                             
                             {/* Stats section */}
-                            <div className="card p-6 mt-6">
+                            <div className="card p-4 mt-4">
                                 <div className="stats-title">Investment Stats</div>
                                 
                                 <div className="stats-card">
@@ -680,66 +742,8 @@
                                 </div>
                             </div>
                             
-                            {/* Token Price Card */}
-                            <div className="card p-6 mt-6">
-                                <div className="stats-title mb-4">Silencio Token Price</div>
-                                
-                                {priceData.loading ? (
-                                    <div className="text-center p-4">
-                                        <div className="inline-block w-6 h-6 border-2 border-t-transparent border-white rounded-full animate-spin mb-2"></div>
-                                        <p>Loading price data...</p>
-                                    </div>
-                                ) : priceData.error ? (
-                                    <div className="text-center text-red-400 p-4">
-                                        <p>Error loading price data</p>
-                                        <button 
-                                            onClick={fetchTokenPriceData} 
-                                            className="pagination-button mt-4 text-sm"
-                                        >
-                                            Retry
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <div className="price-card">
-                                            <div className="stats-label">Sale Price</div>
-                                            <div className="stats-value">{formatAmount(priceData.salePrice, true)}</div>
-                                        </div>
-                                        
-                                        <div className="price-card">
-                                            <div className="stats-label">Current Price</div>
-                                            <div className="stats-value">{formatAmount(priceData.currentPrice, true)}</div>
-                                        </div>
-                                        
-                                        <div className="price-card">
-                                            <div className="stats-label">All-Time High</div>
-                                            <div className="stats-value">{formatAmount(priceData.athPrice, true)}</div>
-                                        </div>
-                                        
-                                        <div className="price-card">
-                                            <div className="stats-label">All-Time Low</div>
-                                            <div className="stats-value">{formatAmount(priceData.lowestPrice, true)}</div>
-                                        </div>
-                                        
-                                        <div className="price-card">
-                                            <div className="stats-label">Current ROI</div>
-                                            <div className={`stats-value ${getCurrentPnLPercent() >= 0 ? 'profit-positive' : 'profit-negative'}`}>
-                                                {getCurrentPnLPercent() !== null ? `${getCurrentPnLPercent().toFixed(2)}%` : 'N/A'}
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="price-card">
-                                            <div className="stats-label">ATH ROI</div>
-                                            <div className={`stats-value ${getAthPnLPercent() >= 0 ? 'profit-positive' : 'profit-negative'}`}>
-                                                {getAthPnLPercent() !== null ? `${getAthPnLPercent().toFixed(2)}%` : 'N/A'}
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                            
                             {/* Investment Calculator */}
-                            <div className="card p-6 mt-6">
+                            <div className="card p-4 mt-4">
                                 <div className="stats-title mb-4">ROI Calculator</div>
                                 <div className="card-subtitle mb-4">Calculate your investment performance</div>
                                 
@@ -860,7 +864,7 @@
                         
                         {/* Right Column - Investors Table */}
                         <div className="md:col-span-2">
-                            <div className="card">
+                            <div className="card h-full">
                                 <div className="p-4 border-b border-gray-800">
                                     <div className="card-title">Top Investors</div>
                                     <div className="card-subtitle">Ranked by investment amount</div>

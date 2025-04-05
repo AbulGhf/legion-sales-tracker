@@ -15,12 +15,13 @@
     <style>
         /* Basic styles */
         body {
-            background-color: #0f0f0f;
+            background-color: #2a1a1a;
+            background-image: linear-gradient(to bottom, #2a1a1a, #1a0f0f);
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
-        /* Lit Protocol orange color */
+        /* Lit color */
         .neon-color {
             color: #fd7244;
         }
@@ -42,6 +43,7 @@
             align-items: center;
             margin-bottom: 20px;
             border: 1px solid rgba(253, 114, 68, 0.15);
+            box-shadow: 0 4px 12px rgba(253, 114, 68, 0.15);
         }
         
         .header-title {
@@ -340,146 +342,6 @@
     
     <!-- React app script -->
     <script type="text/babel">
-        // LiveFeed component
-        function LiveFeed() {
-            const [transactions, setTransactions] = React.useState([]);
-            const [loading, setLoading] = React.useState(true);
-            const [error, setError] = React.useState(null);
-            const [isVisible, setIsVisible] = React.useState(true);
-            const [updateInterval, setUpdateInterval] = React.useState(null);
-            
-            // Format address helper
-            const formatAddress = (address) => {
-                if (!address) return 'Unknown';
-                return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-            };
-            
-            // Function to format time "time ago"
-            const timeAgo = (date) => {
-                const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-                
-                if (seconds < 5) return 'just now';
-                if (seconds < 60) return `${seconds}s ago`;
-                
-                const minutes = Math.floor(seconds / 60);
-                if (minutes < 60) return `${minutes}m ago`;
-                
-                const hours = Math.floor(minutes / 60);
-                if (hours < 24) return `${hours}h ago`;
-                
-                const days = Math.floor(hours / 24);
-                return `${days}d ago`;
-            };
-            
-            // Function to fetch live transactions
-            const fetchLiveTransactions = React.useCallback(async () => {
-                if (!isVisible) return; // Don't fetch if not visible
-                
-                try {
-                    setLoading(true);
-                    const response = await fetch('/api/live-feed?sale=lit&limit=8'); 
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch live transactions');
-                    }
-                    
-                    const data = await response.json();
-                    setTransactions(data.transactions || []);
-                    setLoading(false);
-                } catch (error) {
-                    console.error('Error fetching live transactions:', error);
-                    setError(error.message);
-                    setLoading(false);
-                }
-            }, [isVisible]);
-            
-            // Handle visibility change
-            React.useEffect(() => {
-                const handleVisibilityChange = () => {
-                    const isPageVisible = document.visibilityState === 'visible';
-                    setIsVisible(isPageVisible);
-                    
-                    if (isPageVisible) {
-                        // Page is visible, start polling
-                        fetchLiveTransactions();
-                        const interval = setInterval(fetchLiveTransactions, 30000);
-                        setUpdateInterval(interval);
-                    } else {
-                        // Page is hidden, stop polling
-                        if (updateInterval) {
-                            clearInterval(updateInterval);
-                            setUpdateInterval(null);
-                        }
-                    }
-                };
-                
-                document.addEventListener('visibilitychange', handleVisibilityChange);
-                
-                // Initial setup
-                handleVisibilityChange();
-                
-                return () => {
-                    document.removeEventListener('visibilitychange', handleVisibilityChange);
-                    if (updateInterval) {
-                        clearInterval(updateInterval);
-                    }
-                };
-            }, [fetchLiveTransactions]);
-            
-            // Update times every minute
-            React.useEffect(() => {
-                if (!isVisible) return;
-                
-                const timeUpdateInterval = setInterval(() => {
-                    setTransactions(prevTransactions => [...prevTransactions]);
-                }, 60000);
-                
-                return () => clearInterval(timeUpdateInterval);
-            }, [isVisible]);
-            
-            return (
-                <div className="live-feed-card">
-                    <div className="live-feed-header">
-                        <div className="stats-title">
-                            <span>Live Feed</span>
-                            <i className="fas fa-bolt"></i>
-                        </div>
-                    </div>
-                    <div className="live-feed">
-                        {loading && transactions.length === 0 ? (
-                            <div className="text-center text-gray-500 py-2">
-                                <i className="fas fa-circle-notch fa-spin mr-2"></i>
-                                Connecting to live feed...
-                            </div>
-                        ) : error ? (
-                            <div className="text-center text-red-500 py-2">
-                                Error loading live feed: {error}
-                            </div>
-                        ) : transactions.length === 0 ? (
-                            <div className="text-center text-gray-500 py-2">
-                                No recent transactions found.
-                            </div>
-                        ) : (
-                            transactions.map((tx, index) => (
-                                <div className="feed-item" key={index}>
-                                    <img src="lit.jpg" onError={(e) => e.target.src = 'lit.png'} className="feed-logo" alt="Lit" />
-                                    <a 
-                                        href={`https://arbiscan.io/tx/${tx.hash}`} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="feed-address"
-                                    >
-                                        {formatAddress(tx.from)}
-                                    </a>
-                                    <span className="feed-amount">+${tx.amount.toFixed(2)}</span>
-                                    <span className="feed-time">{timeAgo(tx.timestamp)}</span>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
-            );
-        }
-        
         // Main app component
         function LegionTracker() {
             // State hooks
@@ -513,24 +375,7 @@
             
             // Fetch data on component mount
             React.useEffect(() => {
-                // Check if dashboard is launched
-                const dashboardLaunched = localStorage.getItem('dashboardLaunched') === 'true';
-                const launchTime = parseInt(localStorage.getItem('dashboardLaunchTime') || '0');
-                const currentTime = Date.now();
-                
-                // If dashboard was launched more than 24 hours ago, reset the flag
-                if (launchTime && (currentTime - launchTime > 24 * 60 * 60 * 1000)) {
-                    localStorage.removeItem('dashboardLaunched');
-                    localStorage.removeItem('dashboardLaunchTime');
-                    window.location.href = '/';
-                    return;
-                }
-                
-                if (dashboardLaunched) {
-                    fetchData();
-                } else {
-                    window.location.href = '/';
-                }
+                fetchData();
             }, []);
             
             // Function to fetch data from API
@@ -645,7 +490,7 @@
             
             // Main component render
             return (
-                <div className="container mx-auto px-4 py-8">
+                <div className="main-container">
                     {/* Back button */}
                     <button onClick={handleBack} className="back-button">
                         <i className="fas fa-arrow-left mr-2"></i>
@@ -653,9 +498,9 @@
                     </button>
                     
                     {/* Header */}
-                    <div className="header mb-8">
-                        <h1 className="text-3xl font-bold mb-2">Lit Protocol Sale</h1>
-                        <p className="text-gray-400">Track investments in real-time</p>
+                    <div className="header-card">
+                        <div className="header-title">Lit Protocol</div>
+                        <img src="lit.jpg" alt="Lit Logo" className="h-16" />
                     </div>
                     
                     {/* Main Content Grid */}
@@ -668,9 +513,6 @@
                                 <div className="amount-display">{formatAmount(totalInvestment)}</div>
                                 <div className="text-gray-400 text-sm">{deposits && deposits.length ? deposits.length : 0} unique addresses</div>
                             </div>
-                            
-                            {/* Live Feed */}
-                            <LiveFeed />
                             
                             {/* Stats section */}
                             <div className="stats-section">

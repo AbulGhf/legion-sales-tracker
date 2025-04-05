@@ -6,7 +6,7 @@ from functools import wraps
 from flask_cors import CORS
 
 # Create the Flask application
-app = Flask(__name__, static_url_path='', static_folder='static')
+app = Flask(__name__, static_url_path='/static', static_folder='static')
 CORS(app)  # Enable CORS for all routes
 
 # Load static data from file
@@ -320,33 +320,62 @@ def dashboard():
     return response
 
 # HTML pages for each sale
-@app.route('/<string:sale_name>.html')
-def sale_page(sale_name):
-    return send_from_directory('static', f'{sale_name}.html')
+@app.route('/<path:filename>')
+def serve_static(filename):
+    if filename.endswith(('.jpg', '.png', '.gif')):
+        return send_from_directory('static', filename)
+    elif filename.endswith('.html'):
+        return send_from_directory('static', filename)
+    else:
+        return send_from_directory('static', f'{filename}.html')
 
 @app.route('/api/lit/total-investment', methods=['GET'])
-@cached('lit_total', 'lit_total_timestamp')
 def lit_total_investment():
-    # Check for initialized flag in cookies
-    if not request.cookies.get('app_initialized'):
-        return jsonify({"total": 0})
-    
-    # Original code...
-    transfers = get_lit_usdc_deposits()
-    deposits_list = aggregate_lit_deposits(transfers)
-    total = sum(item["amount"] for item in deposits_list)
-    return jsonify({"total": total})
+    """Get total investment for Lit Protocol sale"""
+    if 'lit' in STATIC_DATA:
+        return jsonify({"total": STATIC_DATA['lit']['total']})
+    return jsonify({"error": "Lit Protocol data not found"}), 404
 
 @app.route('/api/lit/deposits', methods=['GET'])
-@cached('lit_deposits', 'lit_deposits_timestamp')
 def lit_deposits():
-    transfers = get_lit_usdc_deposits()
-    deposits_list = aggregate_lit_deposits(transfers)
-    
-    return jsonify({
-        "deposits": deposits_list,
-        "count": len(deposits_list)
-    })
+    """Get all deposits for Lit Protocol sale"""
+    if 'lit' in STATIC_DATA:
+        return jsonify({
+            "deposits": STATIC_DATA['lit']['deposits'],
+            "count": STATIC_DATA['lit']['count']
+        })
+    return jsonify({"error": "Lit Protocol data not found"}), 404
+
+@app.route('/api/lit/stats', methods=['GET'])
+def lit_stats():
+    """Get statistics for Lit Protocol sale"""
+    if 'lit' in STATIC_DATA:
+        deposits_list = STATIC_DATA['lit']['deposits']
+        total_investment = STATIC_DATA['lit']['total']
+        total_investors = STATIC_DATA['lit']['count']
+        
+        if deposits_list:
+            highest_allocation = max(deposits_list, key=lambda x: x["amount"])
+            lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
+            average_allocation = total_investment / total_investors if total_investors > 0 else 0
+            
+            # Top 5 investors
+            top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
+        else:
+            highest_allocation = {"address": "", "amount": 0}
+            lowest_allocation = {"address": "", "amount": 0}
+            average_allocation = 0
+            top_investors = []
+        
+        return jsonify({
+            "total_investment": total_investment,
+            "total_investors": total_investors,
+            "highest_allocation": highest_allocation,
+            "lowest_allocation": lowest_allocation,
+            "average_allocation": average_allocation,
+            "top_investors": top_investors
+        })
+    return jsonify({"error": "Lit Protocol data not found"}), 404
 
 # API Endpoints for Resolv Protocol (with caching)
 @app.route('/api/resolv/total-investment', methods=['GET'])
@@ -443,14 +472,42 @@ def live_feed():
     sale_filter = request.args.get('sale', default=None, type=str)
     
     if sale_filter == 'lit':
-        # Only get Lit transactions if specifically requested
-        transactions = get_recent_lit_transactions(limit)
+        # Use static data for Lit Protocol
+        if 'lit' in STATIC_DATA:
+            deposits = STATIC_DATA['lit']['deposits']
+            transactions = []
+            for deposit in deposits:
+                tx = {
+                    "from": deposit["address"],
+                    "amount": deposit["amount"],
+                    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
+                    "timestamp": "0",  # Placeholder timestamp
+                    "sale": "lit"
+                }
+                transactions.append(tx)
+            return jsonify({
+                "transactions": transactions[:limit],
+                "count": len(transactions)
+            })
+        return jsonify({"transactions": [], "count": 0})
     elif sale_filter == 'resolv':
         # Only get Resolv transactions if specifically requested
         transactions = get_recent_resolv_transactions(limit)
     else:
         # Get recent transactions for both active sales
-        lit_transactions = get_recent_lit_transactions(limit)
+        lit_transactions = []
+        if 'lit' in STATIC_DATA:
+            deposits = STATIC_DATA['lit']['deposits']
+            for deposit in deposits:
+                tx = {
+                    "from": deposit["address"],
+                    "amount": deposit["amount"],
+                    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
+                    "timestamp": "0",  # Placeholder timestamp
+                    "sale": "lit"
+                }
+                lit_transactions.append(tx)
+        
         resolv_transactions = get_recent_resolv_transactions(limit)
         
         # Combine and sort by timestamp

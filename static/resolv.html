@@ -15,7 +15,8 @@
     <style>
         /* Basic styles */
         body {
-            background-color: #0f0f0f;
+            background-color: #1a2436;
+            background-image: linear-gradient(to bottom, #1a2436, #121827);
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
@@ -42,6 +43,7 @@
             align-items: center;
             margin-bottom: 20px;
             border: 1px solid rgba(102, 150, 174, 0.15);
+            box-shadow: 0 4px 12px rgba(102, 150, 174, 0.15);
         }
         
         .header-title {
@@ -645,7 +647,7 @@
             
             // Main component render
             return (
-                <div className="container mx-auto px-4 py-8">
+                <div className="main-container">
                     {/* Back button */}
                     <button onClick={handleBack} className="back-button">
                         <i className="fas fa-arrow-left mr-2"></i>
@@ -653,9 +655,9 @@
                     </button>
                     
                     {/* Header */}
-                    <div className="header mb-8">
-                        <h1 className="text-3xl font-bold mb-2">Resolv Protocol Sale</h1>
-                        <p className="text-gray-400">Track investments in real-time</p>
+                    <div className="header-card">
+                        <div className="header-title">Resolv Protocol</div>
+                        <img src="resolv.png" alt="Resolv Logo" className="h-16" />
                     </div>
                     
                     {/* Main Content Grid */}
@@ -750,6 +752,31 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                
+                                {/* Pagination */}
+                                {totalPages > 1 && (
+                                    <div className="pagination">
+                                        <button
+                                            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
+                                            disabled={currentPage === 1}
+                                            className="pagination-button"
+                                        >
+                                            Previous
+                                        </button>
+                                        
+                                        <div className="pagination-info">
+                                            {currentPage} of {totalPages}
+                                        </div>
+                                        
+                                        <button
+                                            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
+                                            disabled={currentPage === totalPages}
+                                            className="pagination-button"
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
