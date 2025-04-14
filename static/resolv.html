@@ -54,11 +54,11 @@
         
         /* Cards */
         .card {
-            background-color: #1a1a1a;
+            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
             border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 87, 34, 0.1);
             overflow: hidden;
-            margin-bottom: 20px;
-            border: 1px solid rgba(102, 150, 174, 0.15);
         }
         
         .card-title {
@@ -94,22 +94,30 @@
             align-items: center;
         }
         
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
         .stats-card {
-            background-color: #121827;
-            border-left: 4px solid #6696ae;
-            padding: 15px;
-            margin-bottom: 10px;
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
         }
         
         .stats-label {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: #888;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
         }
         
         .stats-value {
-            font-size: 1.2rem;
+            color: #fff;
+            font-size: 1.25rem;
             font-weight: bold;
-            color: #6696ae;
         }
         
         /* Table */
@@ -429,146 +437,6 @@
     
     <!-- React app script -->
     <script type="text/babel">
-        // LiveFeed component
-        function LiveFeed() {
-            const [transactions, setTransactions] = React.useState([]);
-            const [loading, setLoading] = React.useState(true);
-            const [error, setError] = React.useState(null);
-            const [isVisible, setIsVisible] = React.useState(true);
-            const [updateInterval, setUpdateInterval] = React.useState(null);
-            
-            // Format address helper
-            const formatAddress = (address) => {
-                if (!address) return 'Unknown';
-                return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-            };
-            
-            // Function to format time "time ago"
-            const timeAgo = (date) => {
-                const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-                
-                if (seconds < 5) return 'just now';
-                if (seconds < 60) return `${seconds}s ago`;
-                
-                const minutes = Math.floor(seconds / 60);
-                if (minutes < 60) return `${minutes}m ago`;
-                
-                const hours = Math.floor(minutes / 60);
-                if (hours < 24) return `${hours}h ago`;
-                
-                const days = Math.floor(hours / 24);
-                return `${days}d ago`;
-            };
-            
-            // Function to fetch live transactions
-            const fetchLiveTransactions = React.useCallback(async () => {
-                if (!isVisible) return; // Don't fetch if not visible
-                
-                try {
-                    setLoading(true);
-                    const response = await fetch('/api/live-feed?sale=resolv&limit=8'); 
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch live transactions');
-                    }
-                    
-                    const data = await response.json();
-                    setTransactions(data.transactions || []);
-                    setLoading(false);
-                } catch (error) {
-                    console.error('Error fetching live transactions:', error);
-                    setError(error.message);
-                    setLoading(false);
-                }
-            }, [isVisible]);
-            
-            // Handle visibility change
-            React.useEffect(() => {
-                const handleVisibilityChange = () => {
-                    const isPageVisible = document.visibilityState === 'visible';
-                    setIsVisible(isPageVisible);
-                    
-                    if (isPageVisible) {
-                        // Page is visible, start polling
-                        fetchLiveTransactions();
-                        const interval = setInterval(fetchLiveTransactions, 30000);
-                        setUpdateInterval(interval);
-                    } else {
-                        // Page is hidden, stop polling
-                        if (updateInterval) {
-                            clearInterval(updateInterval);
-                            setUpdateInterval(null);
-                        }
-                    }
-                };
-                
-                document.addEventListener('visibilitychange', handleVisibilityChange);
-                
-                // Initial setup
-                handleVisibilityChange();
-                
-                return () => {
-                    document.removeEventListener('visibilitychange', handleVisibilityChange);
-                    if (updateInterval) {
-                        clearInterval(updateInterval);
-                    }
-                };
-            }, [fetchLiveTransactions]);
-            
-            // Update times every minute
-            React.useEffect(() => {
-                if (!isVisible) return;
-                
-                const timeUpdateInterval = setInterval(() => {
-                    setTransactions(prevTransactions => [...prevTransactions]);
-                }, 60000);
-                
-                return () => clearInterval(timeUpdateInterval);
-            }, [isVisible]);
-            
-            return (
-                <div className="live-feed-card">
-                    <div className="live-feed-header">
-                        <div className="stats-title">
-                            <span>Live Feed</span>
-                            <i className="fas fa-bolt"></i>
-                        </div>
-                    </div>
-                    <div className="live-feed">
-                        {loading && transactions.length === 0 ? (
-                            <div className="text-center text-gray-500 py-2">
-                                <i className="fas fa-circle-notch fa-spin mr-2"></i>
-                                Connecting to live feed...
-                            </div>
-                        ) : error ? (
-                            <div className="text-center text-red-500 py-2">
-                                Error loading live feed: {error}
-                            </div>
-                        ) : transactions.length === 0 ? (
-                            <div className="text-center text-gray-500 py-2">
-                                No recent transactions found.
-                            </div>
-                        ) : (
-                            transactions.map((tx, index) => (
-                                <div className="feed-item" key={index}>
-                                    <img src="resolv.jpg" onError={(e) => e.target.src = 'resolv.png'} className="feed-logo" alt="Resolv" />
-                                    <a 
-                                        href={`https://etherscan.io/tx/${tx.hash}`} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="feed-address"
-                                    >
-                                        {formatAddress(tx.from)}
-                                    </a>
-                                    <span className="feed-amount">+${tx.amount.toFixed(2)}</span>
-                                    <span className="feed-time">{timeAgo(tx.timestamp)}</span>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
-            );
-        }
-        
         // Main app component
         function ResolvTracker() {
             // State hooks
@@ -783,9 +651,6 @@
                                 <div className="amount-display">{formatAmount(totalInvestment)}</div>
                                 <div className="text-gray-400 text-sm">{deposits && deposits.length ? deposits.length : 0} unique addresses</div>
                             </div>
-                            
-                            {/* Live Feed */}
-                            <LiveFeed />
                             
                             {/* Stats section */}
                             <div className="stats-grid">

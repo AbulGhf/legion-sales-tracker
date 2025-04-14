@@ -2,24 +2,22 @@ import json
 import requests
 import time
 
-# Constants for Lit Protocol (Arbitrum)
-LIT_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
-LIT_ALCHEMY_URL = f"https://arb-mainnet.g.alchemy.com/v2/{LIT_ALCHEMY_API_KEY}"
-LIT_CONTRACTS = [
-    "0xE193d30421D6e60D61De1b7e097a66B595eA9B11",
-    "0x9A3475824A15933c207Dd8B661b9488169B25947",
-    "0xDB0a5509318614CfFe600BcEa9bC6C001c28C270",
-    "0x81A00dA473D1BfF1D1b894c8a9b4C88464F15F9D"
+# Constants for Resolv Protocol (Ethereum)
+RESOLV_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
+RESOLV_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{RESOLV_ALCHEMY_API_KEY}"  # Ethereum endpoint
+RESOLV_CONTRACTS = [
+    "0xee6deedb6c1535E4912eE5db48E08b36FD2fAA8f",
+    "0x5Fdab714fe8BB9d40C8B1e5f7c2BacD8E7f869d8"
 ]
-LIT_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"  # Arbitrum USDC contract
+RESOLV_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # Ethereum USDC contract
 
-def get_lit_usdc_deposits():
-    """Get all USDC transfers to the Lit Protocol sale contracts"""
-    print("Fetching USDC transfers to Lit Protocol contracts...")
+def get_resolv_usdc_deposits():
+    """Get all USDC transfers to the Resolv Protocol sale contracts"""
+    print("Fetching USDC transfers to Resolv Protocol contracts...")
     
     all_transfers = []
     
-    for contract_address in LIT_CONTRACTS:
+    for contract_address in RESOLV_CONTRACTS:
         page_key = None
         contract_transfers = []
         
@@ -30,7 +28,7 @@ def get_lit_usdc_deposits():
                 "fromBlock": "0x0",
                 "toBlock": "latest",
                 "toAddress": contract_address,
-                "contractAddresses": [LIT_USDC_CONTRACT],
+                "contractAddresses": [RESOLV_USDC_CONTRACT],
                 "category": ["erc20"],
                 "withMetadata": True,
                 "excludeZeroValue": True,
@@ -47,7 +45,7 @@ def get_lit_usdc_deposits():
                 "params": [params]
             }
             
-            response = requests.post(LIT_ALCHEMY_URL, json=payload)
+            response = requests.post(RESOLV_ALCHEMY_URL, json=payload)
             data = response.json()
             
             if "error" in data:
@@ -73,8 +71,8 @@ def get_lit_usdc_deposits():
     print(f"Total transfers fetched: {len(all_transfers)}")
     return all_transfers
 
-def aggregate_lit_deposits(transfers):
-    """Aggregate deposits by address for Lit Protocol"""
+def aggregate_resolv_deposits(transfers):
+    """Aggregate deposits by address for Resolv Protocol"""
     print("Aggregating deposits by address...")
     
     deposits_by_address = {}
@@ -103,7 +101,7 @@ def aggregate_lit_deposits(transfers):
     return deposits_list
 
 # Main execution
-print("Starting Lit Protocol data collection...")
+print("Starting Resolv Protocol data collection...")
 
 # Try to load existing static data
 try:
@@ -114,32 +112,32 @@ except Exception as e:
     print(f"Starting with fresh static data: {str(e)}")
     static_data = {}
 
-# Fetch and process Lit Protocol data
+# Fetch and process Resolv Protocol data
 start_time = time.time()
 try:
-    transfers = get_lit_usdc_deposits()
-    deposits = aggregate_lit_deposits(transfers)
+    transfers = get_resolv_usdc_deposits()
+    deposits = aggregate_resolv_deposits(transfers)
     
     total_investment = sum(deposit["amount"] for deposit in deposits)
     
-    lit_data = {
+    resolv_data = {
         'total': total_investment,
         'deposits': deposits,
         'count': len(deposits)
     }
     
-    print(f"\n✅ Lit Protocol: Found {lit_data['count']} investors with ${lit_data['total']:.2f} total investment")
+    print(f"\n✅ Resolv Protocol: Found {resolv_data['count']} investors with ${resolv_data['total']:.2f} total investment")
     print(f"   Data collection completed in {time.time() - start_time:.2f} seconds")
     
     # Add to static data
-    static_data['lit'] = lit_data
+    static_data['resolv'] = resolv_data
     
     # Save updated static data
     with open('static_data.json', 'w') as f:
         json.dump(static_data, f, indent=2)
     
-    print("\n✅ Updated static_data.json with Lit Protocol data")
+    print("\n✅ Updated static_data.json with Resolv Protocol data")
     print(f"Total sales in static data: {len(static_data)}")
     
 except Exception as e:
-    print(f"\n❌ Error processing Lit Protocol data: {str(e)}")
+    print(f"\n❌ Error processing Resolv Protocol data: {str(e)}")

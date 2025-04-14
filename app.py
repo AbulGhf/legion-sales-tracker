@@ -379,36 +379,29 @@ def lit_stats():
 
 # API Endpoints for Resolv Protocol (with caching)
 @app.route('/api/resolv/total-investment', methods=['GET'])
-@cached('resolv_total', 'resolv_total_timestamp')
 def resolv_total_investment():
-    # Check for initialized flag in cookies
-    if not request.cookies.get('app_initialized'):
-        return jsonify({"total": 0})
-    
-    # Original code...
-    transfers = get_resolv_usdc_deposits()
-    deposits_list = aggregate_resolv_deposits(transfers)
-    total = sum(item["amount"] for item in deposits_list)
-    return jsonify({"total": total})
+    """Get total investment for Resolv Protocol sale"""
+    if 'resolv' in STATIC_DATA:
+        return jsonify({"total": STATIC_DATA['resolv']['total']})
+    return jsonify({"error": "Resolv Protocol data not found"}), 404
 
 @app.route('/api/resolv/deposits', methods=['GET'])
-@cached('resolv_deposits', 'resolv_deposits_timestamp')
 def resolv_deposits():
-    transfers = get_resolv_usdc_deposits()
-    deposits_list = aggregate_resolv_deposits(transfers)
-    
-    return jsonify({
-        "deposits": deposits_list,
-        "count": len(deposits_list)
-    })
+    """Get all deposits for Resolv Protocol sale"""
+    if 'resolv' in STATIC_DATA:
+        return jsonify({
+            "deposits": STATIC_DATA['resolv']['deposits'],
+            "count": STATIC_DATA['resolv']['count']
+        })
+    return jsonify({"error": "Resolv Protocol data not found"}), 404
 
 @app.route('/api/resolv/stats', methods=['GET'])
 def resolv_stats():
     """Return key statistics for Resolv Protocol sale"""
+    if 'resolv' not in STATIC_DATA:
+        return jsonify({"error": "Resolv Protocol data not found"}), 404
     
-    # Fetch real-time data
-    transfers = get_resolv_usdc_deposits()
-    deposits_list = aggregate_resolv_deposits(transfers)
+    deposits_list = STATIC_DATA['resolv']['deposits']
     
     # Calculate stats
     if deposits_list:
@@ -491,14 +484,31 @@ def live_feed():
             })
         return jsonify({"transactions": [], "count": 0})
     elif sale_filter == 'resolv':
-        # Only get Resolv transactions if specifically requested
-        transactions = get_recent_resolv_transactions(limit)
-    else:
-        # Get recent transactions for both active sales
-        lit_transactions = []
-        if 'lit' in STATIC_DATA:
-            deposits = STATIC_DATA['lit']['deposits']
+        # Use static data for Resolv Protocol
+        if 'resolv' in STATIC_DATA:
+            deposits = STATIC_DATA['resolv']['deposits']
+            transactions = []
             for deposit in deposits:
+                tx = {
+                    "from": deposit["address"],
+                    "amount": deposit["amount"],
+                    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
+                    "timestamp": "0",  # Placeholder timestamp
+                    "sale": "resolv"
+                }
+                transactions.append(tx)
+            return jsonify({
+                "transactions": transactions[:limit],
+                "count": len(transactions)
+            })
+        return jsonify({"transactions": [], "count": 0})
+    else:
+        # Get transactions for both sales from static data
+        transactions = []
+        
+        # Add Lit transactions
+        if 'lit' in STATIC_DATA:
+            for deposit in STATIC_DATA['lit']['deposits']:
                 tx = {
                     "from": deposit["address"],
                     "amount": deposit["amount"],
@@ -506,15 +516,23 @@ def live_feed():
                     "timestamp": "0",  # Placeholder timestamp
                     "sale": "lit"
                 }
-                lit_transactions.append(tx)
+                transactions.append(tx)
         
-        resolv_transactions = get_recent_resolv_transactions(limit)
+        # Add Resolv transactions
+        if 'resolv' in STATIC_DATA:
+            for deposit in STATIC_DATA['resolv']['deposits']:
+                tx = {
+                    "from": deposit["address"],
+                    "amount": deposit["amount"],
+                    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
+                    "timestamp": "0",  # Placeholder timestamp
+                    "sale": "resolv"
+                }
+                transactions.append(tx)
         
-        # Combine and sort by timestamp
-        transactions = lit_transactions + resolv_transactions
-        if transactions and 'timestamp' in transactions[0] and transactions[0]['timestamp']:
-            transactions.sort(key=lambda x: x['timestamp'], reverse=True)
-            transactions = transactions[:limit]  # Limit after combining
+        # Sort by amount since we don't have real timestamps
+        transactions.sort(key=lambda x: x["amount"], reverse=True)
+        transactions = transactions[:limit]  # Limit after combining
     
     return jsonify({
         "transactions": transactions,
@@ -547,16 +565,8 @@ def sale_investors(sale_name):
     limit = min(limit, 500)  # Max 500 per page
     page = max(page, 1)      # Min page 1
     
-    if sale_name == 'lit':
-        # For Lit, fetch real-time data
-        transfers = get_lit_usdc_deposits()
-        deposits_list = aggregate_lit_deposits(transfers)
-    elif sale_name == 'resolv':
-        # For Resolv, fetch real-time data
-        transfers = get_resolv_usdc_deposits()
-        deposits_list = aggregate_resolv_deposits(transfers)
-    elif sale_name in STATIC_DATA:
-        # For concluded sales, use static data
+    if sale_name in STATIC_DATA:
+        # For all sales, use static data
         deposits_list = STATIC_DATA[sale_name]['deposits']
     else:
         return jsonify({"error": f"Sale {sale_name} not found"}), 404
@@ -579,42 +589,22 @@ def sale_investors(sale_name):
 def sale_stats(sale_name):
     """Return key statistics for a sale including highest and lowest allocations"""
     
-    if sale_name == 'lit':
-        # For Lit, fetch real-time data
-        transfers = get_lit_usdc_deposits()
-        deposits_list = aggregate_lit_deposits(transfers)
-    elif sale_name == 'resolv':
-        # For Resolv, fetch real-time data
-        transfers = get_resolv_usdc_deposits()
-        deposits_list = aggregate_resolv_deposits(transfers)
-    elif sale_name in STATIC_DATA:
-        # For concluded sales, use static data
+    if sale_name in STATIC_DATA:
+        # For all sales, use static data
         deposits_list = STATIC_DATA[sale_name]['deposits']
     else:
         return jsonify({"error": f"Sale {sale_name} not found"}), 404
     
     # Calculate stats
     if deposits_list:
-        if sale_name == 'lit' or sale_name == 'resolv':
-            # Special handling for active sales
-            total_investment = sum(item["amount"] for item in deposits_list)
-            total_investors = len(deposits_list)
-            highest_allocation = max(deposits_list, key=lambda x: x["amount"])
-            lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
-            average_allocation = total_investment / total_investors if total_investors > 0 else 0
-            
-            # Top 5 investors
-            top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
-        else:
-            # Standard handling for other sales
-            total_investment = sum(deposit["amount"] for deposit in deposits_list)
-            total_investors = len(deposits_list)
-            highest_allocation = max(deposits_list, key=lambda x: x["amount"])
-            lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
-            average_allocation = total_investment / total_investors if total_investors > 0 else 0
-            
-            # Top 5 investors
-            top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
+        total_investment = sum(deposit["amount"] for deposit in deposits_list)
+        total_investors = len(deposits_list)
+        highest_allocation = max(deposits_list, key=lambda x: x["amount"])
+        lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
+        average_allocation = total_investment / total_investors if total_investors > 0 else 0
+        
+        # Top 5 investors
+        top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
     else:
         total_investment = 0
         total_investors = 0
@@ -636,9 +626,8 @@ def sale_stats(sale_name):
 
 # Global stats endpoint with caching and improved integration
 @app.route('/api/global-stats', methods=['GET'])
-@cached('global_stats', 'global_stats_timestamp')
 def global_stats():
-    """Return aggregated statistics for all sales combined with caching"""
+    """Return aggregated statistics for all sales combined"""
     # Initialize counters
     total_investment = 0
     total_investors_set = set()  # Use a set to prevent duplicate counting
@@ -646,7 +635,7 @@ def global_stats():
     investor_sales_count = {}  # Track number of sales per investor
     investor_total_investments = {}  # Track total investments per investor
     
-    # Process static data first (past sales)
+    # Process all sales from static data
     for sale_name, sale_data in STATIC_DATA.items():
         if 'deposits' in sale_data:
             for deposit in sale_data['deposits']:
@@ -669,68 +658,6 @@ def global_stats():
                 investor_sales_count[address].add(sale_name)
                 investor_total_investments[address] += amount
     
-    # Process live Lit Protocol data
-    try:
-        # Get fresh Lit data
-        transfers = get_lit_usdc_deposits()
-        deposits_list = aggregate_lit_deposits(transfers)
-        
-        # Log the Lit data size to verify it's working
-        print(f"Processing {len(deposits_list)} Lit deposits for global stats")
-        
-        for deposit in deposits_list:
-            address = deposit['address'].lower()
-            amount = deposit['amount']
-            
-            # Add to total investment
-            total_investment += amount
-            
-            # Add investor to set
-            total_investors_set.add(address)
-            
-            # Track individual investment
-            all_investments.append(amount)
-            
-            # Track sales participation
-            if address not in investor_sales_count:
-                investor_sales_count[address] = set()
-                investor_total_investments[address] = 0
-            investor_sales_count[address].add('lit')
-            investor_total_investments[address] += amount
-    except Exception as e:
-        print(f"Error fetching Lit data for global stats: {str(e)}")
-    
-    # Process live Resolv Protocol data
-    try:
-        # Get fresh Resolv data
-        transfers = get_resolv_usdc_deposits()
-        deposits_list = aggregate_resolv_deposits(transfers)
-        
-        # Log the Resolv data size to verify it's working
-        print(f"Processing {len(deposits_list)} Resolv deposits for global stats")
-        
-        for deposit in deposits_list:
-            address = deposit['address'].lower()
-            amount = deposit['amount']
-            
-            # Add to total investment
-            total_investment += amount
-            
-            # Add investor to set
-            total_investors_set.add(address)
-            
-            # Track individual investment
-            all_investments.append(amount)
-            
-            # Track sales participation
-            if address not in investor_sales_count:
-                investor_sales_count[address] = set()
-                investor_total_investments[address] = 0
-            investor_sales_count[address].add('resolv')
-            investor_total_investments[address] += amount
-    except Exception as e:
-        print(f"Error fetching Resolv data for global stats: {str(e)}")
-    
     # Calculate statistics
     total_investors = len(total_investors_set)
     average_investment = total_investment / total_investors if total_investors > 0 else 0
@@ -748,13 +675,10 @@ def global_stats():
     
     # Calculate average sales per investor
     total_sales_participation = sum(len(sales) for sales in investor_sales_count.values())
-    average_sales = total_sales_participation / total_investors if total_investors > 0 else 0
+    average_sales_per_investor = total_sales_participation / total_investors if total_investors > 0 else 0
     
-    # Find the investor with most sales
-    most_active_sales = max(len(sales) for sales in investor_sales_count.values()) if investor_sales_count else 0
-    
-    # Log some stats to verify
-    print(f"Global Stats: {total_investors} investors, ${total_investment:,.2f} invested, ${average_investment:,.2f} average")
+    # Find investors in multiple sales
+    multi_sale_investors = sum(1 for sales in investor_sales_count.values() if len(sales) > 1)
     
     return jsonify({
         "total_investment": total_investment,
@@ -762,8 +686,8 @@ def global_stats():
         "average_investment": average_investment,
         "median_investment": median_investment,
         "largest_investment": largest_investment,
-        "most_active_sales": most_active_sales,
-        "average_sales": average_sales
+        "average_sales_per_investor": average_sales_per_investor,
+        "multi_sale_investors": multi_sale_investors
     })
 
 # Top investors endpoint with modified ranking that preserves ranks during search
@@ -783,7 +707,7 @@ def top_investors():
     # Initialize dict to store aggregated investor data
     investors = {}
     
-    # Process static data first (past sales)
+    # Process all sales from static data
     for sale_name, sale_data in STATIC_DATA.items():
         if 'deposits' in sale_data:
             for deposit in sale_data['deposits']:
@@ -809,66 +733,6 @@ def top_investors():
                 # Update total invested amount
                 investors[address]['total_invested'] += amount
     
-    # Process live Lit data
-    try:
-        transfers = get_lit_usdc_deposits()
-        deposits_list = aggregate_lit_deposits(transfers)
-        
-        for deposit in deposits_list:
-            address = deposit['address'].lower()
-            amount = deposit['amount']
-            
-            if address not in investors:
-                investors[address] = {
-                    'address': address,
-                    'total_invested': 0,
-                    'sales_participated': 0,
-                    'sales': {}
-                }
-            
-            # If this is the first time we're seeing this address for Lit
-            if 'lit' not in investors[address]['sales']:
-                investors[address]['sales_participated'] += 1
-                investors[address]['sales']['lit'] = amount
-            else:
-                # Add to existing amount for Lit
-                investors[address]['sales']['lit'] += amount
-            
-            # Update total invested amount
-            investors[address]['total_invested'] += amount
-    except Exception as e:
-        print(f"Error fetching Lit data: {str(e)}")
-    
-    # Process live Resolv data
-    try:
-        transfers = get_resolv_usdc_deposits()
-        deposits_list = aggregate_resolv_deposits(transfers)
-        
-        for deposit in deposits_list:
-            address = deposit['address'].lower()
-            amount = deposit['amount']
-            
-            if address not in investors:
-                investors[address] = {
-                    'address': address,
-                    'total_invested': 0,
-                    'sales_participated': 0,
-                    'sales': {}
-                }
-            
-            # If this is the first time we're seeing this address for Resolv
-            if 'resolv' not in investors[address]['sales']:
-                investors[address]['sales_participated'] += 1
-                investors[address]['sales']['resolv'] = amount
-            else:
-                # Add to existing amount for Resolv
-                investors[address]['sales']['resolv'] += amount
-            
-            # Update total invested amount
-            investors[address]['total_invested'] += amount
-    except Exception as e:
-        print(f"Error fetching Resolv data: {str(e)}")
-    
     # Convert to list for sorting
     investors_list = list(investors.values())
     
@@ -893,35 +757,17 @@ def top_investors():
         ]
     
     # Calculate pagination
-    total_investors = len(investors_list)
-    total_pages = (total_investors + limit - 1) // limit if total_investors > 0 else 1
-    
-    # Adjust page if it's out of bounds after applying search
-    page = min(page, total_pages)
-    
-    # Paginate the results
     start_idx = (page - 1) * limit
     end_idx = start_idx + limit
     paginated_investors = investors_list[start_idx:end_idx]
     
-    # Process the paginated investors to add additional data
-    for investor in paginated_investors:
-        # Convert sales dict to list for easier frontend processing
-        investor['sales_list'] = [
-            {'sale': sale, 'amount': amount}
-            for sale, amount in investor['sales'].items()
-        ]
-        # Sort sales by amount
-        investor['sales_list'].sort(key=lambda x: x['amount'], reverse=True)
-    
     return jsonify({
-        'investors': paginated_investors,
-        'page': page,
-        'limit': limit,
-        'total_investors': total_investors_original,  # Always return the total count without search filter
-        'total_pages': total_pages,
-        'sort': sort,
-        'filtered_count': total_investors  # Add a new field for the count after filtering
+        "investors": paginated_investors,
+        "page": page,
+        "limit": limit,
+        "total_investors": len(investors_list),
+        "total_investors_original": total_investors_original,
+        "total_pages": (len(investors_list) + limit - 1) // limit
     })
 
 # Endpoint to get data for a specific investor
@@ -936,7 +782,7 @@ def investor_detail(address):
         'sales': []
     }
     
-    # Process static data
+    # Process all sales from static data
     for sale_name, sale_data in STATIC_DATA.items():
         if 'deposits' in sale_data:
             for deposit in sale_data['deposits']:
@@ -947,38 +793,6 @@ def investor_detail(address):
                         'amount': deposit['amount']
                     })
                     investor_data['total_invested'] += deposit['amount']
-    
-    # Process live Lit data
-    try:
-        transfers = get_lit_usdc_deposits()
-        deposits_list = aggregate_lit_deposits(transfers)
-        
-        for deposit in deposits_list:
-            if deposit['address'].lower() == address:
-                # Add to sales list
-                investor_data['sales'].append({
-                    'sale': 'lit',
-                    'amount': deposit['amount']
-                })
-                investor_data['total_invested'] += deposit['amount']
-    except Exception as e:
-        print(f"Error fetching Lit data: {str(e)}")
-    
-    # Process live Resolv data
-    try:
-        transfers = get_resolv_usdc_deposits()
-        deposits_list = aggregate_resolv_deposits(transfers)
-        
-        for deposit in deposits_list:
-            if deposit['address'].lower() == address:
-                # Add to sales list
-                investor_data['sales'].append({
-                    'sale': 'resolv',
-                    'amount': deposit['amount']
-                })
-                investor_data['total_invested'] += deposit['amount']
-    except Exception as e:
-        print(f"Error fetching Resolv data: {str(e)}")
     
     # Remove duplicates and aggregate by sale
     sales_dict = {}

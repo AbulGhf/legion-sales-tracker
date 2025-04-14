@@ -1176,8 +1176,8 @@
                         </div>
                         <div class="live-feed" id="live-feed">
                             <div class="text-center text-gray-500 py-2">
-                                <i class="fas fa-circle-notch fa-spin mr-2"></i>
-                                Connecting to live feed...
+                                <i class="fas fa-info-circle mr-2"></i>
+                                No Live Sales
                             </div>
                         </div>
                     </div>
@@ -1405,8 +1405,8 @@ const sales = [
     { id: 'corn', name: 'corn', className: 'corn' },
     { id: 'enclave', name: 'Enclave', className: 'enclave' },
     { id: 'silencio', name: 'Silencio', className: 'silencio' },
-    { id: 'lit', name: 'Lit Protocol', className: 'lit' }, // Removed isActive flag
-    { id: 'resolv', name: 'Resolv', className: 'resolv', isActive: true }, // Active sale on Ethereum
+    { id: 'lit', name: 'Lit Protocol', className: 'lit' },
+    { id: 'resolv', name: 'Resolv', className: 'resolv' }, // No longer active
     // Other upcoming sales
     { id: 'session', name: 'Session', className: 'session', upcoming: true },
     { id: 'fragmetric', name: 'Fragmetric', className: 'fragmetric', upcoming: true },
@@ -1585,7 +1585,7 @@ async function fetchSaleData(sale) {
             lowestAllocation: statsData.lowest_allocation,
             tokenSalePrice: getTokenSalePrice(sale.id),
             // For active sales (Lit & Resolv)
-            isActive: sale.isActive || false
+            isActive: false
         };
     } catch (error) {
         console.error(`Error fetching ${sale.id} data:`, error);
@@ -1627,7 +1627,7 @@ async function fetchSaleData(sale) {
                 lowestAllocation: { address: "Unknown", amount: 0 },
                 tokenSalePrice: getTokenSalePrice(sale.id),
                 // For active sales (Lit & Resolv)
-                isActive: sale.isActive || false
+                isActive: false
             };
         } catch (fallbackError) {
             console.error(`Fallback also failed for ${sale.id}:`, fallbackError);
@@ -1643,7 +1643,7 @@ async function fetchSaleData(sale) {
                 highestAllocation: { address: "Unknown", amount: 0 },
                 lowestAllocation: { address: "Unknown", amount: 0 },
                 tokenSalePrice: getTokenSalePrice(sale.id),
-                isActive: sale.isActive || false,
+                isActive: false,
                 error: true
             };
         }
@@ -2107,7 +2107,8 @@ function updateLiveFeed(transactions) {
     if (!transactions || transactions.length === 0) {
         liveFeed.innerHTML = `
             <div class="text-center text-gray-500 py-2">
-                No recent transactions found.
+                <i class="fas fa-info-circle mr-2"></i>
+                No Live Sales
             </div>
         `;
         return;
@@ -2285,7 +2286,7 @@ async function refreshActiveData() {
         updateTable();
         updateOverallStats();
         updateCharts();
-        fetchLiveTransactions(); // Refresh the live feed with both sales data
+        // fetchLiveTransactions(); // Refresh the live feed with both sales data - No active sales
     } catch (error) {
         console.error('Error refreshing active sale data:', error);
     }
@@ -2366,6 +2367,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Function to initialize live feed with real data
 function initLiveFeed() {
+    // Display the "No Live Sales" message immediately
+    const liveFeed = document.getElementById('live-feed');
+    if (liveFeed) {
+        liveFeed.innerHTML = `
+            <div class="text-center text-gray-500 py-2">
+                <i class="fas fa-info-circle mr-2"></i>
+                No Live Sales
+            </div>
+        `;
+    }
+    
+    // Don't set up any polling intervals since there are no live sales
+    // The code below is left commented for future use when sales are active
+    
+    /*
     let updateInterval = null;
     let timeUpdateInterval = null;
     let lastFetchTime = 0;
@@ -2413,6 +2429,7 @@ function initLiveFeed() {
         if (updateInterval) clearInterval(updateInterval);
         if (timeUpdateInterval) clearInterval(timeUpdateInterval);
     });
+    */
 }
     </script>
 </body>
