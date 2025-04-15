@@ -18,6 +18,23 @@ except Exception as e:
     print(f"Error loading static data: {str(e)}")
     STATIC_DATA = {}
 
+# Load Fragmetric data for Solana addresses with proper case
+try:
+    with open('fragmetric.json', 'r') as f:
+        FRAGMETRIC_DATA = json.load(f)
+    print(f"Loaded Fragmetric data with {len(FRAGMETRIC_DATA)} entries")
+    
+    # Create a lookup map for Solana addresses (lowercase to original case)
+    SOLANA_ADDRESS_MAP = {}
+    for entry in FRAGMETRIC_DATA:
+        if 'address' in entry and not entry['address'].startswith('0x'):
+            SOLANA_ADDRESS_MAP[entry['address'].lower()] = entry['address']
+    print(f"Created Solana address map with {len(SOLANA_ADDRESS_MAP)} entries")
+except Exception as e:
+    print(f"Error loading Fragmetric data: {str(e)}")
+    FRAGMETRIC_DATA = []
+    SOLANA_ADDRESS_MAP = {}
+
 # Cache for active sales (Lit Protocol and Resolv)
 cache = {
     'lit_deposits': None,
@@ -439,13 +456,15 @@ def sale_total_investment(sale_name):
         return lit_total_investment()
     elif sale_name == 'resolv':
         return resolv_total_investment()
+    elif sale_name == 'fragmetric':
+        return fragmetric_total_investment()
     
     if sale_name in STATIC_DATA:
         return jsonify({"total": STATIC_DATA[sale_name]['total']})
     else:
         return jsonify({"error": f"Sale {sale_name} not found"}), 404
 
-# Updated live feed endpoint to include both Lit and Resolv transactions
+# Updated live feed endpoint to include both Lit, Resolv, and Fragmetric transactions
 @app.route('/api/live-feed', methods=['GET'])
 def live_feed():
     """Return the most recent transactions for the live feed"""
@@ -502,8 +521,35 @@ def live_feed():
                 "count": len(transactions)
             })
         return jsonify({"transactions": [], "count": 0})
+    elif sale_filter == 'fragmetric':
+        # Use data from fragmetric.json
+        try:
+            with open('fragmetric.json', 'r') as f:
+                fragmetric_data = json.load(f)
+                
+            # Transform the data to match the expected format
+            transactions = []
+            for item in fragmetric_data:
+                tx = {
+                    "from": item["address"],
+                    "amount": item["usdc_balance"],
+                    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
+                    "timestamp": "0",  # Placeholder timestamp
+                    "sale": "fragmetric"
+                }
+                transactions.append(tx)
+                
+            # Sort by amount in descending order to show the largest transactions first
+            transactions.sort(key=lambda x: x["amount"], reverse=True)
+            
+            return jsonify({
+                "transactions": transactions[:limit],
+                "count": len(transactions)
+            })
+        except Exception as e:
+            return jsonify({"error": f"Failed to load Fragmetric data: {str(e)}"}), 500
     else:
-        # Get transactions for both sales from static data
+        # Get transactions for all sales from static data and fragmetric.json
         transactions = []
         
         # Add Lit transactions
@@ -529,6 +575,23 @@ def live_feed():
                     "sale": "resolv"
                 }
                 transactions.append(tx)
+                
+        # Add Fragmetric transactions from fragmetric.json
+        try:
+            with open('fragmetric.json', 'r') as f:
+                fragmetric_data = json.load(f)
+                
+            for item in fragmetric_data:
+                tx = {
+                    "from": item["address"],
+                    "amount": item["usdc_balance"],
+                    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
+                    "timestamp": "0",  # Placeholder timestamp
+                    "sale": "fragmetric"
+                }
+                transactions.append(tx)
+        except Exception as e:
+            print(f"Error loading Fragmetric data for live feed: {str(e)}")
         
         # Sort by amount since we don't have real timestamps
         transactions.sort(key=lambda x: x["amount"], reverse=True)
@@ -545,6 +608,8 @@ def sale_deposits(sale_name):
         return lit_deposits()
     elif sale_name == 'resolv':
         return resolv_deposits()
+    elif sale_name == 'fragmetric':
+        return fragmetric_deposits()
     
     if sale_name in STATIC_DATA:
         return jsonify({
@@ -589,6 +654,13 @@ def sale_investors(sale_name):
 def sale_stats(sale_name):
     """Return key statistics for a sale including highest and lowest allocations"""
     
+    if sale_name == 'lit':
+        return lit_stats()
+    elif sale_name == 'resolv':
+        return resolv_stats()
+    elif sale_name == 'fragmetric':
+        return fragmetric_stats()
+    
     if sale_name in STATIC_DATA:
         # For all sales, use static data
         deposits_list = STATIC_DATA[sale_name]['deposits']
@@ -624,61 +696,95 @@ def sale_stats(sale_name):
     
     return jsonify(response_data)
 
+def get_all_individual_investments():
+    """Get all individual investments across all sales for accurate median calculation"""
+    all_investments = []
+    
+    # Get investments from static data
+    for sale_name, sale_data in STATIC_DATA.items():
+        if 'deposits' in sale_data:
+            for deposit in sale_data['deposits']:
+                all_investments.append(deposit["amount"])
+    
+    # Add Fragmetric data from fragmetric.json
+    try:
+        with open('fragmetric.json', 'r') as f:
+            fragmetric_data = json.load(f)
+            
+        for item in fragmetric_data:
+            all_investments.append(item['usdc_balance'])
+    except Exception as e:
+        print(f"Error loading Fragmetric data for investments: {str(e)}")
+    
+    return all_investments
+
 # Global stats endpoint with caching and improved integration
 @app.route('/api/global-stats', methods=['GET'])
 def global_stats():
     """Return aggregated statistics for all sales combined"""
-    # Initialize counters
-    total_investment = 0
-    total_investors_set = set()  # Use a set to prevent duplicate counting
-    all_investments = []
-    investor_sales_count = {}  # Track number of sales per investor
-    investor_total_investments = {}  # Track total investments per investor
-    
-    # Process all sales from static data
-    for sale_name, sale_data in STATIC_DATA.items():
-        if 'deposits' in sale_data:
-            for deposit in sale_data['deposits']:
-                address = deposit['address'].lower()
-                amount = deposit['amount']
-                
-                # Add to total investment
-                total_investment += amount
-                
-                # Add investor to set
-                total_investors_set.add(address)
-                
-                # Track individual investment (for median calculation)
-                all_investments.append(amount)
-                
-                # Track sales participation
-                if address not in investor_sales_count:
-                    investor_sales_count[address] = set()
-                    investor_total_investments[address] = 0
-                investor_sales_count[address].add(sale_name)
-                investor_total_investments[address] += amount
+    # Get all individual investments from all sales
+    investments = get_all_individual_investments()
     
     # Calculate statistics
-    total_investors = len(total_investors_set)
+    total_investment = sum(investments)
+    total_investors = len(investments)
     average_investment = total_investment / total_investors if total_investors > 0 else 0
     
-    # Find largest individual investment (across all investors)
-    largest_investment = max(investor_total_investments.values()) if investor_total_investments else 0
+    # Calculate median investment (true median from all individual investments)
+    median_investment = 0
+    if investments:
+        sorted_investments = sorted(investments)
+        mid = len(sorted_investments) // 2
+        median_investment = sorted_investments[mid] if len(sorted_investments) % 2 == 1 else (sorted_investments[mid-1] + sorted_investments[mid]) / 2
     
-    # Find median investment
-    if all_investments:
-        all_investments.sort()
-        mid = len(all_investments) // 2
-        median_investment = all_investments[mid] if len(all_investments) % 2 == 1 else (all_investments[mid-1] + all_investments[mid]) / 2
-    else:
-        median_investment = 0
+    # Calculate largest investment
+    largest_investment = max(investments) if investments else 0
+    
+    # For investors in multiple sales, we need to track unique addresses
+    investor_sales_count = {}
+    
+    # Collect unique investors and count their sales participation
+    for source, data in STATIC_DATA.items():
+        if not data or 'deposits' not in data:
+            continue
+        
+        for deposit in data['deposits']:
+            address = deposit.get('address', '').lower()
+            if not address:
+                continue
+                
+            if address not in investor_sales_count:
+                investor_sales_count[address] = set()
+            
+            investor_sales_count[address].add(source)
+    
+    # Try to add Fragmetric data if available
+    try:
+        with open('fragmetric.json', 'r') as f:
+            fragmetric_data = json.load(f)
+            for deposit in fragmetric_data:
+                address = deposit.get('address', '').lower()
+                if not address:
+                    continue
+                    
+                if address not in investor_sales_count:
+                    investor_sales_count[address] = set()
+                
+                investor_sales_count[address].add('fragmetric')
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"Error processing Fragmetric data: {e}")
+    
+    # Calculate total sales participation (sum of all investors across all sales)
+    total_sales_participation = sum(len(sales) for sales in investor_sales_count.values())
     
     # Calculate average sales per investor
-    total_sales_participation = sum(len(sales) for sales in investor_sales_count.values())
-    average_sales_per_investor = total_sales_participation / total_investors if total_investors > 0 else 0
+    average_sales_per_investor = total_sales_participation / len(investor_sales_count) if investor_sales_count else 0
     
     # Find investors in multiple sales
     multi_sale_investors = sum(1 for sales in investor_sales_count.values() if len(sales) > 1)
+    
+    # Log the values for debugging
+    print(f"API global_stats: total_investors={total_investors}, avg_investment={average_investment:.2f}, median={median_investment}")
     
     return jsonify({
         "total_investment": total_investment,
@@ -733,6 +839,36 @@ def top_investors():
                 # Update total invested amount
                 investors[address]['total_invested'] += amount
     
+    # Add Fragmetric data from fragmetric.json
+    try:
+        with open('fragmetric.json', 'r') as f:
+            fragmetric_data = json.load(f)
+            
+        for item in fragmetric_data:
+            address = item['address'].lower()
+            amount = item['usdc_balance']
+            
+            if address not in investors:
+                investors[address] = {
+                    'address': address,
+                    'total_invested': 0,
+                    'sales_participated': 0,
+                    'sales': {}
+                }
+            
+            # If this is the first time we're seeing this address for fragmetric
+            if 'fragmetric' not in investors[address]['sales']:
+                investors[address]['sales_participated'] += 1
+                investors[address]['sales']['fragmetric'] = amount
+            else:
+                # Add to existing amount for fragmetric
+                investors[address]['sales']['fragmetric'] += amount
+            
+            # Update total invested amount
+            investors[address]['total_invested'] += amount
+    except Exception as e:
+        print(f"Error loading Fragmetric data for top investors: {str(e)}")
+                
     # Convert to list for sorting
     investors_list = list(investors.values())
     
@@ -793,6 +929,23 @@ def investor_detail(address):
                         'amount': deposit['amount']
                     })
                     investor_data['total_invested'] += deposit['amount']
+    
+    # Add Fragmetric data from fragmetric.json
+    try:
+        with open('fragmetric.json', 'r') as f:
+            fragmetric_data = json.load(f)
+            
+        for item in fragmetric_data:
+            if item['address'].lower() == address:
+                # Add to sales list
+                investor_data['sales'].append({
+                    'sale': 'fragmetric',
+                    'amount': item['usdc_balance']
+                })
+                investor_data['total_invested'] += item['usdc_balance']
+                break  # Found the investor in fragmetric data, no need to continue
+    except Exception as e:
+        print(f"Error loading Fragmetric data for investor detail: {str(e)}")
     
     # Remove duplicates and aggregate by sale
     sales_dict = {}
@@ -868,5 +1021,169 @@ def get_investor_details(address):
         print(f"Error fetching investor details: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/fragmetric/data', methods=['GET'])
+def fragmetric_data():
+    """Get all data for Fragmetric from fragmetric.json file"""
+    try:
+        with open('fragmetric.json', 'r') as f:
+            fragmetric_data = json.load(f)
+            
+        # Transform the data to match the expected format
+        deposits = [{"address": item["address"], "amount": item["usdc_balance"]} for item in fragmetric_data]
+        total_investment = sum(deposit["amount"] for deposit in deposits)
+        
+        return jsonify({
+            "deposits": deposits,
+            "count": len(deposits),
+            "total": total_investment
+        })
+    except Exception as e:
+        return jsonify({"error": f"Failed to load Fragmetric data: {str(e)}"}), 500
+
+@app.route('/api/fragmetric/total-investment', methods=['GET'])
+def fragmetric_total_investment():
+    """Get total investment for Fragmetric sale"""
+    try:
+        with open('fragmetric.json', 'r') as f:
+            fragmetric_data = json.load(f)
+            
+        total_investment = sum(item["usdc_balance"] for item in fragmetric_data)
+        return jsonify({"total": total_investment})
+    except Exception as e:
+        return jsonify({"error": f"Failed to load Fragmetric data: {str(e)}"}), 500
+
+@app.route('/api/fragmetric/deposits', methods=['GET'])
+def fragmetric_deposits():
+    """Get all deposits for Fragmetric sale"""
+    try:
+        with open('fragmetric.json', 'r') as f:
+            fragmetric_data = json.load(f)
+            
+        # Transform the data to match the expected format
+        deposits = [{"address": item["address"], "amount": item["usdc_balance"]} for item in fragmetric_data]
+        
+        return jsonify({
+            "deposits": deposits,
+            "count": len(deposits)
+        })
+    except Exception as e:
+        return jsonify({"error": f"Failed to load Fragmetric data: {str(e)}"}), 500
+
+@app.route('/api/fragmetric/stats', methods=['GET'])
+def fragmetric_stats():
+    """Get statistics for Fragmetric sale"""
+    try:
+        with open('fragmetric.json', 'r') as f:
+            fragmetric_data = json.load(f)
+            
+        # Transform the data to match the expected format
+        deposits = [{"address": item["address"], "amount": item["usdc_balance"]} for item in fragmetric_data]
+        total_investment = sum(deposit["amount"] for deposit in deposits)
+        total_investors = len(deposits)
+        
+        if deposits:
+            highest_allocation = max(deposits, key=lambda x: x["amount"])
+            lowest_allocation = min(deposits, key=lambda x: x["amount"])
+            average_allocation = total_investment / total_investors if total_investors > 0 else 0
+            
+            # Top 5 investors
+            top_investors = sorted(deposits, key=lambda x: x["amount"], reverse=True)[:5]
+        else:
+            highest_allocation = {"address": "", "amount": 0}
+            lowest_allocation = {"address": "", "amount": 0}
+            average_allocation = 0
+            top_investors = []
+        
+        return jsonify({
+            "total_investment": total_investment,
+            "total_investors": total_investors,
+            "highest_allocation": highest_allocation,
+            "lowest_allocation": lowest_allocation,
+            "average_allocation": average_allocation,
+            "top_investors": top_investors
+        })
+    except Exception as e:
+        return jsonify({"error": f"Failed to load Fragmetric data: {str(e)}"}), 500
+
+@app.route('/fragmetric.json')
+def serve_fragmetric_json():
+    """Directly serve the fragmetric.json file"""
+    return send_from_directory('.', 'fragmetric.json')
+
+@app.route('/api/all-investments', methods=['GET'])
+def all_investments():
+    """Get all individual investments data for debugging statistics"""
+    investments = get_all_individual_investments()
+    
+    # Calculate statistics
+    investments.sort()
+    total = sum(investments)
+    count = len(investments)
+    
+    # Calculate median properly
+    if count > 0:
+        mid = count // 2
+        median = investments[mid] if count % 2 == 1 else (investments[mid-1] + investments[mid]) / 2
+    else:
+        median = 0
+        
+    average = total / count if count > 0 else 0
+    
+    response_data = {
+        "total_investment": total,
+        "count": count,
+        "average": average,
+        "median": median,
+        "min": min(investments) if investments else 0,
+        "max": max(investments) if investments else 0,
+        "investments": investments
+    }
+    
+    return jsonify(response_data)
+
+# New endpoint to get the original cased version of a Solana address
+@app.route('/api/original-address', methods=['GET'])
+def get_original_address():
+    """Get the original case-sensitive version of a Solana address"""
+    address = request.args.get('address', '').lower()
+    
+    # Check if we have this address in our map
+    if address in SOLANA_ADDRESS_MAP:
+        return jsonify({
+            'original_address': SOLANA_ADDRESS_MAP[address],
+            'found': True
+        })
+    
+    # If not found, check Fragmetric data again (in case it was updated)
+    try:
+        with open('fragmetric.json', 'r') as f:
+            fragmetric_data = json.load(f)
+        
+        for entry in fragmetric_data:
+            if 'address' in entry and entry['address'].lower() == address:
+                return jsonify({
+                    'original_address': entry['address'],
+                    'found': True
+                })
+    except Exception as e:
+        print(f"Error checking Fragmetric data for address: {str(e)}")
+    
+    # Return not found
+    return jsonify({
+        'found': False,
+        'message': 'Address not found in original case format'
+    })
+
 if __name__ == "__main__":
+    # Load static data before starting the server
+    print("Loading static data...")
+    try:
+        with open('static_data.json', 'r') as f:
+            STATIC_DATA = json.load(f)
+        print(f"Loaded static data for {len(STATIC_DATA)} sales")
+    except Exception as e:
+        print(f"Error loading static data: {str(e)}")
+        STATIC_DATA = {}
+        
+    # Start the server
     app.run(debug=True, host='0.0.0.0', port=5000)

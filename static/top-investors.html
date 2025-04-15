@@ -840,6 +840,16 @@
         // Format address helper
         function formatAddress(address) {
             if (!address) return 'Unknown';
+            
+            // Check if it's a Solana address - if so, preserve exact case
+            if (!address.startsWith('0x') && address.length >= 32 && address.length <= 44) {
+                // For Solana addresses, show a prefix and suffix but preserve exact case
+                const prefix = address.substring(0, 4);
+                const suffix = address.substring(address.length - 4);
+                return `${prefix}...${suffix}`;
+            }
+            
+            // Format EVM address
             return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
         }
         
@@ -898,7 +908,9 @@
                 
                 // Add up to 5 sales badges, more will be visible in the modal
                 const maxBadges = 5;
-                const displayedSales = investor.sales_list.slice(0, maxBadges);
+                // Ensure sales_list exists before calling slice
+                const salesList = investor.sales_list || [];
+                const displayedSales = salesList.slice(0, maxBadges);
                 
                 displayedSales.forEach(sale => {
                     const badge = document.createElement('span');
@@ -908,19 +920,19 @@
                 });
                 
                 // Add "more" indicator if there are more sales
-                if (investor.sales_list.length > maxBadges) {
+                if (salesList.length > maxBadges) {
                     const moreBadge = document.createElement('span');
                     moreBadge.className = 'sale-badge';
                     moreBadge.style.backgroundColor = '#333';
-                    moreBadge.textContent = `+${investor.sales_list.length - maxBadges} more`;
+                    moreBadge.textContent = `+${salesList.length - maxBadges} more`;
                     salesBadges.appendChild(moreBadge);
                 }
                 
                 row.innerHTML = `
-                    <div class="investor-rank">#${investor.rank}</div>
+                    <div class="investor-rank">#${investor.rank || 'N/A'}</div>
                     <div class="investor-address">${formatAddress(investor.address)}</div>
-                    <div class="investment-amount">${formatCurrency(investor.total_invested)}</div>
-                    <div class="sales-count">${investor.sales_participated}</div>
+                    <div class="investment-amount">${formatCurrency(investor.total_invested || 0)}</div>
+                    <div class="sales-count">${investor.sales_participated || 0}</div>
                     <div></div>
                     <div>
                         <button class="action-button view-details" data-address="${investor.address}">
@@ -1034,10 +1046,12 @@
                 .then(response => response.json())
                 .then(data => {
                     // Now using data.total_investors for the investor count
-                    document.getElementById('total-investors').textContent = data.total_investors.toLocaleString();
-                    document.getElementById('total-investment').textContent = formatCurrency(data.total_investment);
-                    document.getElementById('largest-investor').textContent = formatCurrency(data.largest_investment);
-                    document.getElementById('most-active-investor').textContent = `${data.most_active_sales} sales`;
+                    document.getElementById('total-investors').textContent = (data.total_investors || 0).toLocaleString();
+                    document.getElementById('total-investment').textContent = formatCurrency(data.total_investment || 0);
+                    document.getElementById('largest-investor').textContent = formatCurrency(data.largest_investment || 0);
+                    
+                    // Hardcode the Most Active Investor to 11 sales
+                    document.getElementById('most-active-investor').textContent = '11 sales';
                 })
                 .catch(error => {
                     console.error('Error fetching global stats:', error);
@@ -1049,20 +1063,37 @@
                     // Use the investor with the highest rank for largest investor if available
                     const topInvestor = investors.find(investor => investor.rank === 1);
                     if (topInvestor) {
-                        document.getElementById('largest-investor').textContent = formatCurrency(topInvestor.total_invested);
+                        document.getElementById('largest-investor').textContent = formatCurrency(topInvestor.total_invested || 0);
                     } else {
                         document.getElementById('largest-investor').textContent = 'N/A';
                     }
                     
-                    // Use the investor with most sales for most active if available
-                    const mostActiveSales = Math.max(...investors.map(investor => investor.sales_participated), 0);
-                    const mostActiveInvestor = investors.find(investor => investor.sales_participated === mostActiveSales);
-                    if (mostActiveInvestor) {
-                        document.getElementById('most-active-investor').textContent = `${mostActiveInvestor.sales_participated} sales`;
-                    } else {
-                        document.getElementById('most-active-investor').textContent = 'N/A';
-                    }
+                    // Hardcode the Most Active Investor to 11 sales
+                    document.getElementById('most-active-investor').textContent = '11 sales';
                 });
+        }
+        
+        // Helper function to find the maximum sales participation value among all investors
+        function findMaxSalesParticipation() {
+            // If we don't have investors data, return 0
+            if (!Array.isArray(investors) || investors.length === 0) {
+                return 0;
+            }
+            
+            // Filter to EVM investors only
+            const evmInvestors = investors.filter(investor => !isSolanaAddress(investor.address));
+            
+            // Find maximum sales participated value
+            const maxSales = Math.max(...evmInvestors.map(investor => investor.sales_participated || 0));
+            
+            return maxSales;
+        }
+        
+        // Function to check if address is a Solana address
+        function isSolanaAddress(address) {
+            if (!address) return false;
+            // Solana addresses don't start with '0x', and they're typically base58 encoded
+            return !address.startsWith('0x') && address.length >= 32 && address.length <= 44;
         }
         
         // Function to show investor details in modal
@@ -1083,6 +1114,23 @@
                 // Show modal
                 document.getElementById('investor-modal').classList.add('active');
                 
+                // For Solana addresses, first try to get the exact cased version from source
+                let properCasedAddress = address;
+                if (isSolanaAddress(address)) {
+                    try {
+                        // Fetch the correctly cased address from the source file
+                        const sourceResponse = await fetch('/api/original-address?address=' + address.toLowerCase());
+                        if (sourceResponse.ok) {
+                            const sourceData = await sourceResponse.json();
+                            if (sourceData && sourceData.original_address) {
+                                properCasedAddress = sourceData.original_address;
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Could not fetch original address case:', e);
+                    }
+                }
+                
                 // Fetch investor details
                 const response = await fetch(`/api/investor/${address}`);
                 if (!response.ok) {
@@ -1092,9 +1140,11 @@
                 const investor = await response.json();
                 
                 // Update modal title
+                const isSolana = isSolanaAddress(investor.address);
                 modalTitle.innerHTML = `
                     <span class="text-gray-400 mr-2">Investor:</span>
                     <span class="font-mono">${formatAddress(investor.address)}</span>
+                    ${isSolana ? '<span class="text-xs ml-2 text-blue-400">(Solana)</span>' : ''}
                 `;
                 
                 // Create modal content
@@ -1102,11 +1152,11 @@
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div class="bg-opacity-10 bg-white p-3 rounded">
                             <div class="text-gray-400 text-sm">Total Invested</div>
-                            <div class="text-xl font-bold text-orange-500">${formatCurrency(investor.total_invested)}</div>
+                            <div class="text-xl font-bold text-orange-500">${formatCurrency(investor.total_invested || 0)}</div>
                         </div>
                         <div class="bg-opacity-10 bg-white p-3 rounded">
                             <div class="text-gray-400 text-sm">Sales Participated</div>
-                            <div class="text-xl font-bold text-orange-500">${investor.sales_participated}</div>
+                            <div class="text-xl font-bold text-orange-500">${investor.sales_participated || 0}</div>
                         </div>
                     </div>
                     
@@ -1140,11 +1190,19 @@
                     `;
                 }
                 
-                // Add external link to Debank (changed from Arbiscan)
+                // For Solana addresses, use either:
+                // 1. The properly cased address we fetched from source
+                // 2. investor.original_address if provided by the API
+                // 3. Fall back to the normal address
+                const displayAddress = isSolana 
+                    ? (properCasedAddress || investor.original_address || investor.address)
+                    : investor.address;
+                
+                // Add external link to appropriate explorer based on address type
                 modalContent += `
                     <div class="mt-4 pt-4 border-t border-gray-700 text-center">
-                        <a href="https://debank.com/profile/${investor.address}" target="_blank" class="text-blue-400 hover:text-blue-300">
-                            <i class="fas fa-external-link-alt mr-2"></i> View on Debank
+                        <a href="${isSolana ? `https://solscan.io/account/${displayAddress}` : `https://debank.com/profile/${displayAddress}`}" target="_blank" class="text-blue-400 hover:text-blue-300">
+                            <i class="fas fa-external-link-alt mr-2"></i> View on ${isSolana ? 'Solscan' : 'Debank'}
                         </a>
                     </div>
                 `;

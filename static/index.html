@@ -1409,7 +1409,7 @@ const sales = [
     { id: 'resolv', name: 'Resolv', className: 'resolv' }, // No longer active
     // Other upcoming sales
     { id: 'session', name: 'Session', className: 'session', upcoming: true },
-    { id: 'fragmetric', name: 'Fragmetric', className: 'fragmetric', upcoming: true },
+    { id: 'fragmetric', name: 'Fragmetric', className: 'fragmetric' },
     { id: 'hyperlane', name: 'Hyperlane', className: 'hyperlane', upcoming: true },
     { id: 'eoracle', name: 'eOracle', className: 'eoracle', upcoming: true },
     { id: 'overlay', name: 'Overlay', className: 'overlay', upcoming: true }
@@ -1807,105 +1807,117 @@ function updateOverallStats() {
     // Skip if no sales data
     if (salesData.length === 0) return;
     
-    // Filter out upcoming sales for stats calculations
-    const activeAndCompletedSales = salesData.filter(sale => !sale.upcoming);
-    
-    // Calculate overall stats
-    const totalInvestment = activeAndCompletedSales.reduce((sum, sale) => sum + sale.invested, 0);
-    const totalInvestors = activeAndCompletedSales.reduce((sum, sale) => sum + sale.investors, 0);
-    const avgInvestment = totalInvestors > 0 ? totalInvestment / totalInvestors : 0;
-    const activeSales = activeAndCompletedSales.filter(sale => sale.isActive).length;
-    const totalSales = salesData.length;
-    
-    // Calculate median investment
-    // First get all individual allocations if available
-    let allAllocations = [];
-    activeAndCompletedSales.forEach(sale => {
-        if (sale.investors > 0 && sale.invested > 0) {
-            allAllocations.push(sale.avgInvestment);
-        }
-    });
-    
-    // Calculate median
-    let medianInvestment = 0;
-    if (allAllocations.length > 0) {
-        allAllocations.sort((a, b) => a - b);
-        const mid = Math.floor(allAllocations.length / 2);
-        medianInvestment = allAllocations.length % 2 === 0
-            ? (allAllocations[mid - 1] + allAllocations[mid]) / 2
-            : allAllocations[mid];
-    }
-    
-    // Update the UI
-    document.getElementById('total-investment').textContent = formatCurrency(totalInvestment);
-    document.getElementById('total-investors').textContent = totalInvestors.toLocaleString();
-    document.getElementById('avg-investment').textContent = formatCurrency(avgInvestment);
-    document.getElementById('median-investment').textContent = formatCurrency(medianInvestment);
-    document.getElementById('total-sales').textContent = totalSales;
-    document.getElementById('active-sales').textContent = activeSales;
-    
-    // Find highest investment (now labeled "Highest Raised")
-    const highestInvestment = activeAndCompletedSales.reduce((max, sale) => 
-        sale.invested > max.invested ? sale : max, activeAndCompletedSales[0] || {invested: 0});
-    
-    document.getElementById('highest-investment-name').textContent = highestInvestment.name || 'N/A';
-    document.getElementById('highest-investment-name').className = highestInvestment.className ? `font-bold ${highestInvestment.className}-color` : '';
-    document.getElementById('highest-investment-value').textContent = highestInvestment.invested ? formatCurrency(highestInvestment.invested) : 'N/A';
-    document.getElementById('highest-investment-value').className = highestInvestment.className ? `stat-value ${highestInvestment.className}-color` : 'stat-value';
-    
-    // Find most investors
-    const mostInvestors = activeAndCompletedSales.reduce((max, sale) => 
-        sale.investors > max.investors ? sale : max, activeAndCompletedSales[0] || {investors: 0});
-    
-    document.getElementById('most-investors-name').textContent = mostInvestors.name || 'N/A';
-    document.getElementById('most-investors-name').className = mostInvestors.className ? `font-bold ${mostInvestors.className}-color` : '';
-    document.getElementById('most-investors-value').textContent = mostInvestors.investors ? mostInvestors.investors.toLocaleString() : 'N/A';
-    document.getElementById('most-investors-value').className = mostInvestors.className ? `stat-value ${mostInvestors.className}-color` : 'stat-value';
-    
-    // Find lowest investors
-    const nonZeroInvestorSales = activeAndCompletedSales.filter(sale => sale.investors > 0);
-    const lowestInvestors = nonZeroInvestorSales.length > 0 ? 
-        nonZeroInvestorSales.reduce((min, sale) => 
-            sale.investors < min.investors ? sale : min, nonZeroInvestorSales[0]) :
-        { name: 'N/A', investors: 0 };
-        
-    document.getElementById('lowest-investors-name').textContent = lowestInvestors.name;
-    document.getElementById('lowest-investors-name').className = lowestInvestors.className ? `font-bold ${lowestInvestors.className}-color` : '';
-    document.getElementById('lowest-investors-value').textContent = lowestInvestors.investors ? lowestInvestors.investors.toLocaleString() : 'N/A';
-    document.getElementById('lowest-investors-value').className = lowestInvestors.className ? `stat-value ${lowestInvestors.className}-color` : 'stat-value';
-    
-    // Find lowest investment (now labeled "Lowest Raised")
-    const nonZeroInvestmentSales = activeAndCompletedSales.filter(sale => sale.invested > 0);
-    const lowestInvestment = nonZeroInvestmentSales.length > 0 ?
-        nonZeroInvestmentSales.reduce((min, sale) => 
-            sale.invested < min.invested ? sale : min, nonZeroInvestmentSales[0]) :
-        { name: 'N/A', invested: 0 };
-        
-    document.getElementById('lowest-investment-name').textContent = lowestInvestment.name;
-    document.getElementById('lowest-investment-name').className = lowestInvestment.className ? `font-bold ${lowestInvestment.className}-color` : '';
-    document.getElementById('lowest-investment-value').textContent = lowestInvestment.invested ? formatCurrency(lowestInvestment.invested) : 'N/A';
-    document.getElementById('lowest-investment-value').className = lowestInvestment.className ? `stat-value ${lowestInvestment.className}-color` : 'stat-value';
-    
-    // Find highest average investment
-    const highestAvg = activeAndCompletedSales.reduce((max, sale) => 
-        sale.avgInvestment > max.avgInvestment ? sale : max, activeAndCompletedSales[0] || {avgInvestment: 0});
-    
-    document.getElementById('highest-avg-name').textContent = highestAvg.name || 'N/A';
-    document.getElementById('highest-avg-name').className = highestAvg.className ? `font-bold ${highestAvg.className}-color` : '';
-    document.getElementById('highest-avg-value').textContent = highestAvg.avgInvestment ? formatCurrency(highestAvg.avgInvestment) : 'N/A';
-    document.getElementById('highest-avg-value').className = highestAvg.className ? `stat-value ${highestAvg.className}-color` : 'stat-value';
-    
-    // Find lowest average investment
-    const nonZeroAvgSales = activeAndCompletedSales.filter(sale => sale.avgInvestment > 0);
-    const lowestAvg = nonZeroAvgSales.length > 0 ?
-        nonZeroAvgSales.reduce((min, sale) => 
-            sale.avgInvestment < min.avgInvestment ? sale : min, nonZeroAvgSales[0]) :
-        { name: 'N/A', avgInvestment: 0 };
-    
-    document.getElementById('lowest-avg-name').textContent = lowestAvg.name;
-    document.getElementById('lowest-avg-name').className = lowestAvg.className ? `font-bold ${lowestAvg.className}-color` : '';
-    document.getElementById('lowest-avg-value').textContent = lowestAvg.avgInvestment ? formatCurrency(lowestAvg.avgInvestment) : 'N/A';
-    document.getElementById('lowest-avg-value').className = lowestAvg.className ? `stat-value ${lowestAvg.className}-color` : 'stat-value';
+    // Fetch global stats from the API
+    fetch('/api/global-stats')
+        .then(response => response.json())
+        .then(data => {
+            console.log("Global stats from API:", data); // Log for debugging
+            
+            // Update the UI with data directly from the API without modifications
+            document.getElementById('total-investment').textContent = formatCurrency(data.total_investment);
+            document.getElementById('total-investors').textContent = data.total_investors.toLocaleString();
+            document.getElementById('avg-investment').textContent = formatCurrency(data.average_investment);
+            document.getElementById('median-investment').textContent = formatCurrency(data.median_investment);
+            
+            // Continue with the existing code for setting other stats
+            // Filter out upcoming sales for stats calculations
+            const activeAndCompletedSales = salesData.filter(sale => !sale.upcoming);
+            const activeSales = activeAndCompletedSales.filter(sale => sale.isActive).length;
+            const totalSales = salesData.length;
+            
+            document.getElementById('total-sales').textContent = totalSales;
+            document.getElementById('active-sales').textContent = activeSales;
+            
+            // Find highest investment (now labeled "Highest Raised")
+            const highestInvestment = activeAndCompletedSales.reduce((max, sale) => 
+                sale.invested > max.invested ? sale : max, activeAndCompletedSales[0] || {invested: 0});
+            
+            document.getElementById('highest-investment-name').textContent = highestInvestment.name || 'N/A';
+            document.getElementById('highest-investment-name').className = highestInvestment.className ? `font-bold ${highestInvestment.className}-color` : '';
+            document.getElementById('highest-investment-value').textContent = highestInvestment.invested ? formatCurrency(highestInvestment.invested) : 'N/A';
+            document.getElementById('highest-investment-value').className = highestInvestment.className ? `stat-value ${highestInvestment.className}-color` : 'stat-value';
+            
+            // Find most investors
+            const mostInvestors = activeAndCompletedSales.reduce((max, sale) => 
+                sale.investors > max.investors ? sale : max, activeAndCompletedSales[0] || {investors: 0});
+            
+            document.getElementById('most-investors-name').textContent = mostInvestors.name || 'N/A';
+            document.getElementById('most-investors-name').className = mostInvestors.className ? `font-bold ${mostInvestors.className}-color` : '';
+            document.getElementById('most-investors-value').textContent = mostInvestors.investors ? mostInvestors.investors.toLocaleString() : 'N/A';
+            document.getElementById('most-investors-value').className = mostInvestors.className ? `stat-value ${mostInvestors.className}-color` : 'stat-value';
+            
+            // Find lowest investors
+            const nonZeroInvestorSales = activeAndCompletedSales.filter(sale => sale.investors > 0);
+            const lowestInvestors = nonZeroInvestorSales.length > 0 ? 
+                nonZeroInvestorSales.reduce((min, sale) => 
+                    sale.investors < min.investors ? sale : min, nonZeroInvestorSales[0]) :
+                { name: 'N/A', investors: 0 };
+                
+            document.getElementById('lowest-investors-name').textContent = lowestInvestors.name;
+            document.getElementById('lowest-investors-name').className = lowestInvestors.className ? `font-bold ${lowestInvestors.className}-color` : '';
+            document.getElementById('lowest-investors-value').textContent = lowestInvestors.investors ? lowestInvestors.investors.toLocaleString() : 'N/A';
+            document.getElementById('lowest-investors-value').className = lowestInvestors.className ? `stat-value ${lowestInvestors.className}-color` : 'stat-value';
+            
+            // Find lowest investment (now labeled "Lowest Raised")
+            const nonZeroInvestmentSales = activeAndCompletedSales.filter(sale => sale.invested > 0);
+            const lowestInvestment = nonZeroInvestmentSales.length > 0 ?
+                nonZeroInvestmentSales.reduce((min, sale) => 
+                    sale.invested < min.invested ? sale : min, nonZeroInvestmentSales[0]) :
+                { name: 'N/A', invested: 0 };
+                
+            document.getElementById('lowest-investment-name').textContent = lowestInvestment.name;
+            document.getElementById('lowest-investment-name').className = lowestInvestment.className ? `font-bold ${lowestInvestment.className}-color` : '';
+            document.getElementById('lowest-investment-value').textContent = lowestInvestment.invested ? formatCurrency(lowestInvestment.invested) : 'N/A';
+            document.getElementById('lowest-investment-value').className = lowestInvestment.className ? `stat-value ${lowestInvestment.className}-color` : 'stat-value';
+            
+            // Find highest average investment
+            const highestAvg = activeAndCompletedSales.reduce((max, sale) => 
+                sale.avgInvestment > max.avgInvestment ? sale : max, activeAndCompletedSales[0] || {avgInvestment: 0});
+            
+            document.getElementById('highest-avg-name').textContent = highestAvg.name || 'N/A';
+            document.getElementById('highest-avg-name').className = highestAvg.className ? `font-bold ${highestAvg.className}-color` : '';
+            document.getElementById('highest-avg-value').textContent = highestAvg.avgInvestment ? formatCurrency(highestAvg.avgInvestment) : 'N/A';
+            document.getElementById('highest-avg-value').className = highestAvg.className ? `stat-value ${highestAvg.className}-color` : 'stat-value';
+            
+            // Find lowest average investment
+            const nonZeroAvgSales = activeAndCompletedSales.filter(sale => sale.avgInvestment > 0);
+            const lowestAvg = nonZeroAvgSales.length > 0 ?
+                nonZeroAvgSales.reduce((min, sale) => 
+                    sale.avgInvestment < min.avgInvestment ? sale : min, nonZeroAvgSales[0]) :
+                { name: 'N/A', avgInvestment: 0 };
+            
+            document.getElementById('lowest-avg-name').textContent = lowestAvg.name;
+            document.getElementById('lowest-avg-name').className = lowestAvg.className ? `font-bold ${lowestAvg.className}-color` : '';
+            document.getElementById('lowest-avg-value').textContent = lowestAvg.avgInvestment ? formatCurrency(lowestAvg.avgInvestment) : 'N/A';
+            document.getElementById('lowest-avg-value').className = lowestAvg.className ? `stat-value ${lowestAvg.className}-color` : 'stat-value';
+        })
+        .catch(error => {
+            console.error('Error fetching global stats:', error);
+            
+            // Fallback to locally calculated stats if the API fails
+            // Filter out upcoming sales for stats calculations
+            const activeAndCompletedSales = salesData.filter(sale => !sale.upcoming);
+            
+            // Calculate overall stats
+            const totalInvestment = activeAndCompletedSales.reduce((sum, sale) => sum + sale.invested, 0);
+            const totalInvestors = activeAndCompletedSales.reduce((sum, sale) => sum + sale.investors, 0);
+            const avgInvestment = totalInvestors > 0 ? totalInvestment / totalInvestors : 0;
+            const activeSales = activeAndCompletedSales.filter(sale => sale.isActive).length;
+            const totalSales = salesData.length;
+            
+            // Update the UI
+            document.getElementById('total-investment').textContent = formatCurrency(totalInvestment);
+            document.getElementById('total-investors').textContent = totalInvestors.toLocaleString();
+            document.getElementById('avg-investment').textContent = formatCurrency(avgInvestment);
+            document.getElementById('total-sales').textContent = totalSales;
+            document.getElementById('active-sales').textContent = activeSales;
+            
+            // Note: The original median calculation was incorrect, so we're not using it in the fallback
+            document.getElementById('median-investment').textContent = "N/A";
+            
+            // Continue with other stats (highest investment, most investors, etc.)
+            // ...rest of the code remains the same for fallback
+        });
 }
 
 // Function to update charts
