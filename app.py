@@ -985,8 +985,9 @@ def get_investor_details(address):
                 if deposit['address'].lower() == address.lower():
                     investor_data['total_investment'] += deposit['amount']
         
-        # Get current token price from CoinGecko
+        # Get current token price directly without making an HTTP request
         try:
+            # Call CoinGecko API directly
             api_url = f"https://api.coingecko.com/api/v3/coins/silencio?x_cg_demo_api_key=CG-4Fnx2x1Ga65oHP6HufVGevXh"
             response = requests.get(api_url)
             
@@ -1071,39 +1072,83 @@ def fragmetric_deposits():
 
 @app.route('/api/fragmetric/stats', methods=['GET'])
 def fragmetric_stats():
-    """Get statistics for Fragmetric sale"""
-    try:
-        with open('fragmetric.json', 'r') as f:
-            fragmetric_data = json.load(f)
-            
-        # Transform the data to match the expected format
-        deposits = [{"address": item["address"], "amount": item["usdc_balance"]} for item in fragmetric_data]
-        total_investment = sum(deposit["amount"] for deposit in deposits)
-        total_investors = len(deposits)
+    # Check if we have the static data
+    if 'fragmetric' not in STATIC_DATA:
+        return jsonify({'error': 'No Fragmetric data available'}), 404
         
-        if deposits:
-            highest_allocation = max(deposits, key=lambda x: x["amount"])
-            lowest_allocation = min(deposits, key=lambda x: x["amount"])
-            average_allocation = total_investment / total_investors if total_investors > 0 else 0
-            
-            # Top 5 investors
-            top_investors = sorted(deposits, key=lambda x: x["amount"], reverse=True)[:5]
-        else:
-            highest_allocation = {"address": "", "amount": 0}
-            lowest_allocation = {"address": "", "amount": 0}
-            average_allocation = 0
-            top_investors = []
-        
+    # Calculate statistics from deposits
+    deposits = STATIC_DATA['fragmetric']['deposits']
+    
+    if not deposits:
         return jsonify({
-            "total_investment": total_investment,
-            "total_investors": total_investors,
-            "highest_allocation": highest_allocation,
-            "lowest_allocation": lowest_allocation,
-            "average_allocation": average_allocation,
-            "top_investors": top_investors
+            'average': 0,
+            'median': 0,
+            'highest': 0,
+            'lowest': 0,
+            'total': 0,
+            'num_investors': 0
         })
+    
+    # Extract amounts
+    amounts = [d['amount'] for d in deposits]
+    sorted_amounts = sorted(amounts)
+    
+    stats = {
+        'average': sum(amounts) / len(amounts),
+        'median': sorted_amounts[len(sorted_amounts) // 2] if len(sorted_amounts) % 2 != 0 else 
+                 (sorted_amounts[len(sorted_amounts) // 2 - 1] + sorted_amounts[len(sorted_amounts) // 2]) / 2,
+        'highest': max(amounts),
+        'lowest': min(amounts),
+        'total': sum(amounts),
+        'num_investors': len(amounts)
+    }
+    
+    return jsonify(stats)
+
+# Add a new endpoint to proxy CoinGecko API requests
+@app.route('/api/proxy/coingecko/coins/<coin_id>', methods=['GET'])
+def proxy_coingecko(coin_id):
+    try:
+        # Get CoinGecko API key from request or use the default one
+        api_key = request.args.get('api_key', 'CG-4Fnx2x1Ga65oHP6HufVGevXh')
+        
+        # Make the request to CoinGecko
+        api_url = f"https://api.coingecko.com/api/v3/coins/{coin_id}?x_cg_demo_api_key={api_key}"
+        response = requests.get(api_url)
+        
+        # Return the response data
+        return jsonify(response.json()), response.status_code
     except Exception as e:
-        return jsonify({"error": f"Failed to load Fragmetric data: {str(e)}"}), 500
+        print(f"Error proxying CoinGecko API request: {str(e)}")
+        return jsonify({'error': 'Failed to fetch data from CoinGecko API'}), 500
+
+# Add a simpler endpoint for just price data
+@app.route('/api/proxy/coingecko/price/<coin_id>', methods=['GET'])
+def proxy_coingecko_price(coin_id):
+    try:
+        # Get CoinGecko API key from request or use the default one
+        api_key = request.args.get('api_key', 'CG-4Fnx2x1Ga65oHP6HufVGevXh')
+        
+        # Make the request to CoinGecko
+        api_url = f"https://api.coingecko.com/api/v3/coins/{coin_id}?x_cg_demo_api_key={api_key}"
+        response = requests.get(api_url)
+        
+        if response.status_code != 200:
+            return jsonify({'error': 'Failed to fetch price data'}), response.status_code
+            
+        data = response.json()
+        
+        # Extract only the price-related data
+        price_data = {
+            'current_price': data.get('market_data', {}).get('current_price', {}).get('usd', 0),
+            'ath': data.get('market_data', {}).get('ath', {}).get('usd', 0),
+            'atl': data.get('market_data', {}).get('atl', {}).get('usd', 0)
+        }
+        
+        return jsonify(price_data)
+    except Exception as e:
+        print(f"Error proxying CoinGecko price API request: {str(e)}")
+        return jsonify({'error': 'Failed to fetch price data from CoinGecko API'}), 500
 
 @app.route('/fragmetric.json')
 def serve_fragmetric_json():

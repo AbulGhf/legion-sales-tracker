@@ -527,9 +527,9 @@
                 try {
                     setPriceData(prev => ({ ...prev, loading: true, error: null }));
                     
-                    // CoinGecko API endpoint
-                    const apiUrl = `https://api.coingecko.com/api/v3/coins/${FUEL_TOKEN_ID}?x_cg_demo_api_key=${COINGECKO_API_KEY}`;
-                    console.log("Fetching Fuel price data from:", apiUrl);
+                    // Use our proxy endpoint instead of calling CoinGecko directly
+                    const apiUrl = `/api/proxy/coingecko/price/${FUEL_TOKEN_ID}`;
+                    console.log("Fetching Fuel price data from proxy:", apiUrl);
                     const response = await fetch(apiUrl);
                     
                     if (!response.ok) {
@@ -539,22 +539,10 @@
                     const data = await response.json();
                     console.log("Received Fuel price data:", data);
                     
-                    // Extract price data with fallback values using safe property access
-                    let currentPrice = 0;
-                    let athPrice = 0;
-                    let lowestPrice = 0;
-                    
-                    if (data && data.market_data) {
-                        if (data.market_data.current_price && data.market_data.current_price.usd) {
-                            currentPrice = data.market_data.current_price.usd;
-                        }
-                        if (data.market_data.ath && data.market_data.ath.usd) {
-                            athPrice = data.market_data.ath.usd;
-                        }
-                        if (data.market_data.atl && data.market_data.atl.usd) {
-                            lowestPrice = data.market_data.atl.usd;
-                        }
-                    }
+                    // Extract price data directly from our simplified endpoint response
+                    let currentPrice = data.current_price || 0;
+                    let athPrice = data.ath || 0;
+                    let lowestPrice = data.atl || 0;
                     
                     const salePrice = 0.02; // Fixed sale price for Fuel
                     
@@ -592,7 +580,6 @@
                     updateElement('fuelATL', lowestPrice > 0 ? formatAmount(lowestPrice, true) : 'N/A');
                     updateElement('fuelROI', currentPrice > 0 ? `${currentRoi.toFixed(2)}%` : 'N/A');
                     updateElement('fuelATHROI', athPrice > 0 ? `${athRoi.toFixed(2)}%` : 'N/A');
-                    
                 } catch (err) {
                     console.error("Error fetching token price data:", err);
                     setPriceData(prev => ({

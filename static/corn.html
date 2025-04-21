@@ -521,9 +521,9 @@
                 try {
                     setPriceData(prev => ({ ...prev, loading: true, error: null }));
                     
-                    // CoinGecko API endpoint
-                    const apiUrl = `https://api.coingecko.com/api/v3/coins/${CORN_TOKEN_ID}?x_cg_demo_api_key=${COINGECKO_API_KEY}`;
-                    console.log("Fetching Corn price data from:", apiUrl);
+                    // Use our proxy endpoint instead of calling CoinGecko directly
+                    const apiUrl = `/api/proxy/coingecko/price/${CORN_TOKEN_ID}`;
+                    console.log("Fetching Corn price data from proxy:", apiUrl);
                     const response = await fetch(apiUrl);
                     
                     if (!response.ok) {
@@ -533,22 +533,10 @@
                     const data = await response.json();
                     console.log("Received Corn price data:", data);
                     
-                    // Extract price data with fallback values using safe property access
-                    let currentPrice = 0;
-                    let athPrice = 0;
-                    let lowestPrice = 0;
-                    
-                    if (data && data.market_data) {
-                        if (data.market_data.current_price && data.market_data.current_price.usd) {
-                            currentPrice = data.market_data.current_price.usd;
-                        }
-                        if (data.market_data.ath && data.market_data.ath.usd) {
-                            athPrice = data.market_data.ath.usd;
-                        }
-                        if (data.market_data.atl && data.market_data.atl.usd) {
-                            lowestPrice = data.market_data.atl.usd;
-                        }
-                    }
+                    // Extract price data directly from our simplified endpoint response
+                    let currentPrice = data.current_price || 0;
+                    let athPrice = data.ath || 0;
+                    let lowestPrice = data.atl || 0;
                     
                     const salePrice = 0.0714; // Fixed sale price for Corn
                     
@@ -559,7 +547,7 @@
                     // Update price data state
                     setPriceData({
                         salePrice,
-                        currentPrice,
+                        currentPrice, 
                         athPrice,
                         lowestPrice,
                         loading: false,
@@ -586,7 +574,6 @@
                     updateElement('cornATL', lowestPrice > 0 ? formatAmount(lowestPrice, true) : 'N/A');
                     updateElement('cornROI', currentPrice > 0 ? `${currentRoi.toFixed(2)}%` : 'N/A');
                     updateElement('cornATHROI', athPrice > 0 ? `${athRoi.toFixed(2)}%` : 'N/A');
-                    
                 } catch (err) {
                     console.error("Error fetching token price data:", err);
                     setPriceData(prev => ({
@@ -612,18 +599,18 @@
             // Fetch other token prices
             const fetchOtherTokenPrices = async () => {
                 try {
-                    // Fetch Fuel price
-                    const fuelResponse = await fetch('https://api.coingecko.com/api/v3/coins/fuel-network?x_cg_demo_api_key=' + COINGECKO_API_KEY);
+                    // Fetch Fuel price using proxy
+                    const fuelResponse = await fetch('/api/proxy/coingecko/price/fuel-network');
                     const fuelData = await fuelResponse.json();
-                    const fuelPrice = fuelData.market_data.current_price.usd;
+                    const fuelPrice = fuelData.current_price;
                     const fuelRoi = ((fuelPrice - 0.10) / 0.10) * 100;
                     document.getElementById('fuel-price').textContent = formatAmount(fuelPrice, true);
                     document.getElementById('fuel-roi').textContent = `${fuelRoi.toFixed(2)}%`;
 
-                    // Fetch Silencio price
-                    const silencioResponse = await fetch('https://api.coingecko.com/api/v3/coins/silencio?x_cg_demo_api_key=' + COINGECKO_API_KEY);
+                    // Fetch Silencio price using proxy
+                    const silencioResponse = await fetch('/api/proxy/coingecko/price/silencio');
                     const silencioData = await silencioResponse.json();
-                    const silencioPrice = silencioData.market_data.current_price.usd;
+                    const silencioPrice = silencioData.current_price;
                     const silencioRoi = ((silencioPrice - 0.10) / 0.10) * 100;
                     document.getElementById('silencio-price').textContent = formatAmount(silencioPrice, true);
                     document.getElementById('silencio-roi').textContent = `${silencioRoi.toFixed(2)}%`;

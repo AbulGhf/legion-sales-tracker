@@ -1509,21 +1509,25 @@ async function fetchTokenPrices() {
         
         if (ids.length === 0) return;
         
-        const idsString = ids.join(',');
-        const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${idsString}&vs_currencies=usd`);
+        // Use our server proxy for each token instead of calling CoinGecko API directly
+        const pricePromises = ids.map(id => 
+            fetch(`/api/proxy/coingecko/price/${id}`)
+                .then(response => response.ok ? response.json() : null)
+                .then(data => [id, data])
+        );
         
-        if (!response.ok) {
-            throw new Error('Failed to fetch token prices');
-        }
-        
-        const data = await response.json();
+        const results = await Promise.all(pricePromises);
         
         // Update marketPrices object
-        Object.entries(coinGeckoIds).forEach(([saleId, coinId]) => {
-            if (data[coinId] && data[coinId].usd) {
-                marketPrices[saleId] = data[coinId].usd;
+        for (const [coinId, data] of results) {
+            if (data && data.current_price) {
+                // Find the sale ID for this coin ID
+                const saleId = Object.keys(coinGeckoIds).find(key => coinGeckoIds[key] === coinId);
+                if (saleId) {
+                    marketPrices[saleId] = data.current_price;
+                }
             }
-        });
+        }
         
         // Update the table with new prices
         updateTable();
