@@ -6,7 +6,7 @@ app = Flask(__name__, static_folder='static')
 # List of all sales
 SALES = [
     'almanak', 'giza', 'skate', 'pulse', 'fuel', 'electron', 'nil', 'corn',
-    'enclave', 'silencio', 'lit', 'resolv', 'session', 'fragmetric', 'hyperlane',
+    'enclave', 'silencio', 'lit', 'resolv', 'session', 'fragmetric',
     'eoracle', 'overlay'
 ]
 

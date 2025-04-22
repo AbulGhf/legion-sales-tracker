@@ -3,20 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giza Legion Sale Tracker</title>
+    <title>Session Legion Sale Tracker</title>
     <!-- Load React -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
     <!-- Load Tailwind -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <!-- Load Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         /* Basic styles */
         body {
-            background-color: #181818;
-            background-image: linear-gradient(to bottom, #222222, #181818);
+            background-color: #0f1723;
+            background-image: linear-gradient(to bottom, #0f1723, #091218);
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Session color */
+        .neon-color {
+            color: #24f2d2;
         }
         
         /* Main container */
@@ -26,47 +33,32 @@
             padding: 20px;
         }
         
-        /* Back button */
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            transition: background-color 0.2s;
-        }
-        
-        .back-button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Header */
+        /* Header card */
         .header-card {
-            background-color: #181818;
+            background: linear-gradient(90deg, #18a692 0%, #24f2d2 100%);
             border-radius: 8px;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 253, 240, 0.15);
+            border: 1px solid rgba(36, 242, 210, 0.15);
+            box-shadow: 0 4px 12px rgba(36, 242, 210, 0.15);
         }
         
         .header-title {
             font-size: 2rem;
             font-weight: bold;
-            color: #fffdf0;
+            color: white;
         }
         
         /* Cards */
         .card {
-            background-color: #121827;
+            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
             border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(36, 242, 210, 0.1);
             overflow: hidden;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 253, 240, 0.15);
         }
         
         .card-title {
@@ -84,11 +76,11 @@
         .amount-display {
             font-size: 2rem;
             font-weight: bold;
-            color: #fffdf0;
+            color: #24f2d2;
             margin: 10px 0;
         }
         
-        /* Stats box */
+        /* Stats section */
         .stats-section {
             margin-top: 20px;
         }
@@ -97,24 +89,30 @@
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .stats-card {
-            background-color: #121827;
-            border-left: 4px solid #fffdf0;
-            padding: 15px;
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            border-left: 4px solid #24f2d2;
             margin-bottom: 10px;
         }
         
         .stats-label {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: #888;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
         }
         
         .stats-value {
-            font-size: 1.2rem;
+            color: #24f2d2;
+            font-size: 1.25rem;
             font-weight: bold;
-            color: #fffdf0;
         }
         
         /* Table */
@@ -131,7 +129,7 @@
         }
         
         .table-header {
-            background-color: #222222;
+            background-color: rgba(36, 242, 210, 0.8);
             padding: 15px;
             text-align: left;
             font-weight: bold;
@@ -139,7 +137,8 @@
         
         .table-header th {
             padding: 12px 15px;
-            border-bottom: 1px solid rgba(255, 253, 240, 0.1);
+            border-bottom: 1px solid rgba(36, 242, 210, 0.1);
+            color: #0f1723;
         }
         
         .table-header th:first-child {
@@ -152,11 +151,11 @@
         
         .table-row td {
             padding: 12px 15px;
-            border-bottom: 1px solid rgba(255, 253, 240, 0.05);
+            border-bottom: 1px solid rgba(36, 242, 210, 0.05);
         }
         
         .table-row:nth-child(odd) {
-            background-color: rgba(32, 32, 32, 0.6);
+            background-color: rgba(30, 30, 30, 0.6);
         }
         
         .table-row:nth-child(even) {
@@ -164,7 +163,7 @@
         }
         
         .table-row:hover {
-            background-color: rgba(50, 50, 50, 0.8);
+            background-color: rgba(36, 242, 210, 0.2);
         }
         
         /* Rank badge */
@@ -174,8 +173,8 @@
             justify-content: center;
             width: 28px;
             height: 28px;
-            background-color: #fffdf0;
-            color: #181818;
+            background-color: #24f2d2;
+            color: #0f1723;
             font-weight: bold;
             border-radius: 50%;
         }
@@ -183,7 +182,13 @@
         /* Address */
         .address-cell {
             font-family: monospace;
-            color: #fffdf0;
+            color: #fff;
+        }
+        
+        .address-cell a {
+            color: #24f2d2;
+            text-decoration: none;
+            cursor: pointer;
         }
         
         .address-cell a:hover {
@@ -200,8 +205,8 @@
         }
         
         .pagination-button {
-            background-color: #fffdf0;
-            color: #181818;
+            background-color: #24f2d2;
+            color: #0f1723;
             border: none;
             padding: 8px 16px;
             border-radius: 4px;
@@ -210,15 +215,16 @@
         }
         
         .pagination-button:disabled {
-            background-color: #444444;
+            background-color: #1a3e38;
             color: #aaaaaa;
             cursor: not-allowed;
         }
         
         .pagination-info {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(36, 242, 210, 0.1);
             padding: 8px 12px;
             border-radius: 4px;
+            color: #24f2d2;
         }
         
         /* Investor Modal Styles */
@@ -236,7 +242,7 @@
         }
 
         .investor-modal-content {
-            background-color: #1a1a1a;
+            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
             border-radius: 8px;
             padding: 2rem;
             position: relative;
@@ -244,7 +250,8 @@
             max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(36, 242, 210, 0.15);
         }
 
         .investor-modal-close {
@@ -258,7 +265,7 @@
         }
 
         .investor-modal-close:hover {
-            color: #fff;
+            color: #24f2d2;
         }
 
         .investor-details {
@@ -268,7 +275,7 @@
         .investor-details h2 {
             font-size: 1.5rem;
             margin-bottom: 1.5rem;
-            color: #fff;
+            color: #24f2d2;
         }
 
         .investor-stats {
@@ -279,16 +286,17 @@
         }
 
         .investor-stat {
-            background-color: #2a2a2a;
+            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
             padding: 1rem;
             border-radius: 6px;
             text-align: center;
+            border: 1px solid rgba(36, 242, 210, 0.1);
         }
 
         .investor-stat-value {
             font-size: 1.25rem;
             font-weight: bold;
-            color: #fff;
+            color: #24f2d2;
             margin-bottom: 0.5rem;
         }
 
@@ -297,28 +305,17 @@
             font-size: 0.875rem;
         }
 
-        /* Update address cell to use handleInvestorClick */
-        .address-cell a {
-            color: #3b82f6;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .address-cell a:hover {
-            text-decoration: underline;
-        }
-
         /* Sales table in investor modal */
         .sales-table-container {
             max-height: 300px;
             overflow-y: auto;
             margin-top: 1rem;
-            border: 1px solid rgba(255, 253, 240, 0.1);
+            border: 1px solid rgba(36, 242, 210, 0.1);
             border-radius: 6px;
         }
 
-        .giza-sale {
-            background-color: rgba(255, 253, 240, 0.1) !important;
+        .session-sale {
+            background-color: rgba(36, 242, 210, 0.1) !important;
         }
 
         /* Sale type badge */
@@ -330,14 +327,55 @@
             font-weight: bold;
         }
 
-        .sale-badge.giza {
-            background-color: #fffdf0;
-            color: #121827;
+        .sale-badge.session {
+            background-color: #24f2d2;
+            color: #0f1723;
         }
 
         .sale-badge.other {
-            background-color: #2a2a2a;
-            color: #fffdf0;
+            background-color: #1d1d28;
+            color: #fff;
+        }
+        
+        /* Back to dashboard button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(145deg, #151a21 0%, #1c222a 100%);
+            border: 1px solid rgba(36, 242, 210, 0.2);
+            color: #24f2d2;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .back-button:hover {
+            background: linear-gradient(145deg, #1c222a 0%, #232a33 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+        }
+        
+        .back-icon {
+            margin-right: 8px;
+        }
+        
+        /* Loading animation */
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #24f2d2;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -348,125 +386,104 @@
     <!-- React app script -->
     <script type="text/babel">
         // Main app component
-        function GizaTracker() {
+        function SessionTracker() {
             // State hooks
-            const [deposits, setDeposits] = React.useState([]);
-            const [totalInvestment, setTotalInvestment] = React.useState(0);
+            const [stats, setStats] = React.useState({
+                total_investment: 0,
+                investor_count: 0,
+                average_investment: 0,
+                median_investment: 0,
+                largest_investment: 0,
+                smallest_investment: 0,
+                transaction_count: 0
+            });
+            const [investors, setInvestors] = React.useState([]);
+            const [transactions, setTransactions] = React.useState([]);
             const [loading, setLoading] = React.useState(true);
             const [error, setError] = React.useState(null);
             const [sortOrder, setSortOrder] = React.useState('desc');
             const [currentPage, setCurrentPage] = React.useState(1);
-            const [stats, setStats] = React.useState({
-                average: 0,
-                median: 0,
-                highest: 0,
-                lowest: 0
-            });
+            const [totalPages, setTotalPages] = React.useState(1);
             
             // Add investor modal state
             const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [showModal, setShowModal] = React.useState(false);
             const [investorLoading, setInvestorLoading] = React.useState(false);
             
-            // Constants
-            const depositsPerPage = 10;
-            
-            // Function to handle back navigation
-            const handleBack = () => {
-                // Go to dashboard
-                window.location.href = '/dashboard';
-            };
-            
-            // Fetch data on component mount
-            React.useEffect(() => {
-                fetchData();
-            }, []);
-            
-            // Function to fetch data from API
-            const fetchData = async () => {
-                try {
-                    setLoading(true);
-                    
-                    // Fetch total investment
-                    const totalRes = await fetch('/api/giza/total-investment');
-                    if (!totalRes.ok) {
-                        throw new Error('Failed to fetch total investment');
-                    }
-                    const totalData = await totalRes.json();
-                    setTotalInvestment(totalData.total);
-                    
-                    // Fetch deposits
-                    const depositsRes = await fetch('/api/giza/deposits');
-                    if (!depositsRes.ok) {
-                        throw new Error('Failed to fetch deposits');
-                    }
-                    const depositsData = await depositsRes.json();
-                    setDeposits(depositsData.deposits || []);
-                    
-                    // Calculate statistics
-                    if (depositsData.deposits && depositsData.deposits.length > 0) {
-                        const amounts = depositsData.deposits.map(d => d.amount);
-                        const sortedAmounts = [...amounts].sort((a, b) => a - b);
-                        
-                        setStats({
-                            average: amounts.reduce((a, b) => a + b, 0) / amounts.length,
-                            median: sortedAmounts.length % 2 === 0 
-                                ? (sortedAmounts[sortedAmounts.length/2 - 1] + sortedAmounts[sortedAmounts.length/2]) / 2 
-                                : sortedAmounts[Math.floor(sortedAmounts.length/2)],
-                            highest: Math.max(...amounts),
-                            lowest: Math.min(...amounts)
-                        });
-                    }
-                    
-                    setLoading(false);
-                } catch (err) {
-                    console.error("Error fetching data:", err);
-                    setError(err.message);
-                    setLoading(false);
-                }
-            };
-            
-            // Format date to a readable format
-            const formatDate = (dateString) => {
-                const options = { year: 'numeric', month: 'short', day: 'numeric' };
-                return new Date(dateString).toLocaleDateString(undefined, options);
-            };
-            
-            // Function to format currency
-            const formatAmount = (amount) => {
-                return amount.toLocaleString('en-US', {
+            // Format currency
+            const formatCurrency = (amount) => {
+                return new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
-                });
+                }).format(amount);
             };
             
-            // Format wallet address to shorter format
+            // Format crypto amount
+            const formatCrypto = (amount) => {
+                return new Intl.NumberFormat('en-US', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2
+                }).format(amount);
+            };
+            
+            // Format address
             const formatAddress = (address) => {
-                if (!address) return '';
-                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+                if (!address) return 'Unknown';
+                return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
             };
             
-            // Sort deposits based on current sort order
-            const sortedDeposits = React.useMemo(() => {
-                return [...deposits].sort((a, b) => {
-                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
-                });
-            }, [deposits, sortOrder]);
+            // Format time ago
+            const timeAgo = (timestamp) => {
+                if (!timestamp) return 'Unknown time';
+                
+                const now = new Date();
+                const txDate = new Date(timestamp);
+                const seconds = Math.floor((now - txDate) / 1000);
+                
+                if (seconds < 60) return `${seconds} seconds ago`;
+                const minutes = Math.floor(seconds / 60);
+                if (minutes < 60) return `${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+                const hours = Math.floor(minutes / 60);
+                if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+                const days = Math.floor(hours / 24);
+                return `${days} day${days === 1 ? '' : 's'} ago`;
+            };
             
             // Toggle sort order
             const toggleSortOrder = () => {
                 setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
             };
             
-            // Pagination calculations
-            const indexOfLastDeposit = currentPage * depositsPerPage;
-            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
-            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
-            const totalPages = Math.max(1, Math.ceil(deposits.length / depositsPerPage));
+            // Fetch data
+            const fetchData = async () => {
+                setLoading(true);
+                try {
+                    // Fetch stats
+                    const statsResponse = await fetch(`/api/session/stats`);
+                    const statsData = await statsResponse.json();
+                    setStats(statsData);
+                    
+                    // Fetch investors with pagination
+                    const investorsResponse = await fetch(`/api/session/investors?page=${currentPage}&limit=10`);
+                    const investorsData = await investorsResponse.json();
+                    setInvestors(investorsData.investors || []);
+                    setTotalPages(investorsData.total_pages || 1);
+                    
+                    // Fetch recent transactions
+                    const txResponse = await fetch(`/api/live-feed?sale=session&limit=5`);
+                    const txData = await txResponse.json();
+                    setTransactions(txData.transactions || []);
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    setError(error.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
             
-            // Add handleInvestorClick function
+            // Handle investor click to show modal
             const handleInvestorClick = async (address) => {
                 try {
                     setInvestorLoading(true);
@@ -497,16 +514,16 @@
                         throw new Error('No sales found for this address');
                     }
 
-                    // Calculate Giza sales for stats
-                    const gizaSales = allSales.filter(sale => sale.sale.toLowerCase() === 'giza');
-                    const gizaTotal = gizaSales.reduce((sum, sale) => sum + sale.amount, 0);
+                    // Calculate Session sales for stats
+                    const sessionSales = allSales.filter(sale => sale.sale.toLowerCase() === 'session');
+                    const sessionTotal = sessionSales.reduce((sum, sale) => sum + sale.amount, 0);
 
                     setSelectedInvestor({
                         address,
                         total_invested: allSales.reduce((sum, sale) => sum + sale.amount, 0),
-                        giza_total: gizaTotal,
+                        session_total: sessionTotal,
                         sales_participated: allSales.length,
-                        giza_sales: gizaSales.length,
+                        session_sales: sessionSales.length,
                         sales: allSales
                     });
                 } catch (error) {
@@ -516,20 +533,40 @@
                     setInvestorLoading(false);
                 }
             };
-
-            // Add closeModal function
+            
+            // Close modal
             const closeModal = () => {
                 setShowModal(false);
                 setSelectedInvestor(null);
             };
             
-            // Show loading state
-            if (loading) {
+            // Handle page change
+            const handlePageChange = (newPage) => {
+                setCurrentPage(newPage);
+            };
+            
+            // Fetch data on load and when page changes
+            React.useEffect(() => {
+                fetchData();
+                
+                // Refresh data every 30 seconds
+                const interval = setInterval(fetchData, 30000);
+                return () => clearInterval(interval);
+            }, [currentPage]);
+            
+            // Sort investors based on current sort order
+            const sortedInvestors = React.useMemo(() => {
+                return [...investors].sort((a, b) => {
+                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
+                });
+            }, [investors, sortOrder]);
+            
+            if (loading && !stats.total_investment) {
                 return (
                     <div className="flex items-center justify-center h-screen">
                         <div className="text-center p-8 card max-w-md">
-                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                            <p className="mb-6">Loading Giza Sale Data...</p>
+                            <div className="loading-spinner"></div>
+                            <p className="mb-6">Loading Session Sale Data...</p>
                         </div>
                     </div>
                 );
@@ -553,64 +590,76 @@
                 );
             }
             
-            // Main component render
             return (
                 <div className="main-container">
-                    {/* Back to Home Button */}
-                    <a href="/dashboard" className="back-button">
-                        <i className="fas fa-arrow-left mr-2"></i>
+                    {/* Back to Dashboard Button */}
+                    <a href="/" className="back-button">
+                        <i className="fas fa-arrow-left back-icon"></i>
                         Back to Dashboard
                     </a>
                     
                     {/* Header */}
                     <div className="header-card">
-                        <div className="header-title">Giza</div>
-                        <img src="giza.jpg" alt="Giza Logo" className="h-16" />
+                        <div>
+                            <div className="header-title">Session Sale Tracker</div>
+                            <div>Real-time fundraising statistics for Session</div>
+                        </div>
+                        <img src="session.png" alt="Session Logo" style="height: 60px;" />
                     </div>
                     
                     {/* Main Content Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* Left Column - Stats */}
                         <div className="md:col-span-1">
-                            {/* Total USDC Card */}
+                            {/* Total Investment Card */}
                             <div className="card p-6 text-center">
                                 <div className="card-title">Total USDC Invested</div>
-                                <div className="amount-display">{formatAmount(totalInvestment)}</div>
-                                <div className="text-gray-400 text-sm">{deposits.length} unique addresses</div>
+                                <div className="amount-display">{formatCurrency(stats.total_investment || 0)}</div>
+                                <div className="text-gray-400 text-sm">{stats.investor_count || 0} unique addresses</div>
                             </div>
                             
                             {/* Stats section */}
                             <div className="stats-section">
-                                <div className="stats-title">Investment Stats</div>
+                                <div className="stats-title">
+                                    <span>Investment Stats</span>
+                                    <i className="fas fa-chart-bar"></i>
+                                </div>
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Average</div>
-                                    <div className="stats-value">{formatAmount(stats.average)}</div>
+                                    <div className="stats-value">{formatCurrency(stats.average_investment || 0)}</div>
                                 </div>
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Median</div>
-                                    <div className="stats-value">{formatAmount(stats.median)}</div>
+                                    <div className="stats-value">{formatCurrency(stats.median_investment || 0)}</div>
                                 </div>
                                 
                                 <div className="stats-card">
-                                    <div className="stats-label">Highest</div>
-                                    <div className="stats-value">{formatAmount(stats.highest)}</div>
+                                    <div className="stats-label">Largest</div>
+                                    <div className="stats-value">{formatCurrency(stats.largest_investment || 0)}</div>
                                 </div>
                                 
                                 <div className="stats-card">
-                                    <div className="stats-label">Lowest</div>
-                                    <div className="stats-value">{formatAmount(stats.lowest)}</div>
+                                    <div className="stats-label">Smallest</div>
+                                    <div className="stats-value">{formatCurrency(stats.smallest_investment || 0)}</div>
+                                </div>
+                                
+                                <div className="stats-card">
+                                    <div className="stats-label">Total Transactions</div>
+                                    <div className="stats-value">{stats.transaction_count || 0}</div>
                                 </div>
                             </div>
                         </div>
                         
-                        {/* Right Column - Investors Table */}
+                        {/* Right Column - Top Investors and Transactions */}
                         <div className="md:col-span-2">
-                            <div className="card">
-                                <div className="p-4 border-b border-gray-800">
-                                    <div className="card-title">Top Investors</div>
-                                    <div className="card-subtitle">Ranked by investment amount</div>
+                            <div className="card mb-6">
+                                <div className="p-4 border-b border-gray-700">
+                                    <div className="stats-title">
+                                        <span>Top Investors</span>
+                                        <i className="fas fa-trophy"></i>
+                                    </div>
                                 </div>
                                 
                                 <div className="table-container">
@@ -626,13 +675,15 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {currentDeposits.map((deposit, index) => (
-                                                <tr key={deposit.address} className="table-row">
+                                            {sortedInvestors.map((investor, index) => (
+                                                <tr key={investor.address} className="table-row">
                                                     <td>
-                                                        {indexOfFirstDeposit + index + 1 <= 3 ? (
-                                                            <span className="rank-badge">{indexOfFirstDeposit + index + 1}</span>
+                                                        {(currentPage - 1) * 10 + index + 1 <= 3 ? (
+                                                            <span className="rank-badge">
+                                                                {(currentPage - 1) * 10 + index + 1}
+                                                            </span>
                                                         ) : (
-                                                            <span>#{indexOfFirstDeposit + index + 1}</span>
+                                                            <span>#{(currentPage - 1) * 10 + index + 1}</span>
                                                         )}
                                                     </td>
                                                     <td className="address-cell">
@@ -640,49 +691,54 @@
                                                             href="#"
                                                             onClick={(e) => {
                                                                 e.preventDefault();
-                                                                handleInvestorClick(deposit.address);
+                                                                handleInvestorClick(investor.address);
                                                             }}
-                                                            title={deposit.address}
+                                                            title={investor.address}
                                                         >
-                                                            {formatAddress(deposit.address)}
+                                                            {formatAddress(investor.address)}
                                                         </a>
                                                     </td>
-                                                    <td className="text-right font-mono">
-                                                        {formatAmount(deposit.amount)}
-                                                    </td>
+                                                    <td>{formatCurrency(investor.amount)}</td>
                                                     <td className="text-right">
-                                                        {((deposit.amount / totalInvestment) * 100).toFixed(2)}%
+                                                        {((investor.amount / stats.total_investment) * 100).toFixed(2)}%
                                                     </td>
                                                 </tr>
                                             ))}
+                                            {investors.length === 0 && (
+                                                <tr className="table-row">
+                                                    <td colSpan="4" className="text-center py-4">
+                                                        No investors data available yet
+                                                    </td>
+                                                </tr>
+                                            )}
                                         </tbody>
                                     </table>
-                                </div>
-                                
-                                {/* Pagination */}
-                                {totalPages > 1 && (
-                                    <div className="pagination">
-                                        <button
-                                            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                                            disabled={currentPage === 1}
-                                            className="pagination-button"
-                                        >
-                                            Previous
-                                        </button>
-                                        
-                                        <div className="pagination-info">
-                                            {currentPage} of {totalPages}
+                                    
+                                    {/* Pagination */}
+                                    {totalPages > 1 && (
+                                        <div className="pagination">
+                                            <button 
+                                                className="pagination-button" 
+                                                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                                                disabled={currentPage === 1}
+                                            >
+                                                Previous
+                                            </button>
+                                            
+                                            <div className="pagination-info">
+                                                {currentPage} of {totalPages}
+                                            </div>
+                                            
+                                            <button 
+                                                className="pagination-button" 
+                                                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                                                disabled={currentPage === totalPages}
+                                            >
+                                                Next
+                                            </button>
                                         </div>
-                                        
-                                        <button
-                                            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-                                            disabled={currentPage === totalPages}
-                                            className="pagination-button"
-                                        >
-                                            Next
-                                        </button>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -696,7 +752,7 @@
                                     <h2>Investor Details</h2>
                                     {investorLoading && (
                                         <div className="flex items-center justify-center py-8">
-                                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                                            <div className="loading-spinner"></div>
                                         </div>
                                     )}
                                     {!investorLoading && selectedInvestor && (
@@ -707,11 +763,11 @@
                                             </div>
                                             <div className="investor-stats">
                                                 <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.giza_total)}</div>
-                                                    <div className="investor-stat-label">Giza Investment</div>
+                                                    <div className="investor-stat-value">{formatCurrency(selectedInvestor.session_total)}</div>
+                                                    <div className="investor-stat-label">Session Investment</div>
                                                 </div>
                                                 <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                                    <div className="investor-stat-value">{formatCurrency(selectedInvestor.total_invested)}</div>
                                                     <div className="investor-stat-label">Total Invested (All Sales)</div>
                                                 </div>
                                             </div>
@@ -729,13 +785,13 @@
                                                         </thead>
                                                         <tbody>
                                                             {selectedInvestor.sales.map((sale, index) => (
-                                                                <tr key={index} className={`table-row ${sale.sale.toLowerCase() === 'giza' ? 'giza-sale' : ''}`}>
+                                                                <tr key={index} className={`table-row ${sale.sale.toLowerCase() === 'session' ? 'session-sale' : ''}`}>
                                                                     <td>
-                                                                        <span className={`sale-badge ${sale.sale.toLowerCase() === 'giza' ? 'giza' : 'other'}`}>
-                                                                            {sale.sale.toLowerCase() === 'giza' ? '★ ' : ''}{sale.sale.toUpperCase()}
+                                                                        <span className={`sale-badge ${sale.sale.toLowerCase() === 'session' ? 'session' : 'other'}`}>
+                                                                            {sale.sale.toLowerCase() === 'session' ? '★ ' : ''}{sale.sale.toUpperCase()}
                                                                         </span>
                                                                     </td>
-                                                                    <td>{formatAmount(sale.amount)}</td>
+                                                                    <td>{formatCurrency(sale.amount)}</td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>
@@ -757,8 +813,8 @@
             );
         }
         
-        // Render the app to the DOM
-        ReactDOM.render(<GizaTracker />, document.getElementById('app'));
+        // Render the app
+        ReactDOM.render(<SessionTracker />, document.getElementById('app'));
     </script>
 </body>
-</html>
+</html> 

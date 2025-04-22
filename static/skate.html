@@ -447,7 +447,7 @@
                     setShowModal(true);
                     setSelectedInvestor(null);
                     
-                    const response = await fetch(`/api/skate/investor/${address}`);
+                    const response = await fetch(`/api/investor/${address}`);
                     if (!response.ok) {
                         throw new Error('Failed to fetch investor details');
                     }

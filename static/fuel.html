@@ -434,6 +434,8 @@
                 currentPrice: 0,
                 athPrice: 0,
                 lowestPrice: 0,
+                currentRoi: 0,
+                athRoi: 0,
                 loading: true,
                 error: null
             });
@@ -556,30 +558,11 @@
                         currentPrice,
                         athPrice,
                         lowestPrice,
+                        currentRoi,
+                        athRoi,
                         loading: false,
                         error: null
                     });
-                    
-                    // Update DOM elements with error handling
-                    const updateElement = (id, value) => {
-                        const element = document.getElementById(id);
-                        if (element) {
-                            element.textContent = value;
-                            if (id.includes('ROI')) {
-                                const roiValue = parseFloat(value);
-                                if (!isNaN(roiValue)) {
-                                    element.className = `font-bold ${roiValue >= 0 ? 'profit-positive' : 'profit-negative'}`;
-                                }
-                            }
-                        }
-                    };
-                    
-                    // Update all price-related elements
-                    updateElement('fuelCurrentPrice', currentPrice > 0 ? formatAmount(currentPrice, true) : 'N/A');
-                    updateElement('fuelATH', athPrice > 0 ? formatAmount(athPrice, true) : 'N/A');
-                    updateElement('fuelATL', lowestPrice > 0 ? formatAmount(lowestPrice, true) : 'N/A');
-                    updateElement('fuelROI', currentPrice > 0 ? `${currentRoi.toFixed(2)}%` : 'N/A');
-                    updateElement('fuelATHROI', athPrice > 0 ? `${athRoi.toFixed(2)}%` : 'N/A');
                 } catch (err) {
                     console.error("Error fetching token price data:", err);
                     setPriceData(prev => ({
@@ -587,18 +570,6 @@
                         loading: false,
                         error: err.message
                     }));
-                    
-                    // Update DOM elements to show N/A on error
-                    const elements = ['fuelCurrentPrice', 'fuelATH', 'fuelATL', 'fuelROI', 'fuelATHROI'];
-                    elements.forEach(id => {
-                        const element = document.getElementById(id);
-                        if (element) {
-                            element.textContent = 'N/A';
-                            if (id.includes('ROI')) {
-                                element.className = 'font-bold';
-                            }
-                        }
-                    });
                 }
             };
             
@@ -827,23 +798,53 @@
                                 </div>
                                 <div className="text-center">
                                     <div className="text-gray-400 text-sm">Current Price</div>
-                                    <div className="font-bold" id="fuelCurrentPrice">Loading...</div>
+                                    <div className="font-bold">
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : formatAmount(priceData.currentPrice, true)}
+                                    </div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-gray-400 text-sm">All-Time High</div>
-                                    <div className="font-bold" id="fuelATH">Loading...</div>
+                                    <div className="font-bold">
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : formatAmount(priceData.athPrice, true)}
+                                    </div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-gray-400 text-sm">All-Time Low</div>
-                                    <div className="font-bold" id="fuelATL">Loading...</div>
+                                    <div className="font-bold">
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : formatAmount(priceData.lowestPrice, true)}
+                                    </div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-gray-400 text-sm">Current ROI</div>
-                                    <div className="font-bold" id="fuelROI">Loading...</div>
+                                    <div className={`font-bold ${priceData.currentRoi >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : `${priceData.currentRoi.toFixed(2)}%`}
+                                    </div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-gray-400 text-sm">ATH ROI</div>
-                                    <div className="font-bold" id="fuelATHROI">Loading...</div>
+                                    <div className={`font-bold ${priceData.athRoi >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : `${priceData.athRoi.toFixed(2)}%`}
+                                    </div>
                                 </div>
                             </div>
                         </div>
