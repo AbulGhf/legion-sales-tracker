@@ -645,7 +645,6 @@ def session_stats():
 
 # New endpoint for Session investors with pagination
 @app.route('/api/session/investors', methods=['GET'])
-@cached('session_investors', 'session_investors_timestamp')
 def session_investors():
     """Get paginated list of investors for Session Protocol sale"""
     page = request.args.get('page', default=1, type=int)
@@ -655,13 +654,23 @@ def session_investors():
     limit = min(limit, 500)  # Max 500 per page
     page = max(page, 1)      # Min page 1
     
-    # Fetch live Session data
-    try:
-        transfers = get_session_usdc_deposits()
-        deposits_list = aggregate_session_deposits(transfers)
-    except Exception as e:
-        print(f"Error fetching Session investors: {str(e)}")
-        return jsonify({"error": f"Failed to fetch Session investors: {str(e)}"}), 500
+    # Check if we have valid cached full deposits list
+    current_time = time.time()
+    if (cache['session_deposits'] is not None and 
+        current_time - cache['session_deposits_timestamp'] < CACHE_EXPIRY):
+        print("Using cached deposits list for pagination")
+        deposits_list = cache['session_deposits']
+    else:
+        # Fetch live Session data
+        try:
+            transfers = get_session_usdc_deposits()
+            deposits_list = aggregate_session_deposits(transfers)
+            # Update cache
+            cache['session_deposits'] = deposits_list
+            cache['session_deposits_timestamp'] = current_time
+        except Exception as e:
+            print(f"Error fetching Session investors: {str(e)}")
+            return jsonify({"error": f"Failed to fetch Session investors: {str(e)}"}), 500
     
     # Calculate pagination
     start_idx = (page - 1) * limit
