@@ -475,120 +475,139 @@
             };
         }
 
+        // Define API base URL using environment variable or default to relative path
+        var API_BASE_URL = typeof process !== 'undefined' && process.env && process.env.API_BASE_URL
+            ? process.env.API_BASE_URL
+            : '/'; // Default to relative path for production
+
+        // Ensure trailing slash
+        if (API_BASE_URL.charAt(API_BASE_URL.length - 1) !== '/') {
+            API_BASE_URL += '/';
+        }
+
+        // For local development, override API_BASE_URL
+        API_BASE_URL = 'http://192.168.100.2:5000/';
+
         // LiveFeed component
         function LiveFeed() {
-            const [transactions, setTransactions] = React.useState([]);
-            const [loading, setLoading] = React.useState(true);
-            const [error, setError] = React.useState(null);
+            var transactionsState = React.useState([]);
+            var transactions = transactionsState[0];
+            var setTransactions = transactionsState[1];
+            var loadingState = React.useState(true);
+            var loading = loadingState[0];
+            var setLoading = loadingState[1];
+            var errorState = React.useState(null);
+            var error = errorState[0];
+            var setError = errorState[1];
             
             // Format address helper
-            const formatAddress = (address) => {
+            function formatAddress(address) {
                 if (!address) return 'Unknown';
-                return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-            };
+                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+            }
             
             // Function to format time "time ago"
-            const timeAgo = (date) => {
-                const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            function timeAgo(date) {
+                var seconds = Math.floor((new Date() - new Date(date)) / 1000);
                 
                 if (seconds < 5) return 'just now';
-                if (seconds < 60) return `${seconds}s ago`;
+                if (seconds < 60) return seconds + 's ago';
                 
-                const minutes = Math.floor(seconds / 60);
-                if (minutes < 60) return `${minutes}m ago`;
+                var minutes = Math.floor(seconds / 60);
+                if (minutes < 60) return minutes + 'm ago';
                 
-                const hours = Math.floor(minutes / 60);
-                if (hours < 24) return `${hours}h ago`;
+                var hours = Math.floor(minutes / 60);
+                if (hours < 24) return hours + 'h ago';
                 
-                const days = Math.floor(hours / 24);
-                return `${days}d ago`;
-            };
+                var days = Math.floor(hours / 24);
+                return days + 'd ago';
+            }
             
             // Function to fetch live transactions
-            const fetchLiveTransactions = React.useCallback(async () => {
-                try {
-                    setLoading(true);
-                    const response = await fetch('/api/live-feed?sale=session&limit=8');
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch live transactions');
-                    }
-                    
-                    const data = await response.json();
-                    setTransactions(data.transactions || []);
-                    setLoading(false);
-                } catch (error) {
-                    console.error('Error fetching live transactions:', error);
-                    setError(error.message);
-                    setLoading(false);
-                }
+            var fetchLiveTransactions = React.useCallback(function() {
+                setLoading(true);
+                fetch(API_BASE_URL + 'api/live-feed?sale=session&limit=8')
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch live transactions');
+                        }
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        setTransactions(data.transactions || []);
+                        setLoading(false);
+                    })
+                    .catch(function(error) {
+                        console.error('Error fetching live transactions:', error);
+                        setError(error.message);
+                        setLoading(false);
+                    });
             }, []);
             
             // Update times every minute
-            React.useEffect(() => {
-                const timeUpdateInterval = setInterval(() => {
-                    setTransactions(prevTransactions => [...prevTransactions]);
+            React.useEffect(function() {
+                var timeUpdateInterval = setInterval(function() {
+                    setTransactions(function(prevTransactions) { return prevTransactions.slice(); });
                 }, 60000);
                 
-                return () => clearInterval(timeUpdateInterval);
+                return function() { clearInterval(timeUpdateInterval); };
             }, []);
             
             // Fetch transactions on component mount and set up polling
-            React.useEffect(() => {
+            React.useEffect(function() {
                 fetchLiveTransactions();
                 
-                const interval = setInterval(fetchLiveTransactions, 30000);
+                var interval = setInterval(fetchLiveTransactions, 30000);
                 
-                return () => clearInterval(interval);
+                return function() { clearInterval(interval); };
             }, [fetchLiveTransactions]);
             
-            return (
-                <div className="live-feed-card">
-                    <div className="live-feed-header">
-                        <div className="stats-title">
-                            <span>Live Feed</span>
-                            <i className="fas fa-bolt"></i>
-                        </div>
-                    </div>
-                    <div className="live-feed">
-                        {loading && transactions.length === 0 ? (
-                            <div className="text-center text-gray-500 py-2">
-                                <i className="fas fa-circle-notch fa-spin mr-2"></i>
-                                Connecting to live feed...
-                            </div>
-                        ) : error ? (
-                            <div className="text-center text-red-500 py-2">
-                                Error loading live feed: {error}
-                            </div>
-                        ) : transactions.length === 0 ? (
-                            <div className="text-center text-gray-500 py-2">
-                                No recent transactions found.
-                            </div>
-                        ) : (
-                            transactions.map((tx, index) => (
-                                <div className="feed-item" key={index}>
-                                    <img src="session.png" onError={(e) => e.target.src = 'session.png'} className="feed-logo" alt="Session" />
-                                    <a 
-                                        href={`https://arbiscan.io/tx/${tx.hash}`} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer" 
-                                        className="feed-address"
-                                    >
-                                        {formatAddress(tx.from)}
-                                    </a>
-                                    <span className="feed-amount">+${tx.amount.toFixed(2)}</span>
-                                    <span className="feed-time">{timeAgo(tx.timestamp)}</span>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
+            return React.createElement('div', { className: 'live-feed-card' },
+                React.createElement('div', { className: 'live-feed-header' },
+                    React.createElement('div', { className: 'stats-title' },
+                        React.createElement('span', null, 'Live Feed'),
+                        React.createElement('i', { className: 'fas fa-bolt' })
+                    )
+                ),
+                React.createElement('div', { className: 'live-feed' },
+                    loading && transactions.length === 0 ?
+                        React.createElement('div', { className: 'text-center text-gray-500 py-2' },
+                            React.createElement('i', { className: 'fas fa-circle-notch fa-spin mr-2' }),
+                            'Connecting to live feed...'
+                        ) :
+                    error ?
+                        React.createElement('div', { className: 'text-center text-red-500 py-2' },
+                            'Error loading live feed: ' + error
+                        ) :
+                    transactions.length === 0 ?
+                        React.createElement('div', { className: 'text-center text-gray-500 py-2' },
+                            'No recent transactions found.'
+                        ) :
+                        transactions.map(function(tx, index) {
+                            return React.createElement('div', { className: 'feed-item', key: index },
+                                React.createElement('img', { 
+                                    src: '/static/session.png', 
+                                    className: 'feed-logo', 
+                                    alt: 'Session'
+                                }),
+                                React.createElement('a', {
+                                    href: 'https://arbiscan.io/tx/' + tx.hash,
+                                    target: '_blank',
+                                    rel: 'noopener noreferrer',
+                                    className: 'feed-address'
+                                }, formatAddress(tx.from)),
+                                React.createElement('span', { className: 'feed-amount' }, '+' + tx.amount.toFixed(2)),
+                                React.createElement('span', { className: 'feed-time' }, timeAgo(tx.timestamp))
+                            );
+                        })
+                )
             );
         }
 
         // Main app component
         function SessionTracker() {
             // State hooks
-            const [stats, setStats] = React.useState({
+            var statsState = React.useState({
                 total_investment: 0,
                 total_investors: 0,
                 average_allocation: 0,
@@ -597,465 +616,477 @@
                 lowest_allocation: 0,
                 transaction_count: 0
             });
-            const [investors, setInvestors] = React.useState([]);
-            const [loading, setLoading] = React.useState(true);
-            const [error, setError] = React.useState(null);
-            const [sortOrder, setSortOrder] = React.useState('desc');
-            const [currentPage, setCurrentPage] = React.useState(1);
-            const [totalPages, setTotalPages] = React.useState(1);
-            const [selectedInvestor, setSelectedInvestor] = React.useState(null);
-            const [showModal, setShowModal] = React.useState(false);
-            const [investorLoading, setInvestorLoading] = React.useState(false);
+            var stats = statsState[0];
+            var setStats = statsState[1];
+            var allInvestorsState = React.useState([]); // Store all investors
+            var allInvestors = allInvestorsState[0];
+            var setAllInvestors = allInvestorsState[1];
+            var loadingState = React.useState(true);
+            var loading = loadingState[0];
+            var setLoading = loadingState[1];
+            var errorState = React.useState(null);
+            var error = errorState[0];
+            var setError = errorState[1];
+            var sortOrderState = React.useState('desc');
+            var sortOrder = sortOrderState[0];
+            var setSortOrder = sortOrderState[1];
+            var currentPageState = React.useState(1);
+            var currentPage = currentPageState[0];
+            var setCurrentPage = currentPageState[1];
+            var totalPagesState = React.useState(1);
+            var totalPages = totalPagesState[0];
+            var setTotalPages = totalPagesState[1];
+            var selectedInvestorState = React.useState(null);
+            var selectedInvestor = selectedInvestorState[0];
+            var setSelectedInvestor = selectedInvestorState[1];
+            var showModalState = React.useState(false);
+            var showModal = showModalState[0];
+            var setShowModal = showModalState[1];
+            var investorLoadingState = React.useState(false);
+            var investorLoading = investorLoadingState[0];
+            var setInvestorLoading = investorLoadingState[1];
             
             // Constants
-            const investorsPerPage = 10;
+            var investorsPerPage = 10;
             
             // Format currency
-            const formatCurrency = (amount) => {
+            function formatCurrency(amount) {
                 return new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 }).format(amount);
-            };
+            }
             
             // Format address
-            const formatAddress = (address) => {
+            function formatAddress(address) {
                 if (!address) return 'Unknown';
-                return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
-            };
+                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+            }
             
             // Toggle sort order
-            const toggleSortOrder = () => {
+            function toggleSortOrder() {
                 setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            };
+            }
+            
+            // Function to calculate median
+            function calculateMedian(amounts) {
+                if (amounts.length === 0) return 0;
+                amounts.sort(function(a, b) { return a - b; });
+                var mid = Math.floor(amounts.length / 2);
+                if (amounts.length % 2 === 0) {
+                    return (amounts[mid - 1] + amounts[mid]) / 2;
+                } else {
+                    return amounts[mid];
+                }
+            }
+            
+            // Fetch all investors
+            function fetchAllInvestors() {
+                return fetch(API_BASE_URL + 'api/session/investors') // Fetch all investors without pagination
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        return data.investors || [];
+                    });
+            }
             
             // Fetch data
-            const fetchData = async () => {
+            function fetchData() {
                 setLoading(true);
-                try {
-                    // Helper function to safely parse JSON
-                    const safeJsonParse = async (response) => {
-                        const text = await response.text();
-                        try {
-                            if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-                                throw new Error('Server returned HTML instead of JSON');
-                            }
-                            return JSON.parse(text);
-                        } catch (e) {
-                            console.error('JSON parse error:', e);
-                            throw new Error('Invalid JSON response from server');
-                        }
-                    };
-
-                    // Fetch stats
-                    const statsResponse = await fetch('/api/session/stats');
-                    const statsData = await safeJsonParse(statsResponse);
-                    
-                    // Calculate median by fetching all investors
-                    let medianInvestment = 0;
-                    try {
-                        const allInvestorsResponse = await fetch('/api/session/investors?page=1&limit=1000');
-                        const allInvestorsData = await safeJsonParse(allInvestorsResponse);
-                        if (allInvestorsData.investors && allInvestorsData.investors.length > 0) {
-                            const sortedAmounts = allInvestorsData.investors
-                                .map(investor => investor.amount)
-                                .sort((a, b) => a - b);
-                            
-                            const middle = Math.floor(sortedAmounts.length / 2);
-                            
-                            if (sortedAmounts.length % 2 === 0) {
-                                medianInvestment = (sortedAmounts[middle - 1] + sortedAmounts[middle]) / 2;
-                            } else {
-                                medianInvestment = sortedAmounts[middle];
-                            }
-                        }
-                    } catch (error) {
-                        console.error('Error calculating median:', error);
-                    }
-                    
-                    // Fix for highest_allocation and lowest_allocation
-                    const highestAllocation = statsData.highest_allocation && statsData.highest_allocation.amount 
-                        ? statsData.highest_allocation.amount 
-                        : (statsData.highest_allocation || 0);
-                    
-                    const lowestAllocation = statsData.lowest_allocation && statsData.lowest_allocation.amount 
-                        ? statsData.lowest_allocation.amount 
-                        : (statsData.lowest_allocation || 0);
-                    
-                    setStats({
-                        total_investment: statsData.total_investment || 0,
-                        total_investors: statsData.total_investors || 0,
-                        average_allocation: statsData.average_allocation || 0,
-                        median_investment: medianInvestment,
-                        highest_allocation: highestAllocation,
-                        lowest_allocation: lowestAllocation,
-                        transaction_count: 0 // API does not provide this
-                    });
-                    
-                    // Fetch investors with pagination
-                    const investorsResponse = await fetch(`/api/session/investors?page=${currentPage}&limit=${investorsPerPage}`);
-                    const investorsData = await safeJsonParse(investorsResponse);
-                    setInvestors(investorsData.investors || []);
-                    setTotalPages(investorsData.total_pages || 1);
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    setError(error.message || "Failed to load data");
-                } finally {
-                    setLoading(false);
-                }
-            };
-            
-            // Handle investor click to show modal
-            const handleInvestorClick = async (address) => {
-                try {
-                    setInvestorLoading(true);
-                    setShowModal(true);
-                    setSelectedInvestor(null);
-                    
-                    const response = await fetch(`/api/investor/${address}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch investor details');
-                    }
-                    
-                    const text = await response.text();
-                    let data;
-                    try {
+                // Helper function to safely parse JSON
+                function safeJsonParse(response) {
+                    return response.text().then(function(text) {
                         if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
                             throw new Error('Server returned HTML instead of JSON');
                         }
-                        data = JSON.parse(text);
-                    } catch (e) {
+                        return JSON.parse(text);
+                    }).catch(function(e) {
                         console.error('JSON parse error:', e);
                         throw new Error('Invalid JSON response from server');
-                    }
-                    
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
-
-                    const allSales = data.sales || [];
-                    const sessionSales = allSales.filter(sale => sale.sale && sale.sale.toLowerCase() === 'session');
-                    const sessionTotal = sessionSales.reduce((sum, sale) => sum + (sale.amount || 0), 0);
-
-                    setSelectedInvestor({
-                        address,
-                        total_invested: allSales.reduce((sum, sale) => sum + (sale.amount || 0), 0),
-                        session_total: sessionTotal,
-                        sales_participated: allSales.length,
-                        session_sales: sessionSales.length,
-                        sales: allSales
                     });
-                } catch (error) {
-                    console.error('Error fetching investor details:', error);
-                    setSelectedInvestor({
-                        address: address || 'Unknown',
-                        total_invested: 0,
-                        session_total: 0,
-                        sales_participated: 0,
-                        session_sales: 0,
-                        sales: []
-                    });
-                } finally {
-                    setInvestorLoading(false);
                 }
-            };
+
+                // Fetch stats
+                fetch(API_BASE_URL + 'api/session/stats')
+                    .then(function(response) {
+                        return safeJsonParse(response);
+                    })
+                    .then(function(statsData) {
+                        // Fetch all investors to calculate median and for pagination
+                        return fetchAllInvestors().then(function(investorsData) {
+                            var amounts = investorsData.map(function(investor) { return investor.amount || 0; });
+                            var median = calculateMedian(amounts);
+                            
+                            setStats({
+                                total_investment: statsData.total_investment || 0,
+                                total_investors: statsData.total_investors || 0,
+                                average_allocation: statsData.average_allocation || 0,
+                                median_investment: median,
+                                highest_allocation: statsData.highest_allocation ? statsData.highest_allocation.amount : 0,
+                                lowest_allocation: statsData.lowest_allocation ? statsData.lowest_allocation.amount : 0,
+                                transaction_count: 0 // API does not provide this
+                            });
+                            
+                            // Store all investors
+                            setAllInvestors(investorsData);
+                            
+                            // Calculate total pages for client-side pagination
+                            var totalInvestors = statsData.total_investors || investorsData.length;
+                            setTotalPages(Math.ceil(totalInvestors / investorsPerPage));
+                            
+                            setLoading(false);
+                        });
+                    })
+                    .catch(function(error) {
+                        console.error('Error fetching data:', error);
+                        setError(error.message || "Failed to load data");
+                        setLoading(false);
+                    });
+            }
+            
+            // Handle investor click to show modal
+            function handleInvestorClick(address) {
+                setInvestorLoading(true);
+                setShowModal(true);
+                setSelectedInvestor(null);
+                
+                fetch(API_BASE_URL + 'api/investor/' + address)
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch investor details');
+                        }
+                        return response.text();
+                    })
+                    .then(function(text) {
+                        if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                            throw new Error('Server returned HTML instead of JSON');
+                        }
+                        var data = JSON.parse(text);
+                        
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+
+                        var allSales = data.sales || [];
+                        var sessionSales = allSales.filter(function(sale) { return sale.sale && sale.sale.toLowerCase() === 'session'; });
+                        var sessionTotal = sessionSales.reduce(function(sum, sale) { return sum + (sale.amount || 0); }, 0);
+
+                        setSelectedInvestor({
+                            address: address,
+                            total_invested: allSales.reduce(function(sum, sale) { return sum + (sale.amount || 0); }, 0),
+                            session_total: sessionTotal,
+                            sales_participated: allSales.length,
+                            session_sales: sessionSales.length,
+                            sales: allSales
+                        });
+                        setInvestorLoading(false);
+                    })
+                    .catch(function(error) {
+                        console.error('Error fetching investor details:', error);
+                        setSelectedInvestor({
+                            address: address || 'Unknown',
+                            total_invested: 0,
+                            session_total: 0,
+                            sales_participated: 0,
+                            session_sales: 0,
+                            sales: []
+                        });
+                        setInvestorLoading(false);
+                    });
+            }
             
             // Close modal
-            const closeModal = () => {
+            function closeModal() {
                 setShowModal(false);
                 setSelectedInvestor(null);
-            };
+            }
             
             // Handle page change
-            const handlePageChange = (newPage) => {
+            function handlePageChange(newPage) {
                 setCurrentPage(newPage);
-            };
+            }
             
-            // Fetch data on load and when page changes
-            React.useEffect(() => {
+            // Fetch data on load (no dependency on currentPage since we're doing client-side pagination)
+            React.useEffect(function() {
                 fetchData();
-            }, [currentPage]);
+            }, []);
+            
+            // Calculate the investors to display based on the current page (client-side pagination)
+            var startIndex = (currentPage - 1) * investorsPerPage;
+            var endIndex = startIndex + investorsPerPage;
+            var investorsForPage = allInvestors.slice(startIndex, endIndex);
             
             // Sort investors based on current sort order
-            const sortedInvestors = React.useMemo(() => {
-                return [...investors].sort((a, b) => {
+            var sortedInvestors = React.useMemo(function() {
+                return investorsForPage.slice().sort(function(a, b) {
                     return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
                 });
-            }, [investors, sortOrder]);
+            }, [investorsForPage, sortOrder]);
             
             if (loading && !stats.total_investment) {
-                return (
-                    <div className="flex items-center justify-center h-screen">
-                        <div className="text-center p-8 card max-w-md">
-                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                            <p className="mb-6">Loading Session Sale Data...</p>
-                            <div className="note-box">
-                                <p className="text-sm text-gray-300">
-                                    Note: This dashboard displays only the total amount successfully invested, 
-                                    not the amount being requested on the Legion website.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+                return React.createElement('div', { className: 'flex items-center justify-center h-screen' },
+                    React.createElement('div', { className: 'text-center p-8 card max-w-md' },
+                        React.createElement('div', { className: 'inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4' }),
+                        React.createElement('p', { className: 'mb-6' }, 'Loading Session Sale Data...'),
+                        React.createElement('div', { className: 'note-box' },
+                            React.createElement('p', { className: 'text-sm text-gray-300' },
+                                'Note: This dashboard displays only the total amount successfully invested, not the amount being requested on the Legion website.'
+                            )
+                        )
+                    )
                 );
             }
             
             if (error) {
-                return (
-                    <div className="main-container">
-                        <div className="card p-8 text-center">
-                            <h2 className="text-xl text-red-500 mb-4">Error</h2>
-                            <p>{error}</p>
-                            <button 
-                                onClick={fetchData} 
-                                className="pagination-button mt-4"
-                            >
-                                Retry
-                            </button>
-                        </div>
-                    </div>
+                return React.createElement('div', { className: 'main-container' },
+                    React.createElement('div', { className: 'card p-8 text-center' },
+                        React.createElement('h2', { className: 'text-xl text-red-500 mb-4' }, 'Error'),
+                        React.createElement('p', null, error),
+                        React.createElement('button', {
+                            onClick: fetchData,
+                            className: 'pagination-button mt-4'
+                        }, 'Retry')
+                    )
                 );
             }
             
-            return (
-                <div className="main-container">
-                    {/* Back to Dashboard Button */}
-                    <a href="/" className="back-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                            <path d="M19 12H5M12 19l-7-7 7-7"/>
-                        </svg>
-                        Back to Dashboard
-                    </a>
-                    
-                    {/* Header */}
-                    <div className="header-card">
-                        <div className="header-title">Session</div>
-                        <img src="session.png" alt="Session Logo" className="h-16" />
-                    </div>
-                    
-                    {/* Note about data */}
-                    <div className="note-box mb-6">
-                        <p className="text-sm">
-                            <span className="font-bold neon-color">Note:</span> This dashboard shows only the total amount successfully invested, not the amount being requested on the Legion website.
-                        </p>
-                    </div>
-                    
-                    {/* Main Content Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Left Column - Stats and Live Feed */}
-                        <div className="md:col-span-1">
-                            {/* Total USDC Card */}
-                            <div className="card p-6 text-center">
-                                <div className="card-title">Total USDC Invested</div>
-                                <div className="amount-display">{formatCurrency(stats.total_investment || 0)}</div>
-                                <div className="text-gray-400 text-sm">{stats.total_investors || 0} unique addresses</div>
-                            </div>
-                            
-                            {/* Live Feed Component */}
-                            <LiveFeed />
-                            
-                            {/* Stats section */}
-                            <div className="stats-section">
-                                <div className="stats-title">Investment Stats</div>
-                                
-                                <div className="stats-card">
-                                    <div className="stats-label">Average</div>
-                                    <div className="stats-value">{formatCurrency(stats.average_allocation || 0)}</div>
-                                </div>
-                                
-                                <div className="stats-card">
-                                    <div className="stats-label">Median</div>
-                                    <div className="stats-value">{formatCurrency(stats.median_investment || 0)}</div>
-                                </div>
-                                
-                                <div className="stats-card">
-                                    <div className="stats-label">Largest</div>
-                                    <div className="stats-value">{formatCurrency(stats.highest_allocation || 0)}</div>
-                                </div>
-                                
-                                <div className="stats-card">
-                                    <div className="stats-label">Smallest</div>
-                                    <div className="stats-value">{formatCurrency(stats.lowest_allocation || 0)}</div>
-                                </div>
-                            </div>
-                        </div>
+            return React.createElement('div', { className: 'main-container' },
+                // Back to Dashboard Button
+                React.createElement('a', { href: '/', className: 'back-button' },
+                    React.createElement('svg', {
+                        xmlns: 'http://www.w3.org/2000/svg',
+                        width: '16',
+                        height: '16',
+                        viewBox: '0 0 24 24',
+                        fill: 'none',
+                        stroke: 'currentColor',
+                        strokeWidth: '2',
+                        strokeLinecap: 'round',
+                        strokeLinejoin: 'round',
+                        className: 'mr-2'
+                    }, React.createElement('path', { d: 'M19 12H5M12 19l-7-7 7-7' })),
+                    'Back to Dashboard'
+                ),
+                
+                // Header
+                React.createElement('div', { className: 'header-card' },
+                    React.createElement('div', { className: 'header-title' }, 'Session'),
+                    React.createElement('img', { src: '/static/session.png', alt: 'Session Logo', className: 'h-16' })
+                ),
+                
+                // Note about data
+                React.createElement('div', { className: 'note-box mb-6' },
+                    React.createElement('p', { className: 'text-sm' },
+                        React.createElement('span', { className: 'font-bold neon-color' }, 'Note:'),
+                        ' This dashboard shows only the total amount successfully invested, not the amount being requested on the Legion website.'
+                    )
+                ),
+                
+                // Main Content Grid
+                React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-6' },
+                    // Left Column - Stats and Live Feed
+                    React.createElement('div', { className: 'md:col-span-1' },
+                        // Total USDC Card
+                        React.createElement('div', { className: 'card p-6 text-center' },
+                            React.createElement('div', { className: 'card-title' }, 'Total USDC Invested'),
+                            React.createElement('div', { className: 'amount-display' }, formatCurrency(stats.total_investment || 0)),
+                            React.createElement('div', { className: 'text-gray-400 text-sm' }, stats.total_investors + ' unique addresses')
+                        ),
                         
-                        {/* Right Column - Investors Table */}
-                        <div className="md:col-span-2">
-                            <div className="card">
-                                <div className="p-4 border-b border-gray-800">
-                                    <div className="card-title">Top Investors</div>
-                                    <div className="card-subtitle">Ranked by investment amount</div>
-                                </div>
+                        // Live Feed Component
+                        React.createElement(LiveFeed, null),
+                        
+                        // Stats section
+                        React.createElement('div', { className: 'stats-section' },
+                            React.createElement('div', { className: 'stats-title' }, 'Investment Stats'),
+                            
+                            React.createElement('div', { className: 'stats-card' },
+                                React.createElement('div', { className: 'stats-label' }, 'Average'),
+                                React.createElement('div', { className: 'stats-value' }, formatCurrency(stats.average_allocation || 0))
+                            ),
+                            
+                            React.createElement('div', { className: 'stats-card' },
+                                React.createElement('div', { className: 'stats-label' }, 'Median'),
+                                React.createElement('div', { className: 'stats-value' }, formatCurrency(stats.median_investment || 0))
+                            ),
+                            
+                            React.createElement('div', { className: 'stats-card' },
+                                React.createElement('div', { className: 'stats-label' }, 'Largest'),
+                                React.createElement('div', { className: 'stats-value' }, formatCurrency(stats.highest_allocation || 0))
+                            ),
+                            
+                            React.createElement('div', { className: 'stats-card' },
+                                React.createElement('div', { className: 'stats-label' }, 'Smallest'),
+                                React.createElement('div', { className: 'stats-value' }, formatCurrency(stats.lowest_allocation || 0))
+                            )
+                        )
+                    ),
+                    
+                    // Right Column - Investors Table
+                    React.createElement('div', { className: 'md:col-span-2' },
+                        React.createElement('div', { className: 'card' },
+                            React.createElement('div', { className: 'p-4 border-b border-gray-800' },
+                                React.createElement('div', { className: 'card-title' }, 'Top Investors'),
+                                React.createElement('div', { className: 'card-subtitle' }, 'Ranked by investment amount')
+                            ),
+                            
+                            React.createElement('div', { className: 'table-container' },
+                                React.createElement('table', { className: 'data-table' },
+                                    React.createElement('thead', null,
+                                        React.createElement('tr', { className: 'table-header' },
+                                            React.createElement('th', null, 'Rank'),
+                                            React.createElement('th', null, 'Address'),
+                                            React.createElement('th', { className: 'cursor-pointer', onClick: toggleSortOrder },
+                                                'Amount ' + (sortOrder === 'desc' ? '↓' : '↑')
+                                            ),
+                                            React.createElement('th', { className: 'text-right' }, '% of Total')
+                                        )
+                                    ),
+                                    React.createElement('tbody', null,
+                                        sortedInvestors.map(function(investor, index) {
+                                            return React.createElement('tr', { key: investor.address, className: 'table-row' },
+                                                React.createElement('td', null,
+                                                    (currentPage - 1) * investorsPerPage + index + 1 <= 3 ?
+                                                        React.createElement('span', { className: 'rank-badge' },
+                                                            (currentPage - 1) * investorsPerPage + index + 1
+                                                        ) :
+                                                        React.createElement('span', null, '#' + ((currentPage - 1) * investorsPerPage + index + 1))
+                                                ),
+                                                React.createElement('td', { className: 'address-cell' },
+                                                    React.createElement('a', {
+                                                        href: '#',
+                                                        onClick: function(e) {
+                                                            e.preventDefault();
+                                                            handleInvestorClick(investor.address);
+                                                        },
+                                                        title: investor.address
+                                                    }, formatAddress(investor.address))
+                                                ),
+                                                React.createElement('td', { className: 'text-right font-mono' },
+                                                    formatCurrency(investor.amount)
+                                                ),
+                                                React.createElement('td', { className: 'text-right' },
+                                                    stats.total_investment ? ((investor.amount / stats.total_investment) * 100).toFixed(2) : '0.00' + '%'
+                                                )
+                                            );
+                                        }),
+                                        sortedInvestors.length === 0 &&
+                                            React.createElement('tr', { className: 'table-row' },
+                                                React.createElement('td', { colSpan: '4', className: 'text-center py-4' },
+                                                    'No investors data available yet'
+                                                )
+                                            )
+                                    )
+                                ),
                                 
-                                <div className="table-container">
-                                    <table className="data-table">
-                                        <thead>
-                                            <tr className="table-header">
-                                                <th>Rank</th>
-                                                <th>Address</th>
-                                                <th className="cursor-pointer" onClick={toggleSortOrder}>
-                                                    Amount {sortOrder === 'desc' ? '↓' : '↑'}
-                                                </th>
-                                                <th className="text-right">% of Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {sortedInvestors.map((investor, index) => (
-                                                <tr key={investor.address} className="table-row">
-                                                    <td>
-                                                        {(currentPage - 1) * investorsPerPage + index + 1 <= 3 ? (
-                                                            <span className="rank-badge">
-                                                                {(currentPage - 1) * investorsPerPage + index + 1}
-                                                            </span>
-                                                        ) : (
-                                                            <span>#{(currentPage - 1) * investorsPerPage + index + 1}</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="address-cell">
-                                                        <a
-                                                            href="#"
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                handleInvestorClick(investor.address);
-                                                            }}
-                                                            title={investor.address}
-                                                        >
-                                                            {formatAddress(investor.address)}
-                                                        </a>
-                                                    </td>
-                                                    <td className="text-right font-mono">
-                                                        {formatCurrency(investor.amount)}
-                                                    </td>
-                                                    <td className="text-right">
-                                                        {stats.total_investment ? ((investor.amount / stats.total_investment) * 100).toFixed(2) : '0.00'}%
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                            {investors.length === 0 && (
-                                                <tr className="table-row">
-                                                    <td colSpan="4" className="text-center py-4">
-                                                        No investors data available yet
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
-                                    
-                                    {/* Pagination */}
-                                    {totalPages > 1 && (
-                                        <div className="pagination">
-                                            <button 
-                                                className="pagination-button" 
-                                                onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                                                disabled={currentPage === 1}
-                                            >
-                                                Previous
-                                            </button>
-                                            
-                                            <div className="pagination-info">
-                                                {currentPage} of {totalPages}
-                                            </div>
-                                            
-                                            <button 
-                                                className="pagination-button" 
-                                                onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                                                disabled={currentPage === totalPages}
-                                            >
-                                                Next
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="text-center text-gray-500 text-sm mt-6">
-                        Last updated: {new Date().toLocaleString()}
-                    </div>
-                    
-                    {/* Investor Modal */}
-                    {showModal && (
-                        <div className="investor-modal">
-                            <div className="investor-modal-content">
-                                <span className="investor-modal-close" onClick={closeModal}>×</span>
-                                <div className="investor-details">
-                                    <h2>Investor Details</h2>
-                                    {investorLoading && (
-                                        <div className="flex items-center justify-center py-8">
-                                            <div className="loading-spinner"></div>
-                                        </div>
-                                    )}
-                                    {!investorLoading && selectedInvestor && (
-                                        <div>
-                                            <div className="mb-4">
-                                                <div className="text-gray-400 text-sm mb-1">Full Address</div>
-                                                <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
-                                            </div>
-                                            <div className="investor-stats">
-                                                <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatCurrency(selectedInvestor.session_total)}</div>
-                                                    <div className="investor-stat-label">Session Investment</div>
-                                                </div>
-                                                <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatCurrency(selectedInvestor.total_invested)}</div>
-                                                    <div className="investor-stat-label">Total Invested (All Sales)</div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="mt-6">
-                                                <h3 className="font-bold text-lg mb-3">All Sales</h3>
-                                                <div className="sales-table-container">
-                                                    <table className="data-table">
-                                                        <thead>
-                                                            <tr className="table-header">
-                                                                <th>Sale</th>
-                                                                <th>Amount</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {selectedInvestor.sales && selectedInvestor.sales.length > 0 ? (
-                                                                selectedInvestor.sales.map((sale, index) => (
-                                                                    <tr key={index} className={`table-row ${sale.sale && sale.sale.toLowerCase() === 'session' ? 'session-sale' : ''}`}>
-                                                                        <td>
-                                                                            <span className={`sale-badge ${sale.sale && sale.sale.toLowerCase() === 'session' ? 'session' : 'other'}`}>
-                                                                                {sale.sale && sale.sale.toLowerCase() === 'session' ? '★ ' : ''}{sale.sale ? sale.sale.toUpperCase() : 'UNKNOWN'}
-                                                                            </span>
-                                                                        </td>
-                                                                        <td>{formatCurrency(sale.amount || 0)}</td>
-                                                                    </tr>
-                                                                ))
-                                                            ) : (
-                                                                <tr className="table-row">
-                                                                    <td colSpan="2" className="text-center py-4">
-                                                                        No sales data available
-                                                                    </td>
-                                                                </tr>
-                                                            )}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {!investorLoading && !selectedInvestor && (
-                                        <div className="text-red-500 text-center py-4">
-                                            Failed to load investor details
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                                // Pagination
+                                totalPages > 1 &&
+                                    React.createElement('div', { className: 'pagination' },
+                                        React.createElement('button', {
+                                            className: 'pagination-button',
+                                            onClick: function() { handlePageChange(Math.max(1, currentPage - 1)); },
+                                            disabled: currentPage === 1
+                                        }, 'Previous'),
+                                        
+                                        React.createElement('div', { className: 'pagination-info' },
+                                            currentPage + ' of ' + totalPages
+                                        ),
+                                        
+                                        React.createElement('button', {
+                                            className: 'pagination-button',
+                                            onClick: function() { handlePageChange(Math.min(totalPages, currentPage + 1)); },
+                                            disabled: currentPage === totalPages
+                                        }, 'Next')
+                                    )
+                            )
+                        )
+                    )
+                ),
+                
+                React.createElement('div', { className: 'text-center text-gray-500 text-sm mt-6' },
+                    'Last updated: ' + new Date().toLocaleString()
+                ),
+                
+                // Investor Modal
+                showModal &&
+                    React.createElement('div', { className: 'investor-modal' },
+                        React.createElement('div', { className: 'investor-modal-content' },
+                            React.createElement('span', { className: 'investor-modal-close', onClick: closeModal }, '×'),
+                            React.createElement('div', { className: 'investor-details' },
+                                React.createElement('h2', null, 'Investor Details'),
+                                investorLoading &&
+                                    React.createElement('div', { className: 'flex items-center justify-center py-8' },
+                                        React.createElement('div', { className: 'loading-spinner' })
+                                    ),
+                                !investorLoading && selectedInvestor &&
+                                    React.createElement('div', null,
+                                        React.createElement('div', { className: 'mb-4' },
+                                            React.createElement('div', { className: 'text-gray-400 text-sm mb-1' }, 'Full Address'),
+                                            React.createElement('div', { className: 'font-mono text-sm break-all' }, selectedInvestor.address)
+                                        ),
+                                        React.createElement('div', { className: 'investor-stats' },
+                                            React.createElement('div', { className: 'investor-stat' },
+                                                React.createElement('div', { className: 'investor-stat-value' }, formatCurrency(selectedInvestor.session_total)),
+                                                React.createElement('div', { className: 'investor-stat-label' }, 'Session Investment')
+                                            ),
+                                            React.createElement('div', { className: 'investor-stat' },
+                                                React.createElement('div', { className: 'investor-stat-value' }, formatCurrency(selectedInvestor.total_invested)),
+                                                React.createElement('div', { className: 'investor-stat-label' }, 'Total Invested (All Sales)')
+                                            )
+                                        ),
+                                        
+                                        React.createElement('div', { className: 'mt-6' },
+                                            React.createElement('h3', { className: 'font-bold text-lg mb-3' }, 'All Sales'),
+                                            React.createElement('div', { className: 'sales-table-container' },
+                                                React.createElement('table', { className: 'data-table' },
+                                                    React.createElement('thead', null,
+                                                        React.createElement('tr', { className: 'table-header' },
+                                                            React.createElement('th', null, 'Sale'),
+                                                            React.createElement('th', null, 'Amount')
+                                                        )
+                                                    ),
+                                                    React.createElement('tbody', null,
+                                                        selectedInvestor.sales && selectedInvestor.sales.length > 0 ?
+                                                            selectedInvestor.sales.map(function(sale, index) {
+                                                                return React.createElement('tr', {
+                                                                    key: index,
+                                                                    className: 'table-row ' + (sale.sale && sale.sale.toLowerCase() === 'session' ? 'session-sale' : '')
+                                                                },
+                                                                    React.createElement('td', null,
+                                                                        React.createElement('span', {
+                                                                            className: 'sale-badge ' + (sale.sale && sale.sale.toLowerCase() === 'session' ? 'session' : 'other')
+                                                                        },
+                                                                            (sale.sale && sale.sale.toLowerCase() === 'session' ? '★ ' : '') + (sale.sale ? sale.sale.toUpperCase() : 'UNKNOWN')
+                                                                        )
+                                                                    ),
+                                                                    React.createElement('td', null, formatCurrency(sale.amount || 0))
+                                                                );
+                                                            }) :
+                                                            React.createElement('tr', { className: 'table-row' },
+                                                                React.createElement('td', { colSpan: '2', className: 'text-center py-4' },
+                                                                    'No sales data available'
+                                                                )
+                                                            )
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    ),
+                                !investorLoading && !selectedInvestor &&
+                                    React.createElement('div', { className: 'text-red-500 text-center py-4' },
+                                        'Failed to load investor details'
+                                    )
+                            )
+                        )
+                    )
             );
         }
         
         // Render the app
-        ReactDOM.render(<SessionTracker />, document.getElementById('app'));
+        ReactDOM.render(React.createElement(SessionTracker, null), document.getElementById('app'));
     </script>
 </body>
 </html>
