@@ -485,9 +485,6 @@
             API_BASE_URL += '/';
         }
 
-        // For local development, override API_BASE_URL
-        API_BASE_URL = 'http://192.168.100.2:5000/';
-
         // LiveFeed component
         function LiveFeed() {
             var transactionsState = React.useState([]);
@@ -618,9 +615,9 @@
             });
             var stats = statsState[0];
             var setStats = statsState[1];
-            var allInvestorsState = React.useState([]); // Store all investors
-            var allInvestors = allInvestorsState[0];
-            var setAllInvestors = allInvestorsState[1];
+            var investorsState = React.useState([]); // Store investors for the current page
+            var investors = investorsState[0];
+            var setInvestors = investorsState[1];
             var loadingState = React.useState(true);
             var loading = loadingState[0];
             var setLoading = loadingState[1];
@@ -659,8 +656,8 @@
                 }).format(amount);
             }
             
-            // Format address
-            function formatAddress(address) {
+                        // Format address
+                        function formatAddress(address) {
                 if (!address) return 'Unknown';
                 return address.substring(0, 6) + '...' + address.substring(address.length - 4);
             }
@@ -670,7 +667,7 @@
                 setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
             }
             
-            // Function to calculate median
+            // Function to calculate median (used for stats, fetched from API)
             function calculateMedian(amounts) {
                 if (amounts.length === 0) return 0;
                 amounts.sort(function(a, b) { return a - b; });
@@ -682,70 +679,73 @@
                 }
             }
             
-            // Fetch all investors
-            function fetchAllInvestors() {
-                return fetch(API_BASE_URL + 'api/session/investors') // Fetch all investors without pagination
+            // Fetch investors for the current page (server-side pagination)
+            function fetchInvestors(page) {
+                setLoading(true);
+                setError(null); // Reset error state
+                setInvestors([]); // Reset investors to avoid stale data
+                
+                return fetch(API_BASE_URL + 'api/session/investors?page=' + page + '&limit=' + investorsPerPage)
                     .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch investors');
+                        }
                         return response.json();
                     })
                     .then(function(data) {
-                        return data.investors || [];
-                    });
-            }
-            
-            // Fetch data
-            function fetchData() {
-                setLoading(true);
-                // Helper function to safely parse JSON
-                function safeJsonParse(response) {
-                    return response.text().then(function(text) {
-                        if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
-                            throw new Error('Server returned HTML instead of JSON');
-                        }
-                        return JSON.parse(text);
-                    }).catch(function(e) {
-                        console.error('JSON parse error:', e);
-                        throw new Error('Invalid JSON response from server');
-                    });
-                }
-
-                // Fetch stats
-                fetch(API_BASE_URL + 'api/session/stats')
-                    .then(function(response) {
-                        return safeJsonParse(response);
-                    })
-                    .then(function(statsData) {
-                        // Fetch all investors to calculate median and for pagination
-                        return fetchAllInvestors().then(function(investorsData) {
-                            var amounts = investorsData.map(function(investor) { return investor.amount || 0; });
-                            var median = calculateMedian(amounts);
-                            
-                            setStats({
-                                total_investment: statsData.total_investment || 0,
-                                total_investors: statsData.total_investors || 0,
-                                average_allocation: statsData.average_allocation || 0,
-                                median_investment: median,
-                                highest_allocation: statsData.highest_allocation ? statsData.highest_allocation.amount : 0,
-                                lowest_allocation: statsData.lowest_allocation ? statsData.lowest_allocation.amount : 0,
-                                transaction_count: 0 // API does not provide this
-                            });
-                            
-                            // Store all investors
-                            setAllInvestors(investorsData);
-                            
-                            // Calculate total pages for client-side pagination
-                            var totalInvestors = statsData.total_investors || investorsData.length;
-                            setTotalPages(Math.ceil(totalInvestors / investorsPerPage));
-                            
-                            setLoading(false);
-                        });
+                        console.log('Fetched investors for page ' + page + ':', data.investors); // Debugging
+                        setInvestors(data.investors || []);
+                        setTotalPages(data.total_pages || 1);
+                        setLoading(false);
                     })
                     .catch(function(error) {
-                        console.error('Error fetching data:', error);
-                        setError(error.message || "Failed to load data");
+                        console.error('Error fetching investors:', error);
+                        setError(error.message);
+                        setInvestors([]);
                         setLoading(false);
                     });
             }
+            
+            // Fetch stats (called once on mount)
+            function fetchStats() {
+                return fetch(API_BASE_URL + 'api/session/stats')
+                    .then(function(response) {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch stats');
+                        }
+                        return response.json();
+                    })
+                    .then(function(statsData) {
+                        console.log('Fetched stats:', statsData); // Debugging
+                        setStats({
+                            total_investment: statsData.total_investment || 0,
+                            total_investors: statsData.total_investors || 0,
+                            average_allocation: statsData.average_allocation || 0,
+                            median_investment: statsData.median_investment || 0,
+                            highest_allocation: statsData.highest_allocation ? statsData.highest_allocation.amount : 0,
+                            lowest_allocation: statsData.lowest_allocation ? statsData.lowest_allocation.amount : 0,
+                            transaction_count: 0 // API does not provide this
+                        });
+                    })
+                    .catch(function(error) {
+                        console.error('Error fetching stats:', error);
+                        setError(error.message || "Failed to load stats");
+                    });
+            }
+            
+            // Initial data fetch
+            React.useEffect(function() {
+                // Fetch stats first
+                fetchStats().then(function() {
+                    // Then fetch investors for the initial page
+                    fetchInvestors(currentPage);
+                });
+            }, []);
+            
+            // Fetch investors when the page changes
+            React.useEffect(function() {
+                fetchInvestors(currentPage);
+            }, [currentPage]);
             
             // Handle investor click to show modal
             function handleInvestorClick(address) {
@@ -806,25 +806,16 @@
             
             // Handle page change
             function handlePageChange(newPage) {
+                console.log('Navigating to page:', newPage); // Debugging
                 setCurrentPage(newPage);
             }
             
-            // Fetch data on load (no dependency on currentPage since we're doing client-side pagination)
-            React.useEffect(function() {
-                fetchData();
-            }, []);
-            
-            // Calculate the investors to display based on the current page (client-side pagination)
-            var startIndex = (currentPage - 1) * investorsPerPage;
-            var endIndex = startIndex + investorsPerPage;
-            var investorsForPage = allInvestors.slice(startIndex, endIndex);
-            
             // Sort investors based on current sort order
             var sortedInvestors = React.useMemo(function() {
-                return investorsForPage.slice().sort(function(a, b) {
+                return investors.slice().sort(function(a, b) {
                     return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
                 });
-            }, [investorsForPage, sortOrder]);
+            }, [investors, sortOrder]);
             
             if (loading && !stats.total_investment) {
                 return React.createElement('div', { className: 'flex items-center justify-center h-screen' },
@@ -846,7 +837,11 @@
                         React.createElement('h2', { className: 'text-xl text-red-500 mb-4' }, 'Error'),
                         React.createElement('p', null, error),
                         React.createElement('button', {
-                            onClick: fetchData,
+                            onClick: function() {
+                                fetchStats().then(function() {
+                                    fetchInvestors(currentPage);
+                                });
+                            },
                             className: 'pagination-button mt-4'
                         }, 'Retry')
                     )
@@ -946,44 +941,50 @@
                                         )
                                     ),
                                     React.createElement('tbody', null,
-                                        sortedInvestors.map(function(investor, index) {
-                                            return React.createElement('tr', { key: investor.address, className: 'table-row' },
-                                                React.createElement('td', null,
-                                                    (currentPage - 1) * investorsPerPage + index + 1 <= 3 ?
-                                                        React.createElement('span', { className: 'rank-badge' },
-                                                            (currentPage - 1) * investorsPerPage + index + 1
-                                                        ) :
-                                                        React.createElement('span', null, '#' + ((currentPage - 1) * investorsPerPage + index + 1))
-                                                ),
-                                                React.createElement('td', { className: 'address-cell' },
-                                                    React.createElement('a', {
-                                                        href: '#',
-                                                        onClick: function(e) {
-                                                            e.preventDefault();
-                                                            handleInvestorClick(investor.address);
-                                                        },
-                                                        title: investor.address
-                                                    }, formatAddress(investor.address))
-                                                ),
-                                                React.createElement('td', { className: 'text-right font-mono' },
-                                                    formatCurrency(investor.amount)
-                                                ),
-                                                React.createElement('td', { className: 'text-right' },
-                                                    stats.total_investment ? ((investor.amount / stats.total_investment) * 100).toFixed(2) : '0.00' + '%'
-                                                )
-                                            );
-                                        }),
-                                        sortedInvestors.length === 0 &&
+                                        loading ?
                                             React.createElement('tr', { className: 'table-row' },
                                                 React.createElement('td', { colSpan: '4', className: 'text-center py-4' },
-                                                    'No investors data available yet'
+                                                    React.createElement('div', { className: 'loading-spinner' })
                                                 )
-                                            )
+                                            ) :
+                                        !loading && investors.length === 0 ?
+                                            React.createElement('tr', { className: 'table-row' },
+                                                React.createElement('td', { colSpan: '4', className: 'text-center py-4' },
+                                                    'No investors data available'
+                                                )
+                                            ) :
+                                            sortedInvestors.map(function(investor, index) {
+                                                return React.createElement('tr', { key: investor.address, className: 'table-row' },
+                                                    React.createElement('td', null,
+                                                        (currentPage - 1) * investorsPerPage + index + 1 <= 3 ?
+                                                            React.createElement('span', { className: 'rank-badge' },
+                                                                (currentPage - 1) * investorsPerPage + index + 1
+                                                            ) :
+                                                            React.createElement('span', null, '#' + ((currentPage - 1) * investorsPerPage + index + 1))
+                                                    ),
+                                                    React.createElement('td', { className: 'address-cell' },
+                                                        React.createElement('a', {
+                                                            href: '#',
+                                                            onClick: function(e) {
+                                                                e.preventDefault();
+                                                                handleInvestorClick(investor.address);
+                                                            },
+                                                            title: investor.address
+                                                        }, formatAddress(investor.address))
+                                                    ),
+                                                    React.createElement('td', { className: 'text-right font-mono' },
+                                                        formatCurrency(investor.amount)
+                                                    ),
+                                                    React.createElement('td', { className: 'text-right' },
+                                                        stats.total_investment ? ((investor.amount / stats.total_investment) * 100).toFixed(2) : '0.00' + '%'
+                                                    )
+                                                );
+                                            })
                                     )
                                 ),
                                 
                                 // Pagination
-                                totalPages > 1 &&
+                                totalPages > 1 && investors.length > 0 &&
                                     React.createElement('div', { className: 'pagination' },
                                         React.createElement('button', {
                                             className: 'pagination-button',
