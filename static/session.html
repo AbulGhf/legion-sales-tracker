@@ -508,7 +508,7 @@
             const fetchLiveTransactions = React.useCallback(async () => {
                 try {
                     setLoading(true);
-                    const response = await fetch('http://192.168.100.2:5000/api/live-feed?sale=session&limit=8');
+                    const response = await fetch('/api/live-feed?sale=session&limit=8');
                     if (!response.ok) {
                         throw new Error('Failed to fetch live transactions');
                     }
@@ -656,7 +656,7 @@
                     // Calculate median by fetching all investors
                     let medianInvestment = 0;
                     try {
-                        const allInvestorsResponse = await fetch('http://192.168.100.2:5000/api/session/investors?page=1&limit=1000');
+                        const allInvestorsResponse = await fetch('/api/session/investors?page=1&limit=1000');
                         const allInvestorsData = await safeJsonParse(allInvestorsResponse);
                         if (allInvestorsData.investors && allInvestorsData.investors.length > 0) {
                             const sortedAmounts = allInvestorsData.investors
@@ -695,7 +695,7 @@
                     });
                     
                     // Fetch investors with pagination
-                    const investorsResponse = await fetch(`http://192.168.100.2:5000/api/session/investors?page=${currentPage}&limit=${investorsPerPage}`);
+                    const investorsResponse = await fetch(`/api/session/investors?page=${currentPage}&limit=${investorsPerPage}`);
                     const investorsData = await safeJsonParse(investorsResponse);
                     setInvestors(investorsData.investors || []);
                     setTotalPages(investorsData.total_pages || 1);
@@ -714,7 +714,7 @@
                     setShowModal(true);
                     setSelectedInvestor(null);
                     
-                    const response = await fetch(`http://192.168.100.2:5000/api/investor/${address}`);
+                    const response = await fetch(`/api/investor/${address}`);
                     if (!response.ok) {
                         throw new Error('Failed to fetch investor details');
                     }
