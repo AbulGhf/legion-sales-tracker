@@ -45,6 +45,12 @@ cache = {
     'resolv_deposits_timestamp': 0,
     'resolv_total': None,
     'resolv_total_timestamp': 0,
+    'session_deposits': None,
+    'session_deposits_timestamp': 0,
+    'session_total': None,
+    'session_total_timestamp': 0,
+    'session_investors': None,  # Added for new endpoint
+    'session_investors_timestamp': 0,  # Added for new endpoint
     'global_stats': None,
     'global_stats_timestamp': 0
 }
@@ -65,12 +71,24 @@ LIT_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"  # Arbitrum USD
 
 # Constants for Resolv Protocol (Ethereum)
 RESOLV_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"  # Using the same API key
-RESOLV_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{RESOLV_ALCHEMY_API_KEY}"  # Ethereum endpoint
+RESOLV_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{
+
+RESOLV_ALCHEMY_API_KEY}"  # Ethereum endpoint
 RESOLV_CONTRACTS = [
     "0xee6deedb6c1535E4912eE5db48E08b36FD2fAA8f",
     "0x5Fdab714fe8BB9d40C8B1e5f7c2BacD8E7f869d8"
 ]
 RESOLV_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+
+# Constants for Session Protocol (Arbitrum)
+SESSION_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
+SESSION_ALCHEMY_URL = f"https://arb-mainnet.g.alchemy.com/v2/{SESSION_ALCHEMY_API_KEY}"
+SESSION_CONTRACTS = [
+    "0x543Eb0BFB29803C28eC0A0Ed181683c915F44ED2",
+    "0xD3472eD0F891ee9279ADFFC7e147bFCF8E72C790",
+    "0x90cd2BBccdC85Ab75a14d2112ffa2A5cD42817A4"
+]
+SESSION_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"  # Arbitrum USDC contract
 
 # Cache decorator
 def cached(cache_key, timestamp_key):
@@ -321,6 +339,123 @@ def get_recent_resolv_transactions(limit=10):
     # Return the limited number
     return transactions[:limit]
 
+# Session Protocol Functions
+def get_session_usdc_deposits():
+    """Get all USDC transfers to the Session Protocol sale contracts"""
+    
+    all_transfers = []
+    
+    for contract_address in SESSION_CONTRACTS:
+        page_key = None
+        contract_transfers = []
+        
+        print(f"Fetching USDC transfers to Session Protocol contract: {contract_address}")
+        
+        while True:
+            params = {
+                "fromBlock": "0x0",
+                "toBlock": "latest",
+                "toAddress": contract_address,
+                "contractAddresses": [SESSION_USDC_CONTRACT],
+                "category": ["erc20"],
+                "withMetadata": True,
+                "excludeZeroValue": True,
+                "maxCount": "0x64"  # Hex for 100
+            }
+            
+            if page_key:
+                params["pageKey"] = page_key
+            
+            payload = {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "alchemy_getAssetTransfers",
+                "params": [params]
+            }
+            
+            response = requests.post(SESSION_ALCHEMY_URL, json=payload)
+            data = response.json()
+            
+            if "error" in data:
+                print(f"Error fetching transfers: {data['error']['message']}")
+                break
+            
+            if "result" in data and "transfers" in data["result"]:
+                transfers = data["result"]["transfers"]
+                contract_transfers.extend(transfers)
+                
+                # Check if there are more pages
+                if "pageKey" in data["result"]:
+                    page_key = data["result"]["pageKey"]
+                    print(f"Fetched {len(transfers)} transfers for contract, getting next page...")
+                else:
+                    print(f"Fetched {len(transfers)} transfers for contract, no more pages.")
+                    break
+            else:
+                break
+        
+        print(f"Total transfers fetched for contract {contract_address}: {len(contract_transfers)}")
+        all_transfers.extend(contract_transfers)
+    
+    print(f"Total transfers fetched across all contracts: {len(all_transfers)}")
+    return all_transfers
+
+def aggregate_session_deposits(transfers):
+    """Aggregate deposits by address for Session Protocol"""
+    
+    deposits_by_address = {}
+    
+    for transfer in transfers:
+        # Check if it's a USDC transfer
+        if transfer.get("asset") in ["USDC", "USD Coin"]:
+            from_address = transfer["from"].lower()
+            amount = float(transfer["value"])
+            
+            if from_address in deposits_by_address:
+                deposits_by_address[from_address]["amount"] += amount
+            else:
+                deposits_by_address[from_address] = {
+                    "address": from_address,
+                    "amount": amount
+                }
+    
+    # Convert to a list for JSON
+    deposits_list = list(deposits_by_address.values())
+    
+    # Sort by amount in descending order
+    deposits_list.sort(key=lambda x: x["amount"], reverse=True)
+    
+    return deposits_list
+
+def get_recent_session_transactions(limit=10):
+    """Get recent USDC transfers to the Session Protocol sale contracts"""
+    
+    # Get the transfers
+    transfers = get_session_usdc_deposits()
+    
+    # Convert to our format
+    transactions = []
+    for transfer in transfers:
+        # Extract timestamp if available
+        timestamp = transfer.get("metadata", {}).get("blockTimestamp", "")
+        
+        tx = {
+            "from": transfer["from"],
+            "amount": float(transfer["value"]),
+            "hash": transfer.get("hash", ""),
+            "timestamp": timestamp,
+            "sale": "session",  # Add sale identifier
+            "is_live": True     # Flag to indicate this is a live sale
+        }
+        transactions.append(tx)
+    
+    # Sort by timestamp (most recent first)
+    if transactions and 'timestamp' in transactions[0] and transactions[0]['timestamp']:
+        transactions.sort(key=lambda x: x['timestamp'], reverse=True)
+    
+    # Return the limited number
+    return transactions[:limit]
+
 # Route handlers
 @app.route('/')
 def welcome():
@@ -449,6 +584,98 @@ def resolv_stats():
     
     return jsonify(response_data)
 
+# Session Protocol Functions
+@app.route('/api/session/total-investment', methods=['GET'])
+@cached('session_total', 'session_total_timestamp')
+def session_total_investment():
+    """Get total investment for Session Protocol sale"""
+    transfers = get_session_usdc_deposits()
+    deposits_list = aggregate_session_deposits(transfers)
+    total = sum(deposit["amount"] for deposit in deposits_list)
+    return jsonify({"total": total, "is_live": True})
+
+@app.route('/api/session/deposits', methods=['GET'])
+@cached('session_deposits', 'session_deposits_timestamp')
+def session_deposits():
+    """Get all deposits for Session Protocol sale"""
+    transfers = get_session_usdc_deposits()
+    deposits_list = aggregate_session_deposits(transfers)
+    
+    return jsonify({
+        "deposits": deposits_list,
+        "count": len(deposits_list),
+        "is_live": True
+    })
+
+@app.route('/api/session/stats', methods=['GET'])
+def session_stats():
+    """Return key statistics for Session Protocol sale"""
+    transfers = get_session_usdc_deposits()
+    deposits_list = aggregate_session_deposits(transfers)
+    
+    # Calculate stats
+    if deposits_list:
+        total_investment = sum(item["amount"] for item in deposits_list)
+        total_investors = len(deposits_list)
+        highest_allocation = max(deposits_list, key=lambda x: x["amount"])
+        lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
+        average_allocation = total_investment / total_investors if total_investors > 0 else 0
+        
+        # Top 5 investors
+        top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
+    else:
+        total_investment = 0
+        total_investors = 0
+        highest_allocation = {"address": "", "amount": 0}
+        lowest_allocation = {"address": "", "amount": 0}
+        average_allocation = 0
+        top_investors = []
+    
+    response_data = {
+        "total_investment": total_investment,
+        "total_investors": total_investors,
+        "highest_allocation": highest_allocation,
+        "lowest_allocation": lowest_allocation,
+        "average_allocation": average_allocation,
+        "top_investors": top_investors,
+        "is_live": True
+    }
+    
+    return jsonify(response_data)
+
+# New endpoint for Session investors with pagination
+@app.route('/api/session/investors', methods=['GET'])
+@cached('session_investors', 'session_investors_timestamp')
+def session_investors():
+    """Get paginated list of investors for Session Protocol sale"""
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=10, type=int)
+    
+    # Limit values for safety
+    limit = min(limit, 500)  # Max 500 per page
+    page = max(page, 1)      # Min page 1
+    
+    # Fetch live Session data
+    try:
+        transfers = get_session_usdc_deposits()
+        deposits_list = aggregate_session_deposits(transfers)
+    except Exception as e:
+        print(f"Error fetching Session investors: {str(e)}")
+        return jsonify({"error": f"Failed to fetch Session investors: {str(e)}"}), 500
+    
+    # Calculate pagination
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    paginated_deposits = deposits_list[start_idx:end_idx]
+    
+    return jsonify({
+        "investors": paginated_deposits,
+        "page": page,
+        "limit": limit,
+        "total_investors": len(deposits_list),
+        "total_pages": (len(deposits_list) + limit - 1) // limit
+    })
+
 # Generic API Endpoints for all sales
 @app.route('/api/<string:sale_name>/total-investment', methods=['GET'])
 def sale_total_investment(sale_name):
@@ -458,6 +685,8 @@ def sale_total_investment(sale_name):
         return resolv_total_investment()
     elif sale_name == 'fragmetric':
         return fragmetric_total_investment()
+    elif sale_name == 'session':
+        return session_total_investment()
     
     if sale_name in STATIC_DATA:
         return jsonify({"total": STATIC_DATA[sale_name]['total']})
@@ -468,13 +697,7 @@ def sale_total_investment(sale_name):
 @app.route('/api/live-feed', methods=['GET'])
 def live_feed():
     """Return the most recent transactions for the live feed"""
-    # Check for initialized flag in cookies
-    if not request.cookies.get('app_initialized'):
-        # Return empty data if not initialized
-        return jsonify({
-            "transactions": [],
-            "count": 0
-        })
+    # Removed cookie check to ensure we always try to fetch transactions
     
     # Get optional limit parameter
     limit = request.args.get('limit', default=10, type=int)
@@ -483,75 +706,56 @@ def live_feed():
     # Get optional sale parameter
     sale_filter = request.args.get('sale', default=None, type=str)
     
-    if sale_filter == 'lit':
-        # Use static data for Lit Protocol
-        if 'lit' in STATIC_DATA:
-            deposits = STATIC_DATA['lit']['deposits']
-            transactions = []
-            for deposit in deposits:
-                tx = {
-                    "from": deposit["address"],
-                    "amount": deposit["amount"],
-                    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
-                    "timestamp": "0",  # Placeholder timestamp
-                    "sale": "lit"
-                }
-                transactions.append(tx)
-            return jsonify({
-                "transactions": transactions[:limit],
-                "count": len(transactions)
-            })
-        return jsonify({"transactions": [], "count": 0})
-    elif sale_filter == 'resolv':
-        # Use static data for Resolv Protocol
-        if 'resolv' in STATIC_DATA:
-            deposits = STATIC_DATA['resolv']['deposits']
-            transactions = []
-            for deposit in deposits:
-                tx = {
-                    "from": deposit["address"],
-                    "amount": deposit["amount"],
-                    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
-                    "timestamp": "0",  # Placeholder timestamp
-                    "sale": "resolv"
-                }
-                transactions.append(tx)
-            return jsonify({
-                "transactions": transactions[:limit],
-                "count": len(transactions)
-            })
-        return jsonify({"transactions": [], "count": 0})
-    elif sale_filter == 'fragmetric':
-        # Use data from fragmetric.json
+    if sale_filter == 'session':
+        # Fetch live Session Protocol transactions
         try:
-            with open('fragmetric.json', 'r') as f:
-                fragmetric_data = json.load(f)
+            transactions = get_recent_session_transactions(limit)
+            # Make sure each transaction has all required fields
+            for tx in transactions:
+                # Ensure hash is present and valid
+                if not tx.get("hash") or tx["hash"] == "":
+                    tx["hash"] = "0x0000000000000000000000000000000000000000000000000000000000000000"  # Placeholder
                 
-            # Transform the data to match the expected format
-            transactions = []
-            for item in fragmetric_data:
-                tx = {
-                    "from": item["address"],
-                    "amount": item["usdc_balance"],
-                    "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
-                    "timestamp": "0",  # Placeholder timestamp
-                    "sale": "fragmetric"
-                }
-                transactions.append(tx)
+                # Ensure all transactions have the is_live flag
+                tx["is_live"] = True
                 
-            # Sort by amount in descending order to show the largest transactions first
-            transactions.sort(key=lambda x: x["amount"], reverse=True)
-            
+                # Add sale name for proper logo display
+                tx["sale"] = "session"
+                
             return jsonify({
-                "transactions": transactions[:limit],
+                "transactions": transactions,
                 "count": len(transactions)
             })
         except Exception as e:
-            return jsonify({"error": f"Failed to load Fragmetric data: {str(e)}"}), 500
+            print(f"Error fetching Session transactions: {str(e)}")
+            return jsonify({"error": f"Failed to load Session transactions: {str(e)}"}), 500
+    elif sale_filter == 'lit' or sale_filter == 'resolv' or sale_filter == 'fragmetric':
+        # Use existing code for other sales
+        # ... [existing code for other sale filters]
+        pass
     else:
-        # Get transactions for all sales from static data and fragmetric.json
+        # Combined feed with live and static data
         transactions = []
         
+        # Add Session transactions (live data) first - they should be most recent
+        try:
+            session_txs = get_recent_session_transactions(limit)
+            for tx in session_txs:
+                # Make sure we have a valid hash
+                if not tx.get("hash") or tx["hash"] == "":
+                    tx["hash"] = "0x0000000000000000000000000000000000000000000000000000000000000000"  # Placeholder
+                
+                # Ensure all transactions have the is_live flag
+                tx["is_live"] = True
+                
+                # Add sale name for proper logo display
+                tx["sale"] = "session"
+                
+            transactions.extend(session_txs)
+        except Exception as e:
+            print(f"Error loading Session transactions for live feed: {str(e)}")
+        
+        # Add static data for other sales
         # Add Lit transactions
         if 'lit' in STATIC_DATA:
             for deposit in STATIC_DATA['lit']['deposits']:
@@ -560,7 +764,8 @@ def live_feed():
                     "amount": deposit["amount"],
                     "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
                     "timestamp": "0",  # Placeholder timestamp
-                    "sale": "lit"
+                    "sale": "lit",
+                    "is_live": False
                 }
                 transactions.append(tx)
         
@@ -572,7 +777,8 @@ def live_feed():
                     "amount": deposit["amount"],
                     "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
                     "timestamp": "0",  # Placeholder timestamp
-                    "sale": "resolv"
+                    "sale": "resolv",
+                    "is_live": False
                 }
                 transactions.append(tx)
                 
@@ -587,15 +793,26 @@ def live_feed():
                     "amount": item["usdc_balance"],
                     "hash": "0x0000000000000000000000000000000000000000000000000000000000000000",  # Placeholder hash
                     "timestamp": "0",  # Placeholder timestamp
-                    "sale": "fragmetric"
+                    "sale": "fragmetric",
+                    "is_live": False
                 }
                 transactions.append(tx)
         except Exception as e:
             print(f"Error loading Fragmetric data for live feed: {str(e)}")
         
-        # Sort by amount since we don't have real timestamps
-        transactions.sort(key=lambda x: x["amount"], reverse=True)
-        transactions = transactions[:limit]  # Limit after combining
+        # Sort by timestamp first if available, otherwise by amount
+        transactions_with_timestamp = [tx for tx in transactions if tx.get("timestamp") and tx["timestamp"] != "0"]
+        transactions_without_timestamp = [tx for tx in transactions if not tx.get("timestamp") or tx["timestamp"] == "0"]
+        
+        if transactions_with_timestamp:
+            transactions_with_timestamp.sort(key=lambda x: x["timestamp"], reverse=True)
+        
+        if transactions_without_timestamp:
+            transactions_without_timestamp.sort(key=lambda x: x["amount"], reverse=True)
+        
+        # Combine the sorted lists, prioritizing transactions with timestamps
+        sorted_transactions = transactions_with_timestamp + transactions_without_timestamp
+        transactions = sorted_transactions[:limit]  # Limit after combining
     
     return jsonify({
         "transactions": transactions,
@@ -610,6 +827,8 @@ def sale_deposits(sale_name):
         return resolv_deposits()
     elif sale_name == 'fragmetric':
         return fragmetric_deposits()
+    elif sale_name == 'session':
+        return session_deposits()
     
     if sale_name in STATIC_DATA:
         return jsonify({
@@ -660,6 +879,8 @@ def sale_stats(sale_name):
         return resolv_stats()
     elif sale_name == 'fragmetric':
         return fragmetric_stats()
+    elif sale_name == 'session':
+        return session_stats()
     
     if sale_name in STATIC_DATA:
         # For all sales, use static data
@@ -716,12 +937,27 @@ def get_all_individual_investments():
     except Exception as e:
         print(f"Error loading Fragmetric data for investments: {str(e)}")
     
+    # Add Session data (live)
+    try:
+        transfers = get_session_usdc_deposits()
+        deposits_list = aggregate_session_deposits(transfers)
+        
+        for deposit in deposits_list:
+            all_investments.append(deposit["amount"])
+    except Exception as e:
+        print(f"Error loading Session data for investments: {str(e)}")
+    
     return all_investments
 
 # Global stats endpoint with caching and improved integration
 @app.route('/api/global-stats', methods=['GET'])
+@cached('global_stats', 'global_stats_timestamp')
 def global_stats():
     """Return aggregated statistics for all sales combined"""
+    # Reset cache to ensure fresh data
+    cache['global_stats'] = None
+    cache['global_stats_timestamp'] = 0
+    
     # Get all individual investments from all sales
     investments = get_all_individual_investments()
     
@@ -773,6 +1009,23 @@ def global_stats():
                 investor_sales_count[address].add('fragmetric')
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f"Error processing Fragmetric data: {e}")
+    
+    # Add Session data (live)
+    try:
+        transfers = get_session_usdc_deposits()
+        deposits_list = aggregate_session_deposits(transfers)
+        
+        for deposit in deposits_list:
+            address = deposit.get('address', '').lower()
+            if not address:
+                continue
+                
+            if address not in investor_sales_count:
+                investor_sales_count[address] = set()
+            
+            investor_sales_count[address].add('session')
+    except Exception as e:
+        print(f"Error processing Session data for global stats: {e}")
     
     # Calculate total sales participation (sum of all investors across all sales)
     total_sales_participation = sum(len(sales) for sales in investor_sales_count.values())
@@ -869,6 +1122,36 @@ def top_investors():
     except Exception as e:
         print(f"Error loading Fragmetric data for top investors: {str(e)}")
                 
+    # Add Session data
+    try:
+        transfers = get_session_usdc_deposits()
+        deposits_list = aggregate_session_deposits(transfers)
+        
+        for deposit in deposits_list:
+            address = deposit['address'].lower()
+            amount = deposit['amount']
+            
+            if address not in investors:
+                investors[address] = {
+                    'address': address,
+                    'total_invested': 0,
+                    'sales_participated': 0,
+                    'sales': {}
+                }
+            
+            # If this is the first time we're seeing this address for session
+            if 'session' not in investors[address]['sales']:
+                investors[address]['sales_participated'] += 1
+                investors[address]['sales']['session'] = amount
+            else:
+                # Add to existing amount for session
+                investors[address]['sales']['session'] += amount
+            
+            # Update total invested amount
+            investors[address]['total_invested'] += amount
+    except Exception as e:
+        print(f"Error loading Session data for top investors: {str(e)}")
+                
     # Convert to list for sorting
     investors_list = list(investors.values())
     
@@ -946,6 +1229,23 @@ def investor_detail(address):
                 break  # Found the investor in fragmetric data, no need to continue
     except Exception as e:
         print(f"Error loading Fragmetric data for investor detail: {str(e)}")
+    
+    # Add Session data
+    try:
+        transfers = get_session_usdc_deposits()
+        deposits_list = aggregate_session_deposits(transfers)
+        
+        for deposit in deposits_list:
+            if deposit['address'].lower() == address:
+                # Add to sales list
+                investor_data['sales'].append({
+                    'sale': 'session',
+                    'amount': deposit['amount']
+                })
+                investor_data['total_invested'] += deposit['amount']
+                break  # Found the investor in Session data, no need to continue
+    except Exception as e:
+        print(f"Error loading Session data for investor detail: {str(e)}")
     
     # Remove duplicates and aggregate by sale
     sales_dict = {}

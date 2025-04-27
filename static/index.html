@@ -1563,7 +1563,8 @@ async function fetchSaleData(sale) {
             lowestAllocation: { address: "Unknown", amount: 0 },
             tokenSalePrice: 'TBA',
             upcoming: true,
-            isActive: false
+            isActive: false,
+            is_live: false
         };
     }
     
@@ -1586,8 +1587,9 @@ async function fetchSaleData(sale) {
             highestAllocation: statsData.highest_allocation,
             lowestAllocation: statsData.lowest_allocation,
             tokenSalePrice: getTokenSalePrice(sale.id),
-            // For active sales (Lit & Resolv)
-            isActive: false
+            // Mark as active if is_live flag is true
+            isActive: statsData.is_live === true,
+            is_live: statsData.is_live === true
         };
     } catch (error) {
         console.error(`Error fetching ${sale.id} data:`, error);
@@ -1628,8 +1630,9 @@ async function fetchSaleData(sale) {
                 highestAllocation: { address: "Unknown", amount: 0 },
                 lowestAllocation: { address: "Unknown", amount: 0 },
                 tokenSalePrice: getTokenSalePrice(sale.id),
-                // For active sales (Lit & Resolv)
-                isActive: false
+                // Check for is_live flag in either response
+                isActive: totalData.is_live === true || depositsData.is_live === true,
+                is_live: totalData.is_live === true || depositsData.is_live === true
             };
         } catch (fallbackError) {
             console.error(`Fallback also failed for ${sale.id}:`, fallbackError);
@@ -1646,6 +1649,7 @@ async function fetchSaleData(sale) {
                 lowestAllocation: { address: "Unknown", amount: 0 },
                 tokenSalePrice: getTokenSalePrice(sale.id),
                 isActive: false,
+                is_live: false,
                 error: true
             };
         }
@@ -1657,12 +1661,17 @@ function createSaleRow(sale) {
     const row = document.createElement('div');
     row.className = `table-row ${sale.className}-row`;
     
-    // Add sale name with appropriate badge (upcoming or live)
+    // Check if the sale is live
+    const isLive = sale.is_live === true;
+    
+    // Display the name with a live badge if applicable
     let nameDisplay = sale.name;
-    if (sale.upcoming) {
-        nameDisplay = `${sale.name} <span class="upcoming-badge">Upcoming</span>`;
-    } else if (sale.isActive) {
-        nameDisplay = `${sale.name} <span class="live-badge">Live</span>`;
+    if (isLive) {
+        nameDisplay = `${sale.name} <span class="live-badge">LIVE</span>`;
+        // Mark as active for the counter
+        sale.isActive = true;
+    } else if (sale.upcoming) {
+        nameDisplay = `${sale.name} <span class="upcoming-badge">UPCOMING</span>`;
     }
     
     const amount = sale.upcoming ? 'TBA' : (sale.error ? 'Error' : `$${parseFloat(sale.invested).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`);
@@ -1671,8 +1680,8 @@ function createSaleRow(sale) {
     row.innerHTML = `
         <div class="logo-container">
             <img 
-                src="/${sale.id}.jpg" 
-                onerror="this.onerror=null; this.src='/${sale.id}.png';" 
+                src="${sale.id}.jpg" 
+                onerror="this.onerror=null; this.src='${sale.id}.png';" 
                 alt="${sale.name} Logo" 
                 class="sale-logo"
             >
@@ -1683,7 +1692,7 @@ function createSaleRow(sale) {
         <div class="token-sale-price ${sale.className}-color">${sale.tokenSalePrice}</div>
         <div class="token-price ${sale.className}-color">${sale.upcoming ? 'Not Live' : getMarketPrice(sale.id)}</div>
         <div>
-            <a href="${sale.upcoming ? 'https://legion.cc/app/invest' : `/${sale.id}`}" target="_blank" class="action-button ${sale.className}-button">${sale.upcoming ? 'Upcoming' : 'View Details'}</a>
+            <a href="${sale.upcoming ? 'https://legion.cc/app/invest' : `/${sale.id}.html`}" target="_blank" class="action-button ${sale.className}-button">${sale.upcoming ? 'Upcoming' : 'View Details'}</a>
         </div>
     `;
     
@@ -2130,8 +2139,6 @@ function updateLiveFeed(transactions) {
     
     // Add transactions to feed
     transactions.forEach(tx => {
-        const timestamp = tx.timestamp ? timeAgo(tx.timestamp) : 'Unknown';
-        
         const feedItem = document.createElement('div');
         feedItem.className = 'feed-item';
         // Store timestamp as data attribute for later updating
@@ -2139,28 +2146,26 @@ function updateLiveFeed(transactions) {
             feedItem.dataset.timestamp = tx.timestamp;
         }
         
-        // Determine the sale the transaction belongs to (default to lit if not specified)
-        const saleId = tx.sale || 'lit';
-        
-        // Add tier badge if available (only for Lit Protocol)
-        let tierBadge = '';
-        if (saleId === 'lit' && tx.tier) {
-            const tierClass = tx.tier === 1 ? 'bg-yellow-600' : 
-                             tx.tier === 2 ? 'bg-gray-400' : 
-                             tx.tier === 3 ? 'bg-yellow-700' : '';
-            tierBadge = `<span class="text-xs font-bold ml-1 px-1 rounded ${tierClass}">T${tx.tier}</span>`;
-        }
+        // Determine the sale the transaction belongs to
+        const saleId = tx.sale || 'session';
         
         // Determine the correct blockchain explorer link based on the sale
-        const explorerUrl = saleId === 'resolv' 
-            ? `https://etherscan.io/tx/${tx.hash}` 
-            : `https://arbiscan.io/tx/${tx.hash}`;
+        let explorerUrl;
+        if (tx.hash && tx.hash !== "0x0000000000000000000000000000000000000000000000000000000000000000") {
+            if (saleId === 'resolv') {
+                explorerUrl = `https://etherscan.io/tx/${tx.hash}`;
+            } else {
+                explorerUrl = `https://arbiscan.io/tx/${tx.hash}`;
+            }
+        } else {
+            // If no valid hash, just use a placeholder link
+            explorerUrl = "#";
+        }
         
         feedItem.innerHTML = `
-            <img src="/${saleId}.jpg" onerror="this.src='/${saleId}.png'" class="feed-logo" alt="${saleId}">
-            <a href="${explorerUrl}" target="_blank" class="feed-address">${formatAddress(tx.from)}${tierBadge}</a>
-            <span class="feed-amount ${saleId}-color">+$${tx.amount.toFixed(2)}</span>
-            <span class="feed-time">${timestamp}</span>
+            <img src="${saleId}.jpg" onerror="this.src='${saleId}.png'" class="feed-logo" alt="${saleId}">
+            <a href="${explorerUrl}" target="_blank" class="feed-address">${formatAddress(tx.from)}</a>
+            <span class="feed-amount ${saleId}-color">+$${parseFloat(tx.amount).toFixed(2)}</span>
         `;
         liveFeed.appendChild(feedItem);
     });
@@ -2268,7 +2273,7 @@ async function fetchAllSalesData() {
     });
 }
 
-// Function to refresh active sale data (Lit Protocol and Resolv)
+// Function to refresh active sale data
 async function refreshActiveData() {
     if (!appInitialized) return;
     
@@ -2276,9 +2281,10 @@ async function refreshActiveData() {
     if (!isPageVisible || !shouldUpdate()) return;
     
     try {
-        // Only refresh the active sales (Lit Protocol and Resolv)
+        // Refresh the active sales
         const litIndex = salesData.findIndex(sale => sale.id === 'lit');
         const resolvIndex = salesData.findIndex(sale => sale.id === 'resolv');
+        const sessionIndex = salesData.findIndex(sale => sale.id === 'session');
         
         // Fetch updated data for Lit Protocol
         if (litIndex !== -1) {
@@ -2296,11 +2302,19 @@ async function refreshActiveData() {
             }
         }
         
+        // Fetch updated data for Session
+        if (sessionIndex !== -1) {
+            const updatedSession = await fetchSaleData(sales.find(sale => sale.id === 'session'));
+            if (updatedSession) {
+                salesData[sessionIndex] = updatedSession;
+            }
+        }
+        
         // Update UI components
         updateTable();
         updateOverallStats();
         updateCharts();
-        // fetchLiveTransactions(); // Refresh the live feed with both sales data - No active sales
+        fetchLiveTransactions(); // Refresh the live feed
     } catch (error) {
         console.error('Error refreshing active sale data:', error);
     }
@@ -2381,21 +2395,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Function to initialize live feed with real data
 function initLiveFeed() {
-    // Display the "No Live Sales" message immediately
+    // Initialize the live feed to fetch actual data
     const liveFeed = document.getElementById('live-feed');
-    if (liveFeed) {
-        liveFeed.innerHTML = `
-            <div class="text-center text-gray-500 py-2">
-                <i class="fas fa-info-circle mr-2"></i>
-                No Live Sales
-            </div>
-        `;
-    }
     
-    // Don't set up any polling intervals since there are no live sales
-    // The code below is left commented for future use when sales are active
+    // Fetch transactions immediately
+    fetchLiveTransactions();
     
-    /*
+    // Set up polling intervals for live updates
     let updateInterval = null;
     let timeUpdateInterval = null;
     let lastFetchTime = 0;
@@ -2443,7 +2449,6 @@ function initLiveFeed() {
         if (updateInterval) clearInterval(updateInterval);
         if (timeUpdateInterval) clearInterval(timeUpdateInterval);
     });
-    */
 }
     </script>
 </body>
