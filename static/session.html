@@ -508,7 +508,7 @@
             const fetchLiveTransactions = React.useCallback(async () => {
                 try {
                     setLoading(true);
-                    const response = await fetch('/api/live-feed?sale=session&limit=8');
+                    const response = await fetch('http://192.168.100.2:5000/api/live-feed?sale=session&limit=8');
                     if (!response.ok) {
                         throw new Error('Failed to fetch live transactions');
                     }
@@ -566,7 +566,7 @@
                         ) : (
                             transactions.map((tx, index) => (
                                 <div className="feed-item" key={index}>
-                                    <img src="session.jpg" onError={(e) => e.target.src = 'session.png'} className="feed-logo" alt="Session" />
+                                    <img src="session.png" onError={(e) => e.target.src = 'session.png'} className="feed-logo" alt="Session" />
                                     <a 
                                         href={`https://arbiscan.io/tx/${tx.hash}`} 
                                         target="_blank" 
@@ -590,11 +590,11 @@
             // State hooks
             const [stats, setStats] = React.useState({
                 total_investment: 0,
-                investor_count: 0,
-                average_investment: 0,
+                total_investors: 0,
+                average_allocation: 0,
                 median_investment: 0,
-                largest_investment: 0,
-                smallest_investment: 0,
+                highest_allocation: 0,
+                lowest_allocation: 0,
                 transaction_count: 0
             });
             const [investors, setInvestors] = React.useState([]);
@@ -652,18 +652,50 @@
                     // Fetch stats
                     const statsResponse = await fetch('/api/session/stats');
                     const statsData = await safeJsonParse(statsResponse);
-                    setStats(statsData || {
-                        total_investment: 0,
-                        investor_count: 0,
-                        average_investment: 0,
-                        median_investment: 0,
-                        largest_investment: 0,
-                        smallest_investment: 0,
-                        transaction_count: 0
+                    
+                    // Calculate median by fetching all investors
+                    let medianInvestment = 0;
+                    try {
+                        const allInvestorsResponse = await fetch('http://192.168.100.2:5000/api/session/investors?page=1&limit=1000');
+                        const allInvestorsData = await safeJsonParse(allInvestorsResponse);
+                        if (allInvestorsData.investors && allInvestorsData.investors.length > 0) {
+                            const sortedAmounts = allInvestorsData.investors
+                                .map(investor => investor.amount)
+                                .sort((a, b) => a - b);
+                            
+                            const middle = Math.floor(sortedAmounts.length / 2);
+                            
+                            if (sortedAmounts.length % 2 === 0) {
+                                medianInvestment = (sortedAmounts[middle - 1] + sortedAmounts[middle]) / 2;
+                            } else {
+                                medianInvestment = sortedAmounts[middle];
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error calculating median:', error);
+                    }
+                    
+                    // Fix for highest_allocation and lowest_allocation
+                    const highestAllocation = statsData.highest_allocation && statsData.highest_allocation.amount 
+                        ? statsData.highest_allocation.amount 
+                        : (statsData.highest_allocation || 0);
+                    
+                    const lowestAllocation = statsData.lowest_allocation && statsData.lowest_allocation.amount 
+                        ? statsData.lowest_allocation.amount 
+                        : (statsData.lowest_allocation || 0);
+                    
+                    setStats({
+                        total_investment: statsData.total_investment || 0,
+                        total_investors: statsData.total_investors || 0,
+                        average_allocation: statsData.average_allocation || 0,
+                        median_investment: medianInvestment,
+                        highest_allocation: highestAllocation,
+                        lowest_allocation: lowestAllocation,
+                        transaction_count: 0 // API does not provide this
                     });
                     
                     // Fetch investors with pagination
-                    const investorsResponse = await fetch(`/api/session/investors?page=${currentPage}&limit=${investorsPerPage}`);
+                    const investorsResponse = await fetch(`http://192.168.100.2:5000/api/session/investors?page=${currentPage}&limit=${investorsPerPage}`);
                     const investorsData = await safeJsonParse(investorsResponse);
                     setInvestors(investorsData.investors || []);
                     setTotalPages(investorsData.total_pages || 1);
@@ -682,7 +714,7 @@
                     setShowModal(true);
                     setSelectedInvestor(null);
                     
-                    const response = await fetch(`/api/investor/${address}`);
+                    const response = await fetch(`http://192.168.100.2:5000/api/investor/${address}`);
                     if (!response.ok) {
                         throw new Error('Failed to fetch investor details');
                     }
@@ -800,7 +832,7 @@
                     {/* Header */}
                     <div className="header-card">
                         <div className="header-title">Session</div>
-                        <img src="session.jpg" alt="Session Logo" className="h-16" />
+                        <img src="session.png" alt="Session Logo" className="h-16" />
                     </div>
                     
                     {/* Note about data */}
@@ -818,7 +850,7 @@
                             <div className="card p-6 text-center">
                                 <div className="card-title">Total USDC Invested</div>
                                 <div className="amount-display">{formatCurrency(stats.total_investment || 0)}</div>
-                                <div className="text-gray-400 text-sm">{stats.investor_count || 0} unique addresses</div>
+                                <div className="text-gray-400 text-sm">{stats.total_investors || 0} unique addresses</div>
                             </div>
                             
                             {/* Live Feed Component */}
@@ -830,7 +862,7 @@
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Average</div>
-                                    <div className="stats-value">{formatCurrency(stats.average_investment || 0)}</div>
+                                    <div className="stats-value">{formatCurrency(stats.average_allocation || 0)}</div>
                                 </div>
                                 
                                 <div className="stats-card">
@@ -840,12 +872,12 @@
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Largest</div>
-                                    <div className="stats-value">{formatCurrency(stats.largest_investment || 0)}</div>
+                                    <div className="stats-value">{formatCurrency(stats.highest_allocation || 0)}</div>
                                 </div>
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Smallest</div>
-                                    <div className="stats-value">{formatCurrency(stats.smallest_investment || 0)}</div>
+                                    <div className="stats-value">{formatCurrency(stats.lowest_allocation || 0)}</div>
                                 </div>
                             </div>
                         </div>
