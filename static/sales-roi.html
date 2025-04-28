@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legion Sales ROI</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
+        .header-section {
+            background: #1a1b26;
+            padding: 2rem;
+            border-bottom: 1px solid rgba(255, 87, 34, 0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .legion-logo {
+            color: #FF5722;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 87, 34, 0.3);
+        }
+
+        .nav-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-title {
+            color: #FF5722;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .dashboard-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #b0b0b0;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+
+        .dashboard-link:hover {
+            color: #ffffff;
+        }
+
+        .dashboard-link i {
+            font-size: 0.875rem;
+        }
+
+        .back-button {
+            background: rgba(255, 87, 34, 0.1);
+            color: #FF5722;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-button:hover {
+            background: rgba(255, 87, 34, 0.2);
+            transform: translateY(-1px);
+        }
+        .description-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            line-height: 1.6;
+        }
+        .roi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+        .roi-card {
+            background: #23272b;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            height: auto;
+            min-height: 400px;
+        }
+        .roi-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .roi-logo {
+            width: 40px;
+            height: 40px;
+            margin-right: 12px;
+            border-radius: 8px;
+        }
+        .roi-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-pair {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            margin-bottom: 0.5rem;
+        }
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .calculator-section {
+            background: #181c1f;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        .calculator-input {
+            width: 100%;
+            background: #23272b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin: 8px 0;
+        }
+        .calculator-button {
+            width: 100%;
+            background: #284ee9;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            margin-top: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .calculator-button:hover {
+            background: #3a5ff0;
+        }
+        .result-card {
+            background: #23272b;
+            border-radius: 4px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        .profit-positive { color: #3dd656; }
+        .profit-negative { color: #ff6b6b; }
+        
+        /* Project-specific colors */
+        .fuel-color { color: #00f58c; }
+        .silencio-color { color: #284ee9; }
+        .corn-color { color: #ff931e; }
+        
+        .fuel-button { background: #00f58c; color: #000; }
+        .silencio-button { background: #284ee9; }
+        .corn-button { background: #ff931e; color: #000; }
+        
+        .fuel-button:hover { background: #34f9a7; }
+        .silencio-button:hover { background: #4367f0; }
+        .corn-button:hover { background: #ffa545; }
+        
+        @media (max-width: 768px) {
+            .roi-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header-section {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+            .legion-logo {
+                font-size: 2rem;
+            }
+            .page-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="page-title">LEGION SALES ROI</div>
+            <a href="/dashboard" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <!-- ROI Cards Grid -->
+        <div class="roi-grid">
+            <!-- Corn Card -->
+            <div class="roi-card" style="border: 1px solid #ff931e">
+                <div class="roi-header">
+                    <img src="/static/corn.png" alt="Corn Logo" class="roi-logo">
+                    <h2 class="roi-title corn-color">CORN</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value corn-color">$0.0714</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="corn-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="corn-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="corn-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="corn-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="corn-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="corn-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button corn-button" onclick="calculateCornROI()">Calculate</button>
+                    <div id="corn-result" class="result-card hidden"></div>
+                </div>
+            </div>
+
+            <!-- Fuel Card -->
+            <div class="roi-card" style="border: 1px solid #00f58c">
+                <div class="roi-header">
+                    <img src="/static/fuel.png" alt="Fuel Logo" class="roi-logo">
+                    <h2 class="roi-title fuel-color">FUEL</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value fuel-color">$0.02</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="fuel-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="fuel-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="fuel-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="fuel-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="fuel-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="fuel-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button fuel-button" onclick="calculateFuelROI()">Calculate</button>
+                    <div id="fuel-result" class="result-card hidden"></div>
+                </div>
+            </div>
+
+            <!-- Silencio Card -->
+            <div class="roi-card" style="border: 1px solid #284ee9">
+                <div class="roi-header">
+                    <img src="/static/silencio.png" alt="Silencio Logo" class="roi-logo">
+                    <h2 class="roi-title silencio-color">SILENCIO</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value silencio-color">$0.0006</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="silencio-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="silencio-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="silencio-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="silencio-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="silencio-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="silencio-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button silencio-button" onclick="calculateSilencioROI()">Calculate</button>
+                    <div id="silencio-result" class="result-card hidden"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sale configurations
+        const SALES_CONFIG = {
+            corn: {
+                salePrice: 0.0714,
+                tokenId: 'corn-3',
+                color: '#ff931e'
+            },
+            fuel: {
+                salePrice: 0.02,
+                tokenId: 'fuel-network',
+                color: '#00f58c'
+            },
+            silencio: {
+                salePrice: 0.0006,
+                tokenId: 'silencio',
+                color: '#284ee9'
+            }
+        };
+
+        // Price data storage
+        let priceData = {
+            corn: { current: 0, ath: 0, atl: 0 },
+            fuel: { current: 0, ath: 0, atl: 0 },
+            silencio: { current: 0, ath: 0, atl: 0 }
+        };
+
+        // Format currency helper
+        function formatCurrency(amount, decimals = 2) {
+            if (amount < 0.01) decimals = 6;
+            else if (amount < 1) decimals = 4;
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals
+            }).format(amount);
+        }
+
+        // Calculate ROI
+        function calculateROI(saleId, amount) {
+            const config = SALES_CONFIG[saleId];
+            const prices = priceData[saleId];
+            
+            const tokensReceived = amount / config.salePrice;
+            const currentValue = tokensReceived * prices.current;
+            const athValue = tokensReceived * prices.ath;
+            
+            const currentPnL = currentValue - amount;
+            const currentROI = ((prices.current - config.salePrice) / config.salePrice) * 100;
+            const athPnL = athValue - amount;
+            const athROI = ((prices.ath - config.salePrice) / config.salePrice) * 100;
+
+            return {
+                tokensReceived,
+                currentValue,
+                currentPnL,
+                currentROI,
+                athValue,
+                athPnL,
+                athROI
+            };
+        }
+
+        // Update UI with calculation results
+        function updateCalculationUI(saleId, result) {
+            const resultElement = document.getElementById(`${saleId}-result`);
+            resultElement.innerHTML = `
+                <div class="text-sm text-gray-400 mb-2">Investment Results</div>
+                <div class="flex justify-between mb-2">
+                    <span>Tokens Received:</span>
+                    <span class="font-medium">${result.tokensReceived.toLocaleString()}</span>
+                </div>
+                <div class="border-t border-gray-700 my-2"></div>
+                <div class="flex justify-between mb-2">
+                    <span>Current Value:</span>
+                    <span class="font-medium">${formatCurrency(result.currentValue)}</span>
+                </div>
+                <div class="flex justify-between mb-2">
+                    <span>Current P&L:</span>
+                    <span class="font-medium ${result.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}">
+                        ${formatCurrency(result.currentPnL)} (${result.currentROI.toFixed(2)}%)
+                    </span>
+                </div>
+                <div class="border-t border-gray-700 my-2"></div>
+                <div class="flex justify-between mb-2">
+                    <span>ATH Value:</span>
+                    <span class="font-medium">${formatCurrency(result.athValue)}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>ATH P&L:</span>
+                    <span class="font-medium ${result.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}">
+                        ${formatCurrency(result.athPnL)} (${result.athROI.toFixed(2)}%)
+                    </span>
+                </div>
+            `;
+            resultElement.classList.remove('hidden');
+        }
+
+        // Calculator functions for each token
+        function calculateCornROI() {
+            const amount = parseFloat(document.getElementById('corn-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            const result = calculateROI('corn', amount);
+            updateCalculationUI('corn', result);
+        }
+
+        function calculateFuelROI() {
+            const amount = parseFloat(document.getElementById('fuel-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            const result = calculateROI('fuel', amount);
+            updateCalculationUI('fuel', result);
+        }
+
+        function calculateSilencioROI() {
+            const amount = parseFloat(document.getElementById('silencio-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            const result = calculateROI('silencio', amount);
+            updateCalculationUI('silencio', result);
+        }
+
+        // Update price displays
+        function updatePriceDisplays() {
+            Object.keys(SALES_CONFIG).forEach(saleId => {
+                const prices = priceData[saleId];
+                const config = SALES_CONFIG[saleId];
+                
+                // Calculate ROIs
+                const currentRoi = ((prices.current - config.salePrice) / config.salePrice) * 100;
+                const athRoi = ((prices.ath - config.salePrice) / config.salePrice) * 100;
+                const atlRoi = ((prices.atl - config.salePrice) / config.salePrice) * 100;
+                
+                // Update price displays
+                document.getElementById(`${saleId}-ath`).textContent = formatCurrency(prices.ath, 6);
+                document.getElementById(`${saleId}-atl`).textContent = formatCurrency(prices.atl, 6);
+                
+                // Update ROI displays
+                const currentRoiElement = document.getElementById(`${saleId}-current-roi`);
+                currentRoiElement.textContent = `${currentRoi.toFixed(2)}%`;
+                currentRoiElement.className = `stat-value ${currentRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                
+                const athRoiElement = document.getElementById(`${saleId}-ath-roi`);
+                athRoiElement.textContent = `${athRoi.toFixed(2)}%`;
+                athRoiElement.className = `stat-value ${athRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                
+                const atlRoiElement = document.getElementById(`${saleId}-atl-roi`);
+                atlRoiElement.textContent = `${atlRoi.toFixed(2)}%`;
+                atlRoiElement.className = `stat-value ${atlRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
+            });
+        }
+
+        // Fetch price data
+        async function fetchPrices() {
+            try {
+                for (const [saleId, config] of Object.entries(SALES_CONFIG)) {
+                    const response = await fetch(`/api/proxy/coingecko/price/${config.tokenId}`);
+                    if (!response.ok) throw new Error(`Failed to fetch ${saleId} price`);
+                    
+                    const data = await response.json();
+                    priceData[saleId] = {
+                        current: data.current_price || 0,
+                        ath: data.ath || 0,
+                        atl: data.atl || 0
+                    };
+                }
+                updatePriceDisplays();
+            } catch (error) {
+                console.error('Error fetching prices:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPrices();
+            // Refresh prices every 5 minutes
+            setInterval(fetchPrices, 300000);
+        });
+    </script>
+</body>
+</html> 

@@ -236,26 +236,62 @@
             position: relative;
         }
 
-        /* Fixed header container */
-        .table-header-container {
+        /* Table scroll container */
+        .table-scroll-container {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: #FF5722 #242433;
+        }
+
+        .table-content {
+            min-width: 900px;
+        }
+
+        /* Table header */
+        .table-header {
             position: sticky;
             top: 0;
             z-index: 10;
-            width: 100%;
-        }
-
-        /* Updated table header style - removed gradient for cleaner look */
-        .table-header {
             background: #1a1a25;
             border-bottom: 1px solid rgba(255, 87, 34, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table row */
+        .table-row {
             display: grid;
             grid-template-columns: 60px minmax(140px, 0.8fr) minmax(140px, 1fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) 120px;
             padding: 0.75rem 1rem;
-            font-weight: 600;
-            color: #e0e0e0;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            align-items: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        /* Remove unused styles */
+        .table-header-container,
+        .table-body {
+            display: none;
+        }
+
+        /* Mobile styles */
+        @media screen and (max-width: 768px) {
+            .table-content {
+                min-width: 900px;
+            }
+
+            .table-scroll-container {
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .table-header {
+                position: sticky;
+                top: 0;
+                z-index: 10;
+                background: #1a1a25;
+            }
         }
 
         .filter-bar {
@@ -347,31 +383,6 @@
             color: #777777;
         }
 
-        /* Table scroll container with horizontal scroll */
-        .table-scroll-container {
-            flex: 1;
-            overflow-x: auto;
-            overflow-y: visible;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            scrollbar-color: #FF5722 #242433;
-            position: relative;
-        }
-        
-        .table-scroll-container::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .table-scroll-container::-webkit-scrollbar-track {
-            background: #242433;
-            border-radius: 3px;
-        }
-        
-        .table-scroll-container::-webkit-scrollbar-thumb {
-            background-color: #FF5722;
-            border-radius: 3px;
-        }
-        
         /* Table body */
         .table-body {
             width: 100%;
@@ -1061,8 +1072,20 @@
             /* Fixed header for mobile */
             .table-header-container {
                 position: sticky;
-                left: 0;
-                width: 100%;
+                top: 0;
+                z-index: 10;
+                min-width: 900px;
+                background: #1a1a25;
+            }
+            
+            .table-scroll-container {
+                overflow-x: auto;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table-body {
+                min-width: 900px;
             }
             
             /* Header adjustments */
@@ -1155,6 +1178,9 @@
                 <div class="header-nav">
                     <a href="/top-investors.html" class="nav-button">
                         <i class="fas fa-users mr-2"></i> Top Investors
+                    </a>
+                    <a href="/sales-roi.html" class="nav-button ml-2">
+                        <i class="fas fa-chart-line mr-2"></i> Sales ROI
                     </a>
                 </div>
             </div>
@@ -1313,50 +1339,23 @@
                             </div>
                         </div>
                         
-                        <!-- Fixed Header -->
-                        <div class="table-header-container">
-                            <div class="table-header">
-                                <div></div>
-                                <div>Sale</div>
-                                <div>Invested</div>
-                                <div>Investors</div>
-                                <div>Sale Price</div>
-                                <div>Live Price</div>
-                                <div></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Table Content with Horizontal Scroll -->
+                        <!-- Single scrollable container -->
                         <div class="table-scroll-container">
-                            <!-- Table Body -->
-                            <div class="table-body" id="sales-table">
-                                <!-- Loading skeletons -->
-                                <div class="skeleton-row">
-                                    <div><div class="skeleton skeleton-logo"></div></div>
-                                    <div><div class="skeleton skeleton-text-lg"></div></div>
-                                    <div><div class="skeleton skeleton-text-lg"></div></div>
-                                    <div><div class="skeleton skeleton-text"></div></div>
-                                    <div><div class="skeleton skeleton-text"></div></div>
-                                    <div><div class="skeleton skeleton-text"></div></div>
-                                    <div><div class="skeleton skeleton-button"></div></div>
+                            <div class="table-content">
+                                <!-- Table Header -->
+                                <div class="table-row table-header">
+                                    <div></div>
+                                    <div>Sale</div>
+                                    <div>Invested</div>
+                                    <div>Investors</div>
+                                    <div>Sale Price</div>
+                                    <div>Live Price</div>
+                                    <div></div>
                                 </div>
-                                <div class="skeleton-row">
-                                    <div><div class="skeleton skeleton-logo"></div></div>
-                                    <div><div class="skeleton skeleton-text-lg"></div></div>
-                                    <div><div class="skeleton skeleton-text-lg"></div></div>
-                                    <div><div class="skeleton skeleton-text"></div></div>
-                                    <div><div class="skeleton skeleton-text"></div></div>
-                                    <div><div class="skeleton skeleton-text"></div></div>
-                                    <div><div class="skeleton skeleton-button"></div></div>
-                                </div>
-                                <div class="skeleton-row">
-                                    <div><div class="skeleton skeleton-logo"></div></div>
-                                    <div><div class="skeleton skeleton-text-lg"></div></div>
-                                    <div><div class="skeleton skeleton-text-lg"></div></div>
-                                    <div><div class="skeleton skeleton-text"></div></div>
-                                    <div><div class="skeleton skeleton-text"></div></div>
-                                    <div><div class="skeleton skeleton-text"></div></div>
-                                    <div><div class="skeleton skeleton-button"></div></div>
+                                
+                                <!-- Table Body -->
+                                <div id="sales-table">
+                                    <!-- Table content will be dynamically populated -->
                                 </div>
                             </div>
                         </div>
