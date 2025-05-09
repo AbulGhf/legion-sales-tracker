@@ -1196,15 +1196,8 @@
                 <div class="left-column">
                     <!-- Live Feed - Taller -->
                     <div class="stats-card live-feed-card">
-                        <div class="stats-title">
-                            <span>Live Feed</span>
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <div class="live-feed" id="live-feed">
-                            <div class="text-center text-gray-500 py-2">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                No Live Sales
-                            </div>
+                        <div class="text-center text-gray-400 py-12 text-lg font-semibold">
+                            No live sales
                         </div>
                     </div>
                     
@@ -2449,6 +2442,12 @@ function initLiveFeed() {
         if (timeUpdateInterval) clearInterval(timeUpdateInterval);
     });
 }
+    </script>
+    
+    <!-- Vercel Analytics -->
+    <script type="module">
+        import { inject } from 'https://cdn.vercel-insights.com/v1.js';
+        inject();
     </script>
 </body>
 </html>
