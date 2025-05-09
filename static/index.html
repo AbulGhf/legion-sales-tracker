@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Legion Sale Trackers</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -1169,6 +1172,26 @@
     </style>
 </head>
 <body>
+    <!-- Cache busting script -->
+    <script>
+        // Set a deployment timestamp - update this when you deploy
+        const DEPLOYMENT_TIME = Date.now();
+        const LAST_VISIT_KEY = 'last_visited_time';
+        
+        // Get the last visit time
+        const lastVisit = localStorage.getItem(LAST_VISIT_KEY);
+        
+        // If this is a new deployment and not the first visit, reload the page
+        if (lastVisit && parseInt(lastVisit) < DEPLOYMENT_TIME) {
+            // Clear cache and reload
+            localStorage.setItem(LAST_VISIT_KEY, DEPLOYMENT_TIME.toString());
+            window.location.reload(true);
+        } else {
+            // Update the last visit time
+            localStorage.setItem(LAST_VISIT_KEY, DEPLOYMENT_TIME.toString());
+        }
+    </script>
+    
     <!-- Header -->
     <header class="main-header">
         <div class="container mx-auto px-4">
@@ -2446,8 +2469,24 @@ function initLiveFeed() {
     
     <!-- Vercel Analytics -->
     <script type="module">
-        import { inject } from 'https://cdn.vercel-insights.com/v1.js';
-        inject();
+        // Add a cache-busting timestamp
+        const timestamp = new Date().getTime();
+        const analyticsScript = document.createElement('script');
+        analyticsScript.type = 'module';
+        analyticsScript.src = `https://cdn.vercel-insights.com/v1.js?t=${timestamp}`;
+        
+        // When the script loads, inject analytics
+        analyticsScript.onload = function() {
+            // Access the inject function from the loaded script
+            const { inject } = window.VercelAnalytics || {};
+            if (typeof inject === 'function') {
+                inject();
+            } else {
+                console.warn('Vercel Analytics inject function not available');
+            }
+        };
+        
+        document.head.appendChild(analyticsScript);
     </script>
 </body>
 </html>
