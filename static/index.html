@@ -6,10 +6,35 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <!-- Version control: Update this version number when deploying changes -->
+    <meta name="app-version" content="1.2.0">
     <title>Legion Sale Trackers</title>
+    <!-- Load custom app.js with versioning -->
+    <script>
+        // Add version to all script and resource URLs to break cache
+        const APP_VERSION = document.querySelector('meta[name="app-version"]').getAttribute('content');
+        
+        // Function to append version to URLs
+        function getVersionedUrl(url) {
+            const separator = url.includes('?') ? '&' : '?';
+            return `${url}${separator}v=${APP_VERSION}`;
+        }
+        
+        // Dynamically load resources with version parameters
+        function loadScript(src, async = true) {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = getVersionedUrl(src);
+                script.async = async;
+                script.onload = () => resolve();
+                script.onerror = () => reject();
+                document.head.appendChild(script);
+            });
+        }
+    </script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <!-- Chart.js will be loaded dynamically with version -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
         
@@ -1174,17 +1199,49 @@
 <body>
     <!-- Cache busting script - Fixed version -->
     <script>
-        // Only force refresh if explicitly requested via URL parameter
-        if (window.location.href.includes('force_refresh=true')) {
-            // Only reload once per session
-            const hasReloaded = sessionStorage.getItem('page_reloaded');
-            if (!hasReloaded) {
-                sessionStorage.setItem('page_reloaded', 'true');
-                // Remove the parameter and reload
-                const newUrl = window.location.href.replace('force_refresh=true', '');
-                window.location.href = newUrl;
+        // Initialize the app with versioned scripts
+        async function initApp() {
+            try {
+                // Load Chart.js with version
+                await loadScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js');
+                
+                // Check if we need to force a version update
+                const storedVersion = localStorage.getItem('app_version');
+                if (storedVersion !== APP_VERSION) {
+                    console.log(`Updating from version ${storedVersion} to ${APP_VERSION}`);
+                    localStorage.setItem('app_version', APP_VERSION);
+                    
+                    // Clear any cached data that might be stale
+                    localStorage.removeItem('dashboardLaunched');
+                    sessionStorage.clear();
+                    
+                    // Only reload if this isn't the first visit (prevents infinite reloads)
+                    if (storedVersion) {
+                        window.location.reload(true);
+                        return;
+                    }
+                }
+                
+                // Initialize analytics
+                const analyticsScript = document.createElement('script');
+                analyticsScript.type = 'module';
+                analyticsScript.innerHTML = `
+                    import { inject } from 'https://cdn.vercel-insights.com/v1.js?v=${APP_VERSION}';
+                    inject();
+                `;
+                document.body.appendChild(analyticsScript);
+                
+                // Set dashboard as launched
+                localStorage.setItem('dashboardLaunched', 'true');
+                localStorage.setItem('dashboardLaunchTime', Date.now().toString());
+                
+            } catch (error) {
+                console.error('Error initializing app:', error);
             }
         }
+        
+        // Start the initialization
+        initApp();
     </script>
     
     <!-- Header -->
@@ -2462,10 +2519,6 @@ function initLiveFeed() {
 }
     </script>
     
-    <!-- Vercel Analytics -->
-    <script type="module">
-        import { inject } from 'https://cdn.vercel-insights.com/v1.js';
-        inject();
-    </script>
+    <!-- Analytics is now loaded dynamically through initApp() -->
 </body>
 </html>
