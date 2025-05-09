@@ -7,8 +7,15 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <!-- Version control: Update this version number when deploying changes -->
-    <meta name="app-version" content="1.2.1">
+    <meta name="app-version" content="1.2.2">
     <title>Legion Sale Trackers</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js" as="script">
+    
+    <!-- Load Chart.js synchronously to prevent race conditions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    
     <!-- Load custom app.js with versioning -->
     <script>
         // Add version to all script and resource URLs to break cache
@@ -1202,8 +1209,8 @@
         // Initialize the app with versioned scripts
         async function initApp() {
             try {
-                // Load Chart.js with version
-                await loadScript('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js');
+                // Chart.js is now loaded synchronously in the head
+                // No need to load it here anymore
                 
                 // Check if we need to force a version update
                 const storedVersion = localStorage.getItem('app_version');
