@@ -198,14 +198,17 @@
         .fuel-color { color: #00f58c; }
         .silencio-color { color: #284ee9; }
         .corn-color { color: #ff931e; }
+        .giza-color { color: #ffd166; }
         
         .fuel-button { background: #00f58c; color: #000; }
         .silencio-button { background: #284ee9; }
         .corn-button { background: #ff931e; color: #000; }
+        .giza-button { background: #ffd166; color: #000; }
         
         .fuel-button:hover { background: #34f9a7; }
         .silencio-button:hover { background: #4367f0; }
         .corn-button:hover { background: #ffa545; }
+        .giza-button:hover { background: #ffda85; }
         
         @media (max-width: 768px) {
             .roi-grid {
@@ -241,6 +244,46 @@
 
         <!-- ROI Cards Grid -->
         <div class="roi-grid">
+            <!-- Giza Card -->
+            <div class="roi-card" style="border: 1px solid #ffd166">
+                <div class="roi-header">
+                    <img src="/static/giza.jpg" alt="Giza Logo" class="roi-logo">
+                    <h2 class="roi-title giza-color">GIZA</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value giza-color">$0.045</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="giza-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="giza-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="giza-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="giza-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="giza-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="giza-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button giza-button" onclick="calculateGizaROI()">Calculate</button>
+                    <div id="giza-result" class="result-card hidden"></div>
+                </div>
+            </div>
+
             <!-- Corn Card -->
             <div class="roi-card" style="border: 1px solid #ff931e">
                 <div class="roi-header">
@@ -380,6 +423,11 @@
                 salePrice: 0.0006,
                 tokenId: 'silencio',
                 color: '#284ee9'
+            },
+            giza: {
+                salePrice: 0.045,
+                tokenId: 'giza',
+                color: '#ffd166'
             }
         };
 
@@ -387,7 +435,8 @@
         let priceData = {
             corn: { current: 0, ath: 0, atl: 0 },
             fuel: { current: 0, ath: 0, atl: 0 },
-            silencio: { current: 0, ath: 0, atl: 0 }
+            silencio: { current: 0, ath: 0, atl: 0 },
+            giza: { current: 0, ath: 0, atl: 0 }
         };
 
         // Format currency helper
@@ -491,6 +540,16 @@
             }
             const result = calculateROI('silencio', amount);
             updateCalculationUI('silencio', result);
+        }
+
+        function calculateGizaROI() {
+            const amount = parseFloat(document.getElementById('giza-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            const result = calculateROI('giza', amount);
+            updateCalculationUI('giza', result);
         }
 
         // Update price displays
