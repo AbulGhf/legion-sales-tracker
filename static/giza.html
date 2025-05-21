@@ -339,6 +339,36 @@
             background-color: #2a2a2a;
             color: #fffdf0;
         }
+
+        /* Giza Token Calculator Styles */
+        .calculator-card {
+            background: linear-gradient(135deg, rgba(60, 45, 0, 0.7) 0%, rgba(85, 65, 0, 0.7) 100%);
+            border-color: rgba(255, 209, 102, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .calculator-input {
+            background: linear-gradient(135deg, rgba(25, 20, 0, 0.8) 0%, rgba(35, 30, 0, 0.8) 100%);
+            border-color: rgba(255, 209, 102, 0.3);
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(40, 30, 0, 0.8) 0%, rgba(60, 45, 0, 0.8) 100%);
+            border-color: rgba(255, 209, 102, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .price-card {
+            border-left: 4px solid #ffd166;
+            padding: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -363,26 +393,120 @@
                 lowest: 0
             });
             
-            // Add investor modal state
+            // New state for token price data
+            const [priceData, setPriceData] = React.useState({
+                salePrice: 0.045, // Fixed sale price for Giza
+                currentPrice: 0,
+                athPrice: 0,
+                lowestPrice: 0,
+                currentRoi: 0,
+                athRoi: 0,
+                loading: true,
+                error: null
+            });
+            
+            // Add new state for investor modal
             const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [showModal, setShowModal] = React.useState(false);
             const [investorLoading, setInvestorLoading] = React.useState(false);
             
             // Constants
-            const depositsPerPage = 10;
+            const depositsPerPage = 15;
+            const COINGECKO_API_KEY = 'CG-4Fnx2x1Ga65oHP6HufVGevXh';
+            const GIZA_TOKEN_ID = 'giza';  // Correct token ID
             
             // Function to handle back navigation
             const handleBack = () => {
-                // Go to dashboard
                 window.location.href = '/dashboard';
             };
             
             // Fetch data on component mount
             React.useEffect(() => {
                 fetchData();
+                fetchTokenPriceData();
             }, []);
             
-            // Function to fetch data from API
+            // Function to fetch token price data from CoinGecko
+            const fetchTokenPriceData = async () => {
+                try {
+                    setPriceData(prev => ({ ...prev, loading: true, error: null }));
+                    
+                    // Use our proxy endpoint instead of calling CoinGecko directly
+                    const apiUrl = `/api/proxy/coingecko/price/${GIZA_TOKEN_ID}`;
+                    console.log("Fetching Giza price data from proxy:", apiUrl);
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch token price data: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log("Received Giza price data:", data);
+                    
+                    // Extract price data directly from our simplified endpoint response
+                    let currentPrice = data.current_price || 0;
+                    let athPrice = data.ath || 0;
+                    let lowestPrice = data.atl || 0;
+                    
+                    const salePrice = 0.045; // Fixed sale price for Giza
+                    
+                    // Calculate ROIs with safety checks
+                    const currentRoi = currentPrice > 0 ? ((currentPrice - salePrice) / salePrice) * 100 : 0;
+                    const athRoi = athPrice > 0 ? ((athPrice - salePrice) / salePrice) * 100 : 0;
+                    
+                    // Update price data state
+                    setPriceData({
+                        salePrice,
+                        currentPrice,
+                        athPrice,
+                        lowestPrice,
+                        currentRoi,
+                        athRoi,
+                        loading: false,
+                        error: null
+                    });
+                } catch (err) {
+                    console.error("Error fetching token price data:", err);
+                    setPriceData(prev => ({
+                        ...prev,
+                        loading: false,
+                        error: err.message
+                    }));
+                }
+            };
+            
+            // Calculate PnL at different price points
+            const calculatePnL = (investmentAmount) => {
+                const tokensReceived = investmentAmount / priceData.salePrice;
+                
+                const currentValue = tokensReceived * priceData.currentPrice;
+                const athValue = tokensReceived * priceData.athPrice;
+                const lowestValue = tokensReceived * priceData.lowestPrice;
+                
+                const currentPnL = currentValue - investmentAmount;
+                const currentPnLPercent = (currentPnL / investmentAmount) * 100;
+                
+                const athPnL = athValue - investmentAmount;
+                const athPnLPercent = (athPnL / investmentAmount) * 100;
+                
+                const lowestPnL = lowestValue - investmentAmount;
+                const lowestPnLPercent = (lowestPnL / investmentAmount) * 100;
+                
+                return {
+                    tokensReceived,
+                    currentValue,
+                    currentPnL,
+                    currentPnLPercent,
+                    athValue,
+                    athPnL,
+                    athPnLPercent,
+                    lowestValue,
+                    lowestPnL,
+                    lowestPnLPercent
+                };
+            };
+            
+            // Fetch data on component mount
             const fetchData = async () => {
                 try {
                     setLoading(true);
@@ -432,14 +556,21 @@
                 return new Date(dateString).toLocaleDateString(undefined, options);
             };
             
-            // Function to format currency
-            const formatAmount = (amount) => {
-                return amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
+            // Update the formatAmount function to optionally format as currency
+            const formatAmount = (amount, isCurrency = true) => {
+                if (isCurrency) {
+                    return amount.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                } else {
+                    return amount.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
             };
             
             // Format wallet address to shorter format
@@ -568,6 +699,72 @@
                         <img src="giza.jpg" alt="Giza Logo" className="h-16" />
                     </div>
                     
+                    {/* Token Price Stats Card */}
+                    <div className="card p-4 mb-4">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                            <div className="flex items-center mb-4 md:mb-0">
+                                <img src="/static/giza.jpg" alt="Giza Logo" className="w-8 h-8 mr-3" onerror="this.src='giza.png'" />
+                                <span className="text-lg font-semibold">Giza Price Stats</span>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Sale Price</div>
+                                    <div className="font-bold">$0.045</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Current Price</div>
+                                    <div className="font-bold">
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : formatAmount(priceData.currentPrice, true)}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">All-Time High</div>
+                                    <div className="font-bold">
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : formatAmount(priceData.athPrice, true)}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">All-Time Low</div>
+                                    <div className="font-bold">
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : formatAmount(priceData.lowestPrice, true)}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Current ROI</div>
+                                    <div className={`font-bold ${priceData.currentRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : `${priceData.currentRoi.toFixed(2)}%`}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">ATH ROI</div>
+                                    <div className={`font-bold ${priceData.athRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : `${priceData.athRoi.toFixed(2)}%`}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     {/* Main Content Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* Left Column - Stats */}
@@ -602,6 +799,68 @@
                                     <div className="stats-label">Lowest</div>
                                     <div className="stats-value">{formatAmount(stats.lowest)}</div>
                                 </div>
+                            </div>
+                            
+                            {/* Giza Token Calculator */}
+                            <div className="calculator-card" style={{background: 'linear-gradient(135deg, rgba(60, 45, 0, 0.7) 0%, rgba(85, 65, 0, 0.7) 100%)', borderColor: 'rgba(255, 209, 102, 0.2)'}}>
+                                <div className="card-title mb-2">Giza Token Calculator</div>
+                                <div className="card-subtitle mb-4">Calculate token value based on your investment</div>
+                                
+                                <label className="block text-sm font-medium text-gray-300 mb-2">
+                                    Your investment amount (USDC)
+                                </label>
+                                <input 
+                                    type="number" 
+                                    value={inputValue} 
+                                    onChange={e => setInputValue(e.target.value)} 
+                                    placeholder="Enter USDC amount..." 
+                                    className="calculator-input mb-4"
+                                    style={{
+                                        background: 'linear-gradient(135deg, rgba(25, 20, 0, 0.8) 0%, rgba(35, 30, 0, 0.8) 100%)',
+                                        borderColor: 'rgba(255, 209, 102, 0.3)'
+                                    }}
+                                />
+                                
+                                {inputValue && parseFloat(inputValue) > 0 && (
+                                    <div className="result-card" style={{background: 'linear-gradient(135deg, rgba(40, 30, 0, 0.8) 0%, rgba(60, 45, 0, 0.8) 100%)', borderColor: 'rgba(255, 209, 102, 0.1)'}}>
+                                        <div className="mb-2">
+                                            <div className="text-sm text-gray-400">Tokens received</div>
+                                            <div className="font-bold text-amber-200">{(parseFloat(inputValue) / priceData.salePrice).toLocaleString(undefined, {maximumFractionDigits: 2})} GIZA</div>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                                            <div className="price-card" style={{borderLeft: '4px solid #ffd166'}}>
+                                                <div>
+                                                    <div className="text-sm text-gray-400">Current Value</div>
+                                                    <div className="font-bold">{priceData.loading || priceData.error ? 'N/A' : formatAmount((parseFloat(inputValue) / priceData.salePrice) * priceData.currentPrice)}</div>
+                                                </div>
+                                                <div className={`${priceData.currentRoi >= 0 ? 'text-green-500' : 'text-red-500'} font-bold`}>
+                                                    {priceData.loading || priceData.error ? 'N/A' : `${priceData.currentRoi.toFixed(2)}%`}
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="price-card" style={{borderLeft: '4px solid #ffd166'}}>
+                                                <div>
+                                                    <div className="text-sm text-gray-400">ATH Value</div>
+                                                    <div className="font-bold">{priceData.loading || priceData.error ? 'N/A' : formatAmount((parseFloat(inputValue) / priceData.salePrice) * priceData.athPrice)}</div>
+                                                </div>
+                                                <div className={`${priceData.athRoi >= 0 ? 'text-green-500' : 'text-red-500'} font-bold`}>
+                                                    {priceData.loading || priceData.error ? 'N/A' : `${priceData.athRoi.toFixed(2)}%`}
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="price-card" style={{borderLeft: '4px solid #ffd166'}}>
+                                                <div>
+                                                    <div className="text-sm text-gray-400">ATL Value</div>
+                                                    <div className="font-bold">{priceData.loading || priceData.error ? 'N/A' : formatAmount((parseFloat(inputValue) / priceData.salePrice) * priceData.lowestPrice)}</div>
+                                                </div>
+                                                <div className={`${priceData.lowestPrice > priceData.salePrice ? 'text-green-500' : 'text-red-500'} font-bold`}>
+                                                    {priceData.loading || priceData.error ? 'N/A' : `${(((priceData.lowestPrice - priceData.salePrice) / priceData.salePrice) * 100).toFixed(2)}%`}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         

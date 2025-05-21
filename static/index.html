@@ -1201,9 +1201,9 @@
                             <i class="fas fa-bolt"></i>
                         </div>
                         <div class="live-feed" id="live-feed">
-                            <div class="text-center text-gray-500 py-2">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                No Live Sales
+                            <div class="text-center p-4">
+                                <i class="fas fa-exclamation-circle text-yellow-500 text-lg mb-2"></i>
+                                <p class="text-gray-400 mb-1">No active sales at this time</p>
                             </div>
                         </div>
                     </div>
@@ -1406,7 +1406,7 @@ const sales = [
     { id: 'silencio', name: 'Silencio', className: 'silencio' },
     { id: 'lit', name: 'Lit Protocol', className: 'lit' },
     { id: 'resolv', name: 'Resolv', className: 'resolv' }, // No longer active
-    { id: 'session', name: 'Session', className: 'session' },
+    { id: 'session', name: 'Session', className: 'session' }, // No longer active
     { id: 'fragmetric', name: 'Fragmetric', className: 'fragmetric' },
     // Other upcoming sales
     { id: 'eoracle', name: 'eOracle', className: 'eoracle', upcoming: true },
@@ -1439,7 +1439,8 @@ const tokenSalePrices = {
     fuel: "0.02",
     silencio: "0.0006",
     skate: "0.08",
-    corn: "0.0714"
+    corn: "0.0714",
+    giza: "0.045"
 };
 
 // Token CoinGecko IDs
@@ -1447,7 +1448,8 @@ const coinGeckoIds = {
     fuel: "fuel-network",
     silencio: "silencio",
     lit: "lit-protocol", // Add Lit Protocol CoinGecko ID
-    corn: "corn-3"
+    corn: "corn-3",
+    giza: "giza"
 };
 
 // Store fetched market prices
@@ -2126,48 +2128,13 @@ function updateLiveFeed(transactions) {
     // Clear existing content
     liveFeed.innerHTML = '';
     
-    if (!transactions || transactions.length === 0) {
-        liveFeed.innerHTML = `
-            <div class="text-center text-gray-500 py-2">
-                <i class="fas fa-info-circle mr-2"></i>
-                No Live Sales
-            </div>
-        `;
-        return;
-    }
-    
-    // Add transactions to feed
-    transactions.forEach(tx => {
-        const feedItem = document.createElement('div');
-        feedItem.className = 'feed-item';
-        // Store timestamp as data attribute for later updating
-        if (tx.timestamp) {
-            feedItem.dataset.timestamp = tx.timestamp;
-        }
-        
-        // Determine the sale the transaction belongs to
-        const saleId = tx.sale || 'session';
-        
-        // Determine the correct blockchain explorer link based on the sale
-        let explorerUrl;
-        if (tx.hash && tx.hash !== "0x0000000000000000000000000000000000000000000000000000000000000000") {
-            if (saleId === 'resolv') {
-                explorerUrl = `https://etherscan.io/tx/${tx.hash}`;
-            } else {
-                explorerUrl = `https://arbiscan.io/tx/${tx.hash}`;
-            }
-        } else {
-            // If no valid hash, just use a placeholder link
-            explorerUrl = "#";
-        }
-        
-        feedItem.innerHTML = `
-            <img src="${saleId}.jpg" onerror="this.src='${saleId}.png'" class="feed-logo" alt="${saleId}">
-            <a href="${explorerUrl}" target="_blank" class="feed-address">${formatAddress(tx.from)}</a>
-            <span class="feed-amount ${saleId}-color">+$${parseFloat(tx.amount).toFixed(2)}</span>
-        `;
-        liveFeed.appendChild(feedItem);
-    });
+    // Show only a message that there are no active sales
+    liveFeed.innerHTML = `
+        <div class="text-center p-4">
+            <i class="fas fa-exclamation-circle text-yellow-500 text-lg mb-2"></i>
+            <p class="text-gray-400 mb-1">No active sales at this time</p>
+        </div>
+    `;
 }
 
 // Function to update times in the live feed
