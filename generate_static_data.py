@@ -2,22 +2,23 @@ import json
 import requests
 import time
 
-# Constants for Resolv Protocol (Ethereum)
-RESOLV_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
-RESOLV_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{RESOLV_ALCHEMY_API_KEY}"  # Ethereum endpoint
-RESOLV_CONTRACTS = [
-    "0xee6deedb6c1535E4912eE5db48E08b36FD2fAA8f",
-    "0x5Fdab714fe8BB9d40C8B1e5f7c2BacD8E7f869d8"
+# Constants for Session Data
+SESSION_CONTRACTS = [
+    "0x543Eb0BFB29803C28eC0A0Ed181683c915F44ED2",
+    "0xD3472eD0F891ee9279ADFFC7e147bFCF8E72C790",
+    "0x90cd2BBccdC85Ab75a14d2112ffa2A5cD42817A4"
 ]
-RESOLV_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # Ethereum USDC contract
+ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
+ALCHEMY_URL = f"https://arb-mainnet.g.alchemy.com/v2/{ALCHEMY_API_KEY}"  # Arbitrum endpoint
+USDC_CONTRACT = "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"  # Arbitrum USDC contract
 
-def get_resolv_usdc_deposits():
-    """Get all USDC transfers to the Resolv Protocol sale contracts"""
-    print("Fetching USDC transfers to Resolv Protocol contracts...")
+def get_session_transfers():
+    """Get all transfers to the Session contracts"""
+    print("Fetching transfers to Session contracts on Arbitrum...")
     
     all_transfers = []
     
-    for contract_address in RESOLV_CONTRACTS:
+    for contract_address in SESSION_CONTRACTS:
         page_key = None
         contract_transfers = []
         
@@ -28,7 +29,7 @@ def get_resolv_usdc_deposits():
                 "fromBlock": "0x0",
                 "toBlock": "latest",
                 "toAddress": contract_address,
-                "contractAddresses": [RESOLV_USDC_CONTRACT],
+                "contractAddresses": [USDC_CONTRACT],
                 "category": ["erc20"],
                 "withMetadata": True,
                 "excludeZeroValue": True,
@@ -45,7 +46,7 @@ def get_resolv_usdc_deposits():
                 "params": [params]
             }
             
-            response = requests.post(RESOLV_ALCHEMY_URL, json=payload)
+            response = requests.post(ALCHEMY_URL, json=payload)
             data = response.json()
             
             if "error" in data:
@@ -66,13 +67,14 @@ def get_resolv_usdc_deposits():
             else:
                 break
         
+        print(f"Total transfers fetched for contract {contract_address}: {len(contract_transfers)}")
         all_transfers.extend(contract_transfers)
     
-    print(f"Total transfers fetched: {len(all_transfers)}")
+    print(f"Total transfers fetched across all contracts: {len(all_transfers)}")
     return all_transfers
 
-def aggregate_resolv_deposits(transfers):
-    """Aggregate deposits by address for Resolv Protocol"""
+def aggregate_session_deposits(transfers):
+    """Aggregate deposits by address for Session"""
     print("Aggregating deposits by address...")
     
     deposits_by_address = {}
@@ -101,7 +103,7 @@ def aggregate_resolv_deposits(transfers):
     return deposits_list
 
 # Main execution
-print("Starting Resolv Protocol data collection...")
+print("Starting Session data collection...")
 
 # Try to load existing static data
 try:
@@ -112,32 +114,32 @@ except Exception as e:
     print(f"Starting with fresh static data: {str(e)}")
     static_data = {}
 
-# Fetch and process Resolv Protocol data
+# Fetch and process Session data
 start_time = time.time()
 try:
-    transfers = get_resolv_usdc_deposits()
-    deposits = aggregate_resolv_deposits(transfers)
+    transfers = get_session_transfers()
+    deposits = aggregate_session_deposits(transfers)
     
     total_investment = sum(deposit["amount"] for deposit in deposits)
     
-    resolv_data = {
+    session_data = {
         'total': total_investment,
         'deposits': deposits,
         'count': len(deposits)
     }
     
-    print(f"\n✅ Resolv Protocol: Found {resolv_data['count']} investors with ${resolv_data['total']:.2f} total investment")
+    print(f"\n✅ Session: Found {session_data['count']} investors with ${session_data['total']:.2f} total investment")
     print(f"   Data collection completed in {time.time() - start_time:.2f} seconds")
     
     # Add to static data
-    static_data['resolv'] = resolv_data
+    static_data['session'] = session_data
     
     # Save updated static data
     with open('static_data.json', 'w') as f:
         json.dump(static_data, f, indent=2)
     
-    print("\n✅ Updated static_data.json with Resolv Protocol data")
+    print("\n✅ Updated static_data.json with Session data")
     print(f"Total sales in static data: {len(static_data)}")
     
 except Exception as e:
-    print(f"\n❌ Error processing Resolv Protocol data: {str(e)}")
+    print(f"\n❌ Error processing Session data: {str(e)}")
