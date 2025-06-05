@@ -35,7 +35,7 @@ except Exception as e:
     FRAGMETRIC_DATA = []
     SOLANA_ADDRESS_MAP = {}
 
-# Cache for active sales (Lit Protocol and Resolv)
+# Cache for active sales (Lit Protocol, Resolv, and Intuition)
 cache = {
     'lit_deposits': None,
     'lit_deposits_timestamp': 0,
@@ -51,6 +51,10 @@ cache = {
     'session_total_timestamp': 0,
     'session_investors': None,  # Added for new endpoint
     'session_investors_timestamp': 0,  # Added for new endpoint
+    'intuition_deposits': None,
+    'intuition_deposits_timestamp': 0,
+    'intuition_total': None,
+    'intuition_total_timestamp': 0,
     'global_stats': None,
     'global_stats_timestamp': 0
 }
@@ -87,6 +91,15 @@ SESSION_CONTRACTS = [
     "0x90cd2BBccdC85Ab75a14d2112ffa2A5cD42817A4"
 ]
 SESSION_USDC_CONTRACT = "0xaf88d065e77c8cc2239327c5edb3a432268e5831"  # Arbitrum USDC contract
+
+# Constants for Intuition Protocol (Ethereum)
+INTUITION_ALCHEMY_API_KEY = "uuLBOZte0sf0z3XRVPPsPKMrfuQ1gqHv"
+INTUITION_ALCHEMY_URL = f"https://eth-mainnet.g.alchemy.com/v2/{INTUITION_ALCHEMY_API_KEY}"
+INTUITION_CONTRACTS = [
+    "0x81eE48c2bb20B21bB20C95B24a36010f1DD9BCe7",
+    "0x81A00dA473D1BfF1D1b894c8a9b4C88464F15F9D"
+]
+INTUITION_USDC_CONTRACT = "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"  # Ethereum mainnet USDC contract
 
 # Cache decorator
 def cached(cache_key, timestamp_key):
@@ -422,6 +435,85 @@ def session_investors():
         "is_live": False
     })
 
+# API Endpoints for Intuition Protocol
+@app.route('/api/intuition/total-investment', methods=['GET'])
+def intuition_total_investment():
+    """Get total investment for Intuition sale"""
+    if 'intuition' in STATIC_DATA:
+        return jsonify({"total": STATIC_DATA['intuition']['total']})
+    return jsonify({"error": "Intuition data not found"}), 404
+
+@app.route('/api/intuition/deposits', methods=['GET'])
+def intuition_deposits():
+    """Get all deposits for Intuition sale"""
+    if 'intuition' in STATIC_DATA:
+        return jsonify({
+            "deposits": STATIC_DATA['intuition']['deposits'],
+            "count": STATIC_DATA['intuition']['count']
+        })
+    return jsonify({"error": "Intuition data not found"}), 404
+
+@app.route('/api/intuition/stats', methods=['GET'])
+def intuition_stats():
+    """Get statistics for Intuition sale"""
+    if 'intuition' in STATIC_DATA:
+        deposits_list = STATIC_DATA['intuition']['deposits']
+        total_investment = STATIC_DATA['intuition']['total']
+        total_investors = STATIC_DATA['intuition']['count']
+        
+        if deposits_list:
+            highest_allocation = max(deposits_list, key=lambda x: x["amount"])
+            lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
+            average_allocation = total_investment / total_investors if total_investors > 0 else 0
+            
+            # Top 5 investors
+            top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
+        else:
+            highest_allocation = {"address": "", "amount": 0}
+            lowest_allocation = {"address": "", "amount": 0}
+            average_allocation = 0
+            top_investors = []
+        
+        return jsonify({
+            "total_investment": total_investment,
+            "total_investors": total_investors,
+            "highest_allocation": highest_allocation,
+            "lowest_allocation": lowest_allocation,
+            "average_allocation": average_allocation,
+            "top_investors": top_investors,
+            "is_live": False  # Intuition sale has ended
+        })
+    return jsonify({"error": "Intuition data not found"}), 404
+
+@app.route('/api/intuition/investors', methods=['GET'])
+def intuition_investors():
+    """Get investor data for Intuition sale with pagination"""
+    if 'intuition' not in STATIC_DATA:
+        return jsonify({"error": "Intuition data not found"}), 404
+    
+    # Get optional pagination parameters
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=100, type=int)
+    
+    # Limit values for safety
+    limit = min(limit, 500)  # Max 500 per page
+    
+    deposits_list = STATIC_DATA['intuition']['deposits']
+    
+    # Calculate pagination
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    paginated_deposits = deposits_list[start_idx:end_idx]
+    
+    return jsonify({
+        "investors": paginated_deposits,
+        "page": page,
+        "limit": limit,
+        "total_investors": len(deposits_list),
+        "total_pages": (len(deposits_list) + limit - 1) // limit,
+        "is_live": False
+    })
+
 # Route handlers
 @app.route('/')
 def welcome():
@@ -561,6 +653,8 @@ def sale_total_investment(sale_name):
         return fragmetric_total_investment()
     elif sale_name == 'session':
         return session_total_investment()
+    elif sale_name == 'intuition':
+        return intuition_total_investment()
     
     if sale_name in STATIC_DATA:
         return jsonify({"total": STATIC_DATA[sale_name]['total']})
@@ -591,6 +685,8 @@ def sale_deposits(sale_name):
         return fragmetric_deposits()
     elif sale_name == 'session':
         return session_deposits()
+    elif sale_name == 'intuition':
+        return intuition_deposits()
     
     if sale_name in STATIC_DATA:
         return jsonify({
@@ -643,6 +739,8 @@ def sale_stats(sale_name):
         return fragmetric_stats()
     elif sale_name == 'session':
         return session_stats()
+    elif sale_name == 'intuition':
+        return intuition_stats()
     
     if sale_name in STATIC_DATA:
         # For all sales, use static data

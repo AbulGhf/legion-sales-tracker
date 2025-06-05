@@ -954,6 +954,42 @@
             background-color: #267d68;
         }
 
+        /* Inference */
+        .inference-row {
+            border-left: 3px solid #ff6b9d;
+        }
+        
+        .inference-color {
+            color: #ff6b9d;
+        }
+        
+        .inference-button {
+            background-color: #ff6b9d;
+            color: #ffffff;
+        }
+        
+        .inference-button:hover {
+            background-color: #ff85b0;
+        }
+
+        /* Arcium */
+        .arcium-row {
+            border-left: 3px solid #9b59b6;
+        }
+        
+        .arcium-color {
+            color: #9b59b6;
+        }
+        
+        .arcium-button {
+            background-color: #9b59b6;
+            color: #ffffff;
+        }
+        
+        .arcium-button:hover {
+            background-color: #b371d1;
+        }
+
         /* Intuition */
         .intuition-row {
             border-left: 3px solid #241c1d;
@@ -1488,11 +1524,14 @@ const sales = [
     { id: 'silencio', name: 'Silencio', className: 'silencio' },
     { id: 'lit', name: 'Lit Protocol', className: 'lit' },
     { id: 'resolv', name: 'Resolv', className: 'resolv' }, // No longer active
-    { id: 'session', name: 'Session', className: 'session' }, // No longer active
+    { id: 'session', name: 'Session', className: 'session' }, // Completed sale
     { id: 'fragmetric', name: 'Fragmetric', className: 'fragmetric' },
     // Other upcoming sales
     { id: 'eoracle', name: 'eOracle', className: 'eoracle', upcoming: true },
-    { id: 'intuition', name: 'Intuition', className: 'intuition', upcoming: true }
+    { id: 'inference', name: 'Inference', className: 'inference', upcoming: true },
+    { id: 'arcium', name: 'Arcium', className: 'arcium', upcoming: true },
+    // Active sales
+    { id: 'intuition', name: 'Intuition', className: 'intuition' }
 ];
         
 // Chart colors that match project branding
@@ -1513,7 +1552,9 @@ const chartColors = {
     session: '#24f2d2',
     fragmetric: '#007d3a',
     eoracle: '#1b6a58',
-    intuition: '#241c1d'
+    inference: '#ff6b9d',  // Pink/magenta color
+    arcium: '#9b59b6',  // Purple color
+    intuition: '#8b5a3c'  // Intuition brown/bronze color
 };
 
 // Token prices data
@@ -1522,7 +1563,8 @@ const tokenSalePrices = {
     silencio: "0.0006",
     skate: "0.08",
     corn: "0.0714",
-    giza: "0.045"
+    giza: "0.045",
+    session: "0.2"
 };
 
 // Token CoinGecko IDs
@@ -1531,7 +1573,8 @@ const coinGeckoIds = {
     silencio: "silencio",
     lit: "lit-protocol", // Add Lit Protocol CoinGecko ID
     corn: "corn-3",
-    giza: "giza"
+    giza: "giza",
+    session: "session-token"
 };
 
 // Store fetched market prices

@@ -199,16 +199,19 @@
         .silencio-color { color: #284ee9; }
         .corn-color { color: #ff931e; }
         .giza-color { color: #ffd166; }
+        .session-color { color: #24f2d2; }
         
         .fuel-button { background: #00f58c; color: #000; }
         .silencio-button { background: #284ee9; }
         .corn-button { background: #ff931e; color: #000; }
         .giza-button { background: #ffd166; color: #000; }
+        .session-button { background: #24f2d2; color: #000; }
         
         .fuel-button:hover { background: #34f9a7; }
         .silencio-button:hover { background: #4367f0; }
         .corn-button:hover { background: #ffa545; }
         .giza-button:hover { background: #ffda85; }
+        .session-button:hover { background: #40f5da; }
         
         @media (max-width: 768px) {
             .roi-grid {
@@ -403,6 +406,46 @@
                     <div id="silencio-result" class="result-card hidden"></div>
                 </div>
             </div>
+
+            <!-- Session Card -->
+            <div class="roi-card" style="border: 1px solid #24f2d2">
+                <div class="roi-header">
+                    <img src="/static/session.png" alt="Session Logo" class="roi-logo">
+                    <h2 class="roi-title session-color">SESSION</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value session-color">$0.20</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="session-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="session-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="session-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="session-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="session-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="session-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button session-button" onclick="calculateSessionROI()">Calculate</button>
+                    <div id="session-result" class="result-card hidden"></div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -428,6 +471,11 @@
                 salePrice: 0.045,
                 tokenId: 'giza',
                 color: '#ffd166'
+            },
+            session: {
+                salePrice: 0.2,
+                tokenId: 'session-token',
+                color: '#24f2d2'
             }
         };
 
@@ -436,7 +484,8 @@
             corn: { current: 0, ath: 0, atl: 0 },
             fuel: { current: 0, ath: 0, atl: 0 },
             silencio: { current: 0, ath: 0, atl: 0 },
-            giza: { current: 0, ath: 0, atl: 0 }
+            giza: { current: 0, ath: 0, atl: 0 },
+            session: { current: 0, ath: 0, atl: 0 }
         };
 
         // Format currency helper
@@ -550,6 +599,16 @@
             }
             const result = calculateROI('giza', amount);
             updateCalculationUI('giza', result);
+        }
+
+        function calculateSessionROI() {
+            const amount = parseFloat(document.getElementById('session-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            const result = calculateROI('session', amount);
+            updateCalculationUI('session', result);
         }
 
         // Update price displays

@@ -10,20 +10,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
     <!-- Load Tailwind -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <!-- Load Font Awesome for icons -->
+    <!-- Load Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         /* Basic styles */
         body {
-            background-color: #181818;
-            background-image: linear-gradient(to bottom, #111820, #0f1723);
+            background-color: #0f1a1a;
+            background-image: linear-gradient(to bottom, #1a2a2a, #0f1a1a);
             color: white;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        /* Session neon teal color */
-        .neon-color {
-            color: #24f2d2;
         }
         
         /* Main container */
@@ -49,9 +44,9 @@
             background-color: rgba(255, 255, 255, 0.2);
         }
         
-        /* Header card */
+        /* Header */
         .header-card {
-            background-color: #0f1723;
+            background-color: #0f1a1a;
             border-radius: 8px;
             padding: 20px;
             display: flex;
@@ -95,7 +90,7 @@
             margin: 10px 0;
         }
         
-        /* Stats section */
+        /* Stats box */
         .stats-section {
             margin-top: 20px;
         }
@@ -104,9 +99,6 @@
             font-size: 1.2rem;
             font-weight: bold;
             margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
         
         .stats-card {
@@ -185,7 +177,7 @@
             width: 28px;
             height: 28px;
             background-color: #24f2d2;
-            color: #0f1723;
+            color: #000;
             font-weight: bold;
             border-radius: 50%;
         }
@@ -194,11 +186,6 @@
         .address-cell {
             font-family: monospace;
             color: #24f2d2;
-        }
-        
-        .address-cell a {
-            color: #24f2d2;
-            text-decoration: none;
         }
         
         .address-cell a:hover {
@@ -215,8 +202,8 @@
         }
         
         .pagination-button {
-            background-color: #24f2d2;
-            color: #121827;
+            background-color: #fffdf0;
+            color: #181818;
             border: none;
             padding: 8px 16px;
             border-radius: 4px;
@@ -231,10 +218,49 @@
         }
         
         .pagination-info {
-            background-color: rgba(36, 242, 210, 0.1);
+            background-color: rgba(255, 255, 255, 0.1);
             padding: 8px 12px;
             border-radius: 4px;
-            color: #24f2d2;
+        }
+        
+        /* Calculator styles */
+        .calculator-card {
+            background-color: #121827;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid rgba(36, 242, 210, 0.15);
+            padding: 20px;
+        }
+        
+        .calculator-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(36, 242, 210, 0.3);
+            border-radius: 6px;
+            background: rgba(0, 25, 25, 0.8);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .calculator-input:focus {
+            outline: none;
+            border-color: #24f2d2;
+        }
+        
+        .result-card {
+            border: 1px solid rgba(36, 242, 210, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .price-card {
+            background-color: rgba(18, 24, 39, 0.8);
+            border-radius: 6px;
+            padding: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         /* Investor Modal Styles */
@@ -304,7 +330,7 @@
         .investor-stat-value {
             font-size: 1.25rem;
             font-weight: bold;
-            color: #24f2d2;
+            color: #fff;
             margin-bottom: 0.5rem;
         }
 
@@ -313,17 +339,28 @@
             font-size: 0.875rem;
         }
 
+        /* Update address cell to use handleInvestorClick */
+        .address-cell a {
+            color: #3b82f6;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .address-cell a:hover {
+            text-decoration: underline;
+        }
+
         /* Sales table in investor modal */
         .sales-table-container {
             max-height: 300px;
             overflow-y: auto;
             margin-top: 1rem;
-            border: 1px solid rgba(36, 242, 210, 0.1);
+            border: 1px solid rgba(255, 253, 240, 0.1);
             border-radius: 6px;
         }
 
-        .session-sale {
-            background-color: rgba(36, 242, 210, 0.1) !important;
+        .giza-sale {
+            background-color: rgba(255, 253, 240, 0.1) !important;
         }
 
         /* Sale type badge */
@@ -335,14 +372,82 @@
             font-weight: bold;
         }
 
-        .sale-badge.session {
-            background-color: #24f2d2;
+        .sale-badge.giza {
+            background-color: #fffdf0;
             color: #121827;
         }
 
         .sale-badge.other {
             background-color: #2a2a2a;
+            color: #fffdf0;
+        }
+
+        /* Giza Token Calculator Styles */
+        .calculator-card {
+            background: linear-gradient(135deg, rgba(60, 45, 0, 0.7) 0%, rgba(85, 65, 0, 0.7) 100%);
+            border-color: rgba(255, 209, 102, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .calculator-input {
+            background: linear-gradient(135deg, rgba(25, 20, 0, 0.8) 0%, rgba(35, 30, 0, 0.8) 100%);
+            border-color: rgba(255, 209, 102, 0.3);
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(40, 30, 0, 0.8) 0%, rgba(60, 45, 0, 0.8) 100%);
+            border-color: rgba(255, 209, 102, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .price-card {
+            border-left: 4px solid #ffd166;
+            padding: 0.5rem;
+        }
+
+        /* Tab button styles */
+        .tab-button {
+            padding: 0.5rem 1rem;
+            background: rgba(36, 242, 210, 0.1);
+            border: 1px solid rgba(36, 242, 210, 0.3);
             color: #24f2d2;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+
+        .tab-button:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .tab-button:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .tab-button.active {
+            background: rgba(36, 242, 210, 0.2);
+            border-color: #24f2d2;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: rgba(36, 242, 210, 0.15);
+        }
+
+        /* Color classes for P&L */
+        .profit-positive {
+            color: #10b981;
+        }
+
+        .profit-negative {
+            color: #ef4444;
         }
     </style>
 </head>
@@ -368,26 +473,126 @@
                 lowest: 0
             });
             
-            // Add investor modal state
+            // New state for token price data
+            const [priceData, setPriceData] = React.useState({
+                salePrice: 0.045, // Fixed sale price for Giza
+                currentPrice: 0,
+                athPrice: 0,
+                lowestPrice: 0,
+                currentRoi: 0,
+                athRoi: 0,
+                loading: true,
+                error: null
+            });
+            
+            // Add new state for investor modal
             const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [showModal, setShowModal] = React.useState(false);
             const [investorLoading, setInvestorLoading] = React.useState(false);
             
+            // Add state for calculator input
+            const [inputValue, setInputValue] = React.useState('');
+            const [calculatorMode, setCalculatorMode] = React.useState('amount'); // 'amount' or 'address'
+            const [calculationResult, setCalculationResult] = React.useState(null);
+            const [calculatorLoading, setCalculatorLoading] = React.useState(false);
+            
             // Constants
-            const depositsPerPage = 10;
+            const depositsPerPage = 15;
+            const COINGECKO_API_KEY = 'CG-4Fnx2x1Ga65oHP6HufVGevXh';
+            const SESSION_TOKEN_ID = 'session-token';  // Session token ID
             
             // Function to handle back navigation
             const handleBack = () => {
-                // Go to dashboard
                 window.location.href = '/dashboard';
             };
             
             // Fetch data on component mount
             React.useEffect(() => {
                 fetchData();
+                fetchTokenPriceData();
             }, []);
             
-            // Function to fetch data from API
+            // Function to fetch token price data from CoinGecko
+            const fetchTokenPriceData = async () => {
+                try {
+                    setPriceData(prev => ({ ...prev, loading: true, error: null }));
+                    
+                    // Use our proxy endpoint instead of calling CoinGecko directly
+                    const apiUrl = `/api/proxy/coingecko/price/${SESSION_TOKEN_ID}`;
+                    console.log("Fetching Session price data from proxy:", apiUrl);
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch token price data: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log("Received Session price data:", data);
+                    
+                    // Extract price data directly from our simplified endpoint response
+                    let currentPrice = data.current_price || 0;
+                    let athPrice = data.ath || 0;
+                    let lowestPrice = data.atl || 0;
+                    
+                    const salePrice = 0.2; // Fixed sale price for Session
+                    
+                    // Calculate ROIs with safety checks
+                    const currentRoi = currentPrice > 0 ? ((currentPrice - salePrice) / salePrice) * 100 : 0;
+                    const athRoi = athPrice > 0 ? ((athPrice - salePrice) / salePrice) * 100 : 0;
+                    
+                    // Update price data state
+                    setPriceData({
+                        salePrice,
+                        currentPrice,
+                        athPrice,
+                        lowestPrice,
+                        currentRoi,
+                        athRoi,
+                        loading: false,
+                        error: null
+                    });
+                } catch (err) {
+                    console.error("Error fetching token price data:", err);
+                    setPriceData(prev => ({
+                        ...prev,
+                        loading: false,
+                        error: err.message
+                    }));
+                }
+            };
+            
+            // Calculate PnL at different price points
+            const calculatePnL = (investmentAmount) => {
+                const tokensReceived = investmentAmount / priceData.salePrice;
+                
+                const currentValue = tokensReceived * priceData.currentPrice;
+                const athValue = tokensReceived * priceData.athPrice;
+                const lowestValue = tokensReceived * priceData.lowestPrice;
+                
+                const currentPnL = currentValue - investmentAmount;
+                const currentPnLPercent = (currentPnL / investmentAmount) * 100;
+                
+                const athPnL = athValue - investmentAmount;
+                const athPnLPercent = (athPnL / investmentAmount) * 100;
+                
+                const lowestPnL = lowestValue - investmentAmount;
+                const lowestPnLPercent = (lowestPnL / investmentAmount) * 100;
+                
+                return {
+                    tokensReceived,
+                    currentValue,
+                    currentPnL,
+                    currentPnLPercent,
+                    athValue,
+                    athPnL,
+                    athPnLPercent,
+                    lowestValue,
+                    lowestPnL,
+                    lowestPnLPercent
+                };
+            };
+            
+            // Fetch data on component mount
             const fetchData = async () => {
                 try {
                     setLoading(true);
@@ -408,13 +613,20 @@
                     const depositsData = await depositsRes.json();
                     setDeposits(depositsData.deposits || []);
                     
-                    // Fetch stats
-                    const statsRes = await fetch('/api/session/stats');
-                    if (!statsRes.ok) {
-                        throw new Error('Failed to fetch session stats');
+                    // Calculate statistics
+                    if (depositsData.deposits && depositsData.deposits.length > 0) {
+                        const amounts = depositsData.deposits.map(d => d.amount);
+                        const sortedAmounts = [...amounts].sort((a, b) => a - b);
+                        
+                        setStats({
+                            average: amounts.reduce((a, b) => a + b, 0) / amounts.length,
+                            median: sortedAmounts.length % 2 === 0 
+                                ? (sortedAmounts[sortedAmounts.length/2 - 1] + sortedAmounts[sortedAmounts.length/2]) / 2 
+                                : sortedAmounts[Math.floor(sortedAmounts.length/2)],
+                            highest: Math.max(...amounts),
+                            lowest: Math.min(...amounts)
+                        });
                     }
-                    const statsData = await statsRes.json();
-                    setStats(statsData);
                     
                     setLoading(false);
                 } catch (err) {
@@ -430,14 +642,21 @@
                 return new Date(dateString).toLocaleDateString(undefined, options);
             };
             
-            // Function to format currency
-            const formatAmount = (amount) => {
-                return amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
+            // Update the formatAmount function to optionally format as currency
+            const formatAmount = (amount, isCurrency = true) => {
+                if (isCurrency) {
+                    return amount.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                } else {
+                    return amount.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
             };
             
             // Format wallet address to shorter format
@@ -495,18 +714,18 @@
                         throw new Error('No sales found for this address');
                     }
 
-                    // Calculate Session sales for stats
-                    const sessionSales = allSales.filter(sale => sale.sale.toLowerCase() === 'session');
-                    const sessionTotal = sessionSales.reduce((sum, sale) => sum + sale.amount, 0);
+                                                        // Calculate Session sales for stats
+                                    const sessionSales = allSales.filter(sale => sale.sale.toLowerCase() === 'session');
+                                    const sessionTotal = sessionSales.reduce((sum, sale) => sum + sale.amount, 0);
 
-                    setSelectedInvestor({
-                        address,
-                        total_invested: allSales.reduce((sum, sale) => sum + sale.amount, 0),
-                        session_total: sessionTotal,
-                        sales_participated: allSales.length,
-                        session_sales: sessionSales.length,
-                        sales: allSales
-                    });
+                                    setSelectedInvestor({
+                                        address,
+                                        total_invested: allSales.reduce((sum, sale) => sum + sale.amount, 0),
+                                        session_total: sessionTotal,
+                                        sales_participated: allSales.length,
+                                        session_sales: sessionSales.length,
+                                        sales: allSales
+                                    });
                 } catch (error) {
                     console.error('Error in handleInvestorClick:', error);
                     setSelectedInvestor(null);
@@ -519,6 +738,54 @@
             const closeModal = () => {
                 setShowModal(false);
                 setSelectedInvestor(null);
+            };
+
+            // Handle calculator function
+            const handleCalculate = async () => {
+                try {
+                    setCalculatorLoading(true);
+                    setCalculationResult(null);
+                    
+                    if (calculatorMode === 'address') {
+                        // Address mode - fetch investor data
+                        const response = await fetch(`/api/investor/${inputValue.trim()}`);
+                        if (!response.ok) {
+                            throw new Error('Address not found or invalid');
+                        }
+                        const data = await response.json();
+                        
+                        const sessionSales = data.sales.filter(sale => sale.sale.toLowerCase() === 'session');
+                        const sessionTotal = sessionSales.reduce((sum, sale) => sum + sale.amount, 0);
+                        
+                        if (sessionTotal === 0) {
+                            setCalculationResult({ error: 'This address did not participate in the Session sale.' });
+                            return;
+                        }
+                        
+                        const pnlData = calculatePnL(sessionTotal);
+                        setCalculationResult({
+                            investmentAmount: sessionTotal,
+                            ...pnlData
+                        });
+                    } else {
+                        // Amount mode - calculate based on input
+                        const amount = parseFloat(inputValue);
+                        if (isNaN(amount) || amount <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
+                            return;
+                        }
+                        
+                        const pnlData = calculatePnL(amount);
+                        setCalculationResult({
+                            investmentAmount: amount,
+                            ...pnlData
+                        });
+                    }
+                } catch (error) {
+                    setCalculationResult({ error: error.message });
+                } finally {
+                    setCalculatorLoading(false);
+                }
             };
             
             // Show loading state
@@ -563,7 +830,73 @@
                     {/* Header */}
                     <div className="header-card">
                         <div className="header-title">Session</div>
-                        <img src="session.png" alt="Session Logo" className="h-16" onError={(e) => {e.target.style.display = 'none'}} />
+                        <img src="/static/session.png" alt="Session Logo" className="h-16" />
+                    </div>
+                    
+                    {/* Token Price Stats Card */}
+                    <div className="card p-4 mb-4">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                                                    <div className="flex items-center mb-4 md:mb-0">
+                            <img src="/static/session.png" alt="Session Logo" className="w-8 h-8 mr-3" onerror="this.src='session.png'" />
+                            <span className="text-lg font-semibold">Session Price Stats</span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Sale Price</div>
+                                <div className="font-bold">$0.20</div>
+                            </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Current Price</div>
+                                    <div className="font-bold">
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : formatAmount(priceData.currentPrice, true)}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">All-Time High</div>
+                                    <div className="font-bold">
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : formatAmount(priceData.athPrice, true)}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">All-Time Low</div>
+                                    <div className="font-bold">
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : formatAmount(priceData.lowestPrice, true)}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Current ROI</div>
+                                    <div className={`font-bold ${priceData.currentRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : `${priceData.currentRoi.toFixed(2)}%`}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">ATH ROI</div>
+                                    <div className={`font-bold ${priceData.athRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                        {priceData.loading 
+                                            ? "Loading..." 
+                                            : priceData.error 
+                                                ? "N/A" 
+                                                : `${priceData.athRoi.toFixed(2)}%`}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     {/* Main Content Grid */}
@@ -583,17 +916,141 @@
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Average</div>
-                                    <div className="stats-value">{formatAmount(stats.average_allocation)}</div>
+                                    <div className="stats-value">{formatAmount(stats.average)}</div>
+                                </div>
+                                
+                                <div className="stats-card">
+                                    <div className="stats-label">Median</div>
+                                    <div className="stats-value">{formatAmount(stats.median)}</div>
                                 </div>
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Highest</div>
-                                    <div className="stats-value">{stats.highest_allocation ? formatAmount(stats.highest_allocation.amount) : '-'}</div>
+                                    <div className="stats-value">{formatAmount(stats.highest)}</div>
                                 </div>
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Lowest</div>
-                                    <div className="stats-value">{stats.lowest_allocation ? formatAmount(stats.lowest_allocation.amount) : '-'}</div>
+                                    <div className="stats-value">{formatAmount(stats.lowest)}</div>
+                                </div>
+                            </div>
+                            
+                            {/* ROI Calculator */}
+                            <div className="card p-4 mt-4">
+                                <div className="stats-title mb-4">ROI Calculator</div>
+                                <div className="card-subtitle mb-4">Calculate your investment performance</div>
+                                
+                                <div className="flex mb-4">
+                                    <button 
+                                        className={`tab-button ${calculatorMode === 'amount' ? 'active' : ''}`}
+                                        onClick={() => setCalculatorMode('amount')}
+                                    >
+                                        USDC Amount
+                                    </button>
+                                    <button 
+                                        className={`tab-button ${calculatorMode === 'address' ? 'active' : ''}`}
+                                        onClick={() => setCalculatorMode('address')}
+                                    >
+                                        Wallet Address
+                                    </button>
+                                </div>
+                                
+                                <div className="bg-opacity-30 bg-black p-4 rounded">
+                                    {calculatorMode === 'amount' ? (
+                                        <div>
+                                            <label className="block text-sm mb-1">Enter USDC Investment Amount</label>
+                                            <input 
+                                                type="number" 
+                                                className="calculator-input" 
+                                                placeholder="e.g. 1000" 
+                                                value={inputValue}
+                                                onChange={(e) => setInputValue(e.target.value)}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <label className="block text-sm mb-1">Enter Wallet Address</label>
+                                            <input 
+                                                type="text" 
+                                                className="calculator-input" 
+                                                placeholder="0x..." 
+                                                value={inputValue}
+                                                onChange={(e) => setInputValue(e.target.value)}
+                                            />
+                                        </div>
+                                    )}
+                                    
+                                    <button 
+                                        className="pagination-button w-full mt-4"
+                                        onClick={handleCalculate}
+                                        disabled={calculatorLoading || !inputValue || priceData.loading}
+                                    >
+                                        {calculatorLoading ? 'Calculating...' : 'Calculate'}
+                                    </button>
+                                    
+                                    {calculationResult && !calculationResult.error && (
+                                        <div className="result-card mt-4">
+                                            <div className="text-sm text-gray-400 mb-2">Investment Results</div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Investment:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.investmentAmount)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Tokens Received:</span>
+                                                <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()}</span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Current Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.currentValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Current P&L:</span>
+                                                <span className={`font-medium ${calculationResult.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.currentPnL)} ({calculationResult.currentPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>ATH Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.athValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>ATH P&L:</span>
+                                                <span className={`font-medium ${calculationResult.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.athPnL)} ({calculationResult.athPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Lowest Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.lowestValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between">
+                                                <span>Lowest P&L:</span>
+                                                <span className={`font-medium ${calculationResult.lowestPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.lowestPnL)} ({calculationResult.lowestPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {calculationResult && calculationResult.error && (
+                                        <div className="result-card mt-4 text-red-400">
+                                            {calculationResult.error}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

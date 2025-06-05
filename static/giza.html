@@ -369,6 +369,44 @@
             border-left: 4px solid #ffd166;
             padding: 0.5rem;
         }
+
+        /* Tab button styles with Giza colors */
+        .tab-button {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 209, 102, 0.1);
+            border: 1px solid rgba(255, 209, 102, 0.3);
+            color: #ffd166;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+
+        .tab-button:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .tab-button:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .tab-button.active {
+            background: rgba(255, 209, 102, 0.2);
+            border-color: #ffd166;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: rgba(255, 209, 102, 0.15);
+        }
+
+        /* Color classes for P&L */
+        .profit-positive {
+            color: #10b981;
+        }
+
+        .profit-negative {
+            color: #ef4444;
+        }
     </style>
 </head>
 <body>
@@ -409,6 +447,12 @@
             const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [showModal, setShowModal] = React.useState(false);
             const [investorLoading, setInvestorLoading] = React.useState(false);
+            
+            // Add state for calculator input
+            const [inputValue, setInputValue] = React.useState('');
+            const [calculatorMode, setCalculatorMode] = React.useState('amount'); // 'amount' or 'address'
+            const [calculationResult, setCalculationResult] = React.useState(null);
+            const [calculatorLoading, setCalculatorLoading] = React.useState(false);
             
             // Constants
             const depositsPerPage = 15;
@@ -653,6 +697,54 @@
                 setShowModal(false);
                 setSelectedInvestor(null);
             };
+
+            // Handle calculator function
+            const handleCalculate = async () => {
+                try {
+                    setCalculatorLoading(true);
+                    setCalculationResult(null);
+                    
+                    if (calculatorMode === 'address') {
+                        // Address mode - fetch investor data
+                        const response = await fetch(`/api/investor/${inputValue.trim()}`);
+                        if (!response.ok) {
+                            throw new Error('Address not found or invalid');
+                        }
+                        const data = await response.json();
+                        
+                        const gizaSales = data.sales.filter(sale => sale.sale.toLowerCase() === 'giza');
+                        const gizaTotal = gizaSales.reduce((sum, sale) => sum + sale.amount, 0);
+                        
+                        if (gizaTotal === 0) {
+                            setCalculationResult({ error: 'This address did not participate in the Giza sale.' });
+                            return;
+                        }
+                        
+                        const pnlData = calculatePnL(gizaTotal);
+                        setCalculationResult({
+                            investmentAmount: gizaTotal,
+                            ...pnlData
+                        });
+                    } else {
+                        // Amount mode - calculate based on input
+                        const amount = parseFloat(inputValue);
+                        if (isNaN(amount) || amount <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
+                            return;
+                        }
+                        
+                        const pnlData = calculatePnL(amount);
+                        setCalculationResult({
+                            investmentAmount: amount,
+                            ...pnlData
+                        });
+                    }
+                } catch (error) {
+                    setCalculationResult({ error: error.message });
+                } finally {
+                    setCalculatorLoading(false);
+                }
+            };
             
             // Show loading state
             if (loading) {
@@ -801,66 +893,123 @@
                                 </div>
                             </div>
                             
-                            {/* Giza Token Calculator */}
-                            <div className="calculator-card" style={{background: 'linear-gradient(135deg, rgba(60, 45, 0, 0.7) 0%, rgba(85, 65, 0, 0.7) 100%)', borderColor: 'rgba(255, 209, 102, 0.2)'}}>
-                                <div className="card-title mb-2">Giza Token Calculator</div>
-                                <div className="card-subtitle mb-4">Calculate token value based on your investment</div>
+                            {/* ROI Calculator */}
+                            <div className="card p-4 mt-4">
+                                <div className="stats-title mb-4">ROI Calculator</div>
+                                <div className="card-subtitle mb-4">Calculate your investment performance</div>
                                 
-                                <label className="block text-sm font-medium text-gray-300 mb-2">
-                                    Your investment amount (USDC)
-                                </label>
-                                <input 
-                                    type="number" 
-                                    value={inputValue} 
-                                    onChange={e => setInputValue(e.target.value)} 
-                                    placeholder="Enter USDC amount..." 
-                                    className="calculator-input mb-4"
-                                    style={{
-                                        background: 'linear-gradient(135deg, rgba(25, 20, 0, 0.8) 0%, rgba(35, 30, 0, 0.8) 100%)',
-                                        borderColor: 'rgba(255, 209, 102, 0.3)'
-                                    }}
-                                />
+                                <div className="flex mb-4">
+                                    <button 
+                                        className={`tab-button ${calculatorMode === 'amount' ? 'active' : ''}`}
+                                        onClick={() => setCalculatorMode('amount')}
+                                    >
+                                        USDC Amount
+                                    </button>
+                                    <button 
+                                        className={`tab-button ${calculatorMode === 'address' ? 'active' : ''}`}
+                                        onClick={() => setCalculatorMode('address')}
+                                    >
+                                        Wallet Address
+                                    </button>
+                                </div>
                                 
-                                {inputValue && parseFloat(inputValue) > 0 && (
-                                    <div className="result-card" style={{background: 'linear-gradient(135deg, rgba(40, 30, 0, 0.8) 0%, rgba(60, 45, 0, 0.8) 100%)', borderColor: 'rgba(255, 209, 102, 0.1)'}}>
-                                        <div className="mb-2">
-                                            <div className="text-sm text-gray-400">Tokens received</div>
-                                            <div className="font-bold text-amber-200">{(parseFloat(inputValue) / priceData.salePrice).toLocaleString(undefined, {maximumFractionDigits: 2})} GIZA</div>
+                                <div className="bg-opacity-30 bg-black p-4 rounded">
+                                    {calculatorMode === 'amount' ? (
+                                        <div>
+                                            <label className="block text-sm mb-1">Enter USDC Investment Amount</label>
+                                            <input 
+                                                type="number" 
+                                                className="calculator-input" 
+                                                placeholder="e.g. 1000" 
+                                                value={inputValue}
+                                                onChange={(e) => setInputValue(e.target.value)}
+                                            />
                                         </div>
-                                        
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-                                            <div className="price-card" style={{borderLeft: '4px solid #ffd166'}}>
-                                                <div>
-                                                    <div className="text-sm text-gray-400">Current Value</div>
-                                                    <div className="font-bold">{priceData.loading || priceData.error ? 'N/A' : formatAmount((parseFloat(inputValue) / priceData.salePrice) * priceData.currentPrice)}</div>
-                                                </div>
-                                                <div className={`${priceData.currentRoi >= 0 ? 'text-green-500' : 'text-red-500'} font-bold`}>
-                                                    {priceData.loading || priceData.error ? 'N/A' : `${priceData.currentRoi.toFixed(2)}%`}
-                                                </div>
+                                    ) : (
+                                        <div>
+                                            <label className="block text-sm mb-1">Enter Wallet Address</label>
+                                            <input 
+                                                type="text" 
+                                                className="calculator-input" 
+                                                placeholder="0x..." 
+                                                value={inputValue}
+                                                onChange={(e) => setInputValue(e.target.value)}
+                                            />
+                                        </div>
+                                    )}
+                                    
+                                    <button 
+                                        className="pagination-button w-full mt-4"
+                                        onClick={handleCalculate}
+                                        disabled={calculatorLoading || !inputValue || priceData.loading}
+                                    >
+                                        {calculatorLoading ? 'Calculating...' : 'Calculate'}
+                                    </button>
+                                    
+                                    {calculationResult && !calculationResult.error && (
+                                        <div className="result-card mt-4">
+                                            <div className="text-sm text-gray-400 mb-2">Investment Results</div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Investment:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.investmentAmount)}</span>
                                             </div>
                                             
-                                            <div className="price-card" style={{borderLeft: '4px solid #ffd166'}}>
-                                                <div>
-                                                    <div className="text-sm text-gray-400">ATH Value</div>
-                                                    <div className="font-bold">{priceData.loading || priceData.error ? 'N/A' : formatAmount((parseFloat(inputValue) / priceData.salePrice) * priceData.athPrice)}</div>
-                                                </div>
-                                                <div className={`${priceData.athRoi >= 0 ? 'text-green-500' : 'text-red-500'} font-bold`}>
-                                                    {priceData.loading || priceData.error ? 'N/A' : `${priceData.athRoi.toFixed(2)}%`}
-                                                </div>
+                                            <div className="flex justify-between mb-2">
+                                                <span>Tokens Received:</span>
+                                                <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()}</span>
                                             </div>
                                             
-                                            <div className="price-card" style={{borderLeft: '4px solid #ffd166'}}>
-                                                <div>
-                                                    <div className="text-sm text-gray-400">ATL Value</div>
-                                                    <div className="font-bold">{priceData.loading || priceData.error ? 'N/A' : formatAmount((parseFloat(inputValue) / priceData.salePrice) * priceData.lowestPrice)}</div>
-                                                </div>
-                                                <div className={`${priceData.lowestPrice > priceData.salePrice ? 'text-green-500' : 'text-red-500'} font-bold`}>
-                                                    {priceData.loading || priceData.error ? 'N/A' : `${(((priceData.lowestPrice - priceData.salePrice) / priceData.salePrice) * 100).toFixed(2)}%`}
-                                                </div>
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Current Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.currentValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Current P&L:</span>
+                                                <span className={`font-medium ${calculationResult.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.currentPnL)} ({calculationResult.currentPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>ATH Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.athValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>ATH P&L:</span>
+                                                <span className={`font-medium ${calculationResult.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.athPnL)} ({calculationResult.athPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Lowest Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.lowestValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between">
+                                                <span>Lowest P&L:</span>
+                                                <span className={`font-medium ${calculationResult.lowestPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.lowestPnL)} ({calculationResult.lowestPnLPercent.toFixed(2)}%)
+                                                </span>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                    
+                                    {calculationResult && calculationResult.error && (
+                                        <div className="result-card mt-4 text-red-400">
+                                            {calculationResult.error}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                         
