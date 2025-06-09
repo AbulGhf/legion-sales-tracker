@@ -529,6 +529,12 @@ def dashboard():
     
     return response
 
+# Special route for skate calculator
+@app.route('/skate-calculator')
+def skate_calculator():
+    """Redirect to skate page which has the advanced calculator"""
+    return send_from_directory('static', 'skate.html')
+
 # HTML pages for each sale
 @app.route('/<path:filename>')
 def serve_static(filename):

@@ -318,6 +318,110 @@
             font-size: 0.875rem;
             color: #b0b0b0;
         }
+
+        /* Sales table in investor modal */
+        .sales-table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            border: 1px solid rgba(197, 255, 51, 0.1);
+            border-radius: 6px;
+        }
+
+        .skate-sale {
+            background-color: rgba(197, 255, 51, 0.1) !important;
+        }
+
+        /* Sale type badge */
+        .sale-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .sale-badge.skate {
+            background-color: #c5ff33;
+            color: #000000;
+        }
+
+        .sale-badge.other {
+            background-color: #2a2a2a;
+            color: #c5ff33;
+        }
+
+        /* Skate Token Calculator Styles */
+        .calculator-card {
+            background: linear-gradient(135deg, rgba(0, 30, 0, 0.7) 0%, rgba(0, 50, 0, 0.7) 100%);
+            border-color: rgba(197, 255, 51, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid rgba(197, 255, 51, 0.2);
+        }
+
+        .calculator-input {
+            background: linear-gradient(135deg, rgba(0, 20, 0, 0.8) 0%, rgba(0, 35, 0, 0.8) 100%);
+            border-color: rgba(197, 255, 51, 0.3);
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+            color: white;
+            border: 1px solid rgba(197, 255, 51, 0.3);
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(0, 25, 0, 0.8) 0%, rgba(0, 40, 0, 0.8) 100%);
+            border-color: rgba(197, 255, 51, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid rgba(197, 255, 51, 0.1);
+        }
+
+        .price-card {
+            border-left: 4px solid #c5ff33;
+            padding: 0.5rem;
+        }
+
+        /* Tab button styles with Skate colors */
+        .tab-button {
+            padding: 0.5rem 1rem;
+            background: rgba(197, 255, 51, 0.1);
+            border: 1px solid rgba(197, 255, 51, 0.3);
+            color: #c5ff33;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+
+        .tab-button:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .tab-button:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .tab-button.active {
+            background: rgba(197, 255, 51, 0.2);
+            border-color: #c5ff33;
+        }
+
+        .tab-button:hover:not(.active) {
+            background: rgba(197, 255, 51, 0.15);
+        }
+
+        /* Color classes for P&L */
+        .profit-positive {
+            color: #10b981;
+        }
+
+        .profit-negative {
+            color: #ef4444;
+        }
     </style>
 </head>
 <body>
@@ -345,8 +449,28 @@
             const [showModal, setShowModal] = React.useState(false);
             const [investorLoading, setInvestorLoading] = React.useState(false);
             
+            // New state for token price data
+            const [priceData, setPriceData] = React.useState({
+                salePrice: 0.08, // Fixed sale price for Skate
+                currentPrice: 0,
+                athPrice: 0,
+                lowestPrice: 0,
+                currentRoi: 0,
+                athRoi: 0,
+                loading: true,
+                error: null
+            });
+            
+            // Add state for calculator input
+            const [inputValue, setInputValue] = React.useState('');
+            const [calculatorMode, setCalculatorMode] = React.useState('amount'); // 'amount' or 'address'
+            const [calculationResult, setCalculationResult] = React.useState(null);
+            const [calculatorLoading, setCalculatorLoading] = React.useState(false);
+            
             // Constants
             const depositsPerPage = 10;
+            const COINGECKO_API_KEY = 'CG-4Fnx2x1Ga65oHP6HufVGevXh';
+            const SKATE_TOKEN_ID = 'skate';  // Skate token ID on CoinGecko
             
             // Function to handle back navigation
             const handleBack = () => {
@@ -357,6 +481,7 @@
             // Fetch data on component mount
             React.useEffect(() => {
                 fetchData();
+                fetchTokenPriceData();
             }, []);
             
             // Function to fetch data from API
@@ -404,6 +529,86 @@
                     setError(err.message);
                     setLoading(false);
                 }
+            };
+            
+            // Function to fetch token price data from CoinGecko
+            const fetchTokenPriceData = async () => {
+                try {
+                    setPriceData(prev => ({ ...prev, loading: true, error: null }));
+                    
+                    // Use our proxy endpoint instead of calling CoinGecko directly
+                    const apiUrl = `/api/proxy/coingecko/price/${SKATE_TOKEN_ID}`;
+                    console.log("Fetching Skate price data from proxy:", apiUrl);
+                    const response = await fetch(apiUrl);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch token price data: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log("Received Skate price data:", data);
+                    
+                    // Extract price data directly from our simplified endpoint response
+                    let currentPrice = data.current_price || 0;
+                    let athPrice = data.ath || 0;
+                    let lowestPrice = data.atl || 0;
+                    
+                    const salePrice = 0.08; // Fixed sale price for Skate
+                    
+                    // Calculate ROIs with safety checks
+                    const currentRoi = currentPrice > 0 ? ((currentPrice - salePrice) / salePrice) * 100 : 0;
+                    const athRoi = athPrice > 0 ? ((athPrice - salePrice) / salePrice) * 100 : 0;
+                    
+                    // Update price data state
+                    setPriceData({
+                        salePrice,
+                        currentPrice,
+                        athPrice,
+                        lowestPrice,
+                        currentRoi,
+                        athRoi,
+                        loading: false,
+                        error: null
+                    });
+                } catch (err) {
+                    console.error("Error fetching token price data:", err);
+                    setPriceData(prev => ({
+                        ...prev,
+                        loading: false,
+                        error: err.message
+                    }));
+                }
+            };
+            
+            // Calculate PnL at different price points
+            const calculatePnL = (investmentAmount) => {
+                const tokensReceived = investmentAmount / priceData.salePrice;
+                
+                const currentValue = tokensReceived * priceData.currentPrice;
+                const athValue = tokensReceived * priceData.athPrice;
+                const lowestValue = tokensReceived * priceData.lowestPrice;
+                
+                const currentPnL = currentValue - investmentAmount;
+                const currentPnLPercent = (currentPnL / investmentAmount) * 100;
+                
+                const athPnL = athValue - investmentAmount;
+                const athPnLPercent = (athPnL / investmentAmount) * 100;
+                
+                const lowestPnL = lowestValue - investmentAmount;
+                const lowestPnLPercent = (lowestPnL / investmentAmount) * 100;
+                
+                return {
+                    tokensReceived,
+                    currentValue,
+                    currentPnL,
+                    currentPnLPercent,
+                    athValue,
+                    athPnL,
+                    athPnLPercent,
+                    lowestValue,
+                    lowestPnL,
+                    lowestPnLPercent
+                };
             };
             
             // Function to format currency
@@ -458,15 +663,78 @@
                         throw new Error(data.error);
                     }
 
+                    // Keep all sales data instead of filtering
+                    const allSales = data.sales;
+                    
+                    if (allSales.length === 0) {
+                        throw new Error('No sales found for this address');
+                    }
+
+                    // Calculate Skate sales for stats
+                    const skateSales = allSales.filter(sale => sale.sale.toLowerCase() === 'skate');
+                    const skateTotal = skateSales.reduce((sum, sale) => sum + sale.amount, 0);
+
                     setSelectedInvestor({
                         address,
-                        ...data
+                        total_invested: allSales.reduce((sum, sale) => sum + sale.amount, 0),
+                        skate_total: skateTotal,
+                        sales_participated: allSales.length,
+                        skate_sales: skateSales.length,
+                        sales: allSales
                     });
                 } catch (error) {
                     console.error('Error:', error);
                     setSelectedInvestor(null);
                 } finally {
                     setInvestorLoading(false);
+                }
+            };
+
+            // Handle calculator function
+            const handleCalculate = async () => {
+                try {
+                    setCalculatorLoading(true);
+                    setCalculationResult(null);
+                    
+                    if (calculatorMode === 'address') {
+                        // Address mode - fetch investor data
+                        const response = await fetch(`/api/investor/${inputValue.trim()}`);
+                        if (!response.ok) {
+                            throw new Error('Address not found or invalid');
+                        }
+                        const data = await response.json();
+                        
+                        const skateSales = data.sales.filter(sale => sale.sale.toLowerCase() === 'skate');
+                        const skateTotal = skateSales.reduce((sum, sale) => sum + sale.amount, 0);
+                        
+                        if (skateTotal === 0) {
+                            setCalculationResult({ error: 'This address did not participate in the Skate sale.' });
+                            return;
+                        }
+                        
+                        const pnlData = calculatePnL(skateTotal);
+                        setCalculationResult({
+                            investmentAmount: skateTotal,
+                            ...pnlData
+                        });
+                    } else {
+                        // Amount mode - calculate based on input
+                        const amount = parseFloat(inputValue);
+                        if (isNaN(amount) || amount <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
+                            return;
+                        }
+                        
+                        const pnlData = calculatePnL(amount);
+                        setCalculationResult({
+                            investmentAmount: amount,
+                            ...pnlData
+                        });
+                    }
+                } catch (error) {
+                    setCalculationResult({ error: error.message });
+                } finally {
+                    setCalculatorLoading(false);
                 }
             };
             
@@ -515,6 +783,68 @@
                         <img src="skate.jpg" alt="Skate Logo" className="h-16" />
                     </div>
                     
+                    {/* Token Price Stats Card */}
+                    <div className="card p-4 mb-4">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                            <div className="flex items-center mb-4 md:mb-0">
+                                <img src="/static/skate.jpg" alt="Skate Logo" className="w-8 h-8 mr-3" onError="this.src='skate.png'" />
+                                <span className="text-lg font-semibold">Skate Price Stats</span>
+                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Sale Price</div>
+                                    <div className="font-bold">$0.08</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Current Price</div>
+                                    <div className="font-bold">
+                                        {priceData.loading ? 'Loading...' : 
+                                         priceData.error ? 'Error' : 
+                                         `$${priceData.currentPrice.toFixed(6)}`}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Current ROI</div>
+                                    <div className={`font-bold ${priceData.currentRoi >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {priceData.loading ? 'Loading...' : 
+                                         priceData.error ? 'Error' : 
+                                         `${priceData.currentRoi.toFixed(2)}%`}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">All-Time High</div>
+                                    <div className="font-bold">
+                                        {priceData.loading ? 'Loading...' : 
+                                         priceData.error ? 'Error' : 
+                                         `$${priceData.athPrice.toFixed(6)}`}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">ATH ROI</div>
+                                    <div className={`font-bold ${priceData.athRoi >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {priceData.loading ? 'Loading...' : 
+                                         priceData.error ? 'Error' : 
+                                         `${priceData.athRoi.toFixed(2)}%`}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">All-Time Low</div>
+                                    <div className="font-bold">
+                                        {priceData.loading ? 'Loading...' : 
+                                         priceData.error ? 'Error' : 
+                                         `$${priceData.lowestPrice.toFixed(6)}`}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {priceData.error && (
+                            <div className="mt-2 text-red-400 text-sm">
+                                Error loading price data: {priceData.error}
+                            </div>
+                        )}
+                    </div>
+                    
                     {/* Main Content Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* Left Column - Stats */}
@@ -548,6 +878,135 @@
                                 <div className="stats-card">
                                     <div className="stats-label">Lowest</div>
                                     <div className="stats-value">{formatAmount(stats.lowest)}</div>
+                                </div>
+                            </div>
+                            
+                            {/* Skate ROI Calculator */}
+                            <div className="calculator-card">
+                                <div className="text-lg font-semibold text-center mb-4">Skate ROI Calculator</div>
+                                
+                                {/* Calculator Tabs */}
+                                <div className="flex mb-4">
+                                    <button 
+                                        className={`tab-button ${calculatorMode === 'amount' ? 'active' : ''}`}
+                                        onClick={() => {
+                                            setCalculatorMode('amount');
+                                            setInputValue('');
+                                            setCalculationResult(null);
+                                        }}
+                                    >
+                                        By Amount
+                                    </button>
+                                    <button 
+                                        className={`tab-button ${calculatorMode === 'address' ? 'active' : ''}`}
+                                        onClick={() => {
+                                            setCalculatorMode('address');
+                                            setInputValue('');
+                                            setCalculationResult(null);
+                                        }}
+                                    >
+                                        By Address
+                                    </button>
+                                </div>
+                                
+                                <div className="bg-opacity-30 bg-black p-4 rounded">
+                                    {calculatorMode === 'amount' ? (
+                                        <div>
+                                            <label className="block text-sm mb-1">Enter USDC Investment Amount</label>
+                                            <input 
+                                                type="number" 
+                                                className="calculator-input" 
+                                                placeholder="e.g. 1000" 
+                                                value={inputValue}
+                                                onChange={(e) => setInputValue(e.target.value)}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <label className="block text-sm mb-1">Enter Wallet Address</label>
+                                            <input 
+                                                type="text" 
+                                                className="calculator-input" 
+                                                placeholder="0x..." 
+                                                value={inputValue}
+                                                onChange={(e) => setInputValue(e.target.value)}
+                                            />
+                                        </div>
+                                    )}
+                                    
+                                    <button 
+                                        className="pagination-button w-full mt-4"
+                                        onClick={handleCalculate}
+                                        disabled={calculatorLoading || !inputValue || priceData.loading}
+                                    >
+                                        {calculatorLoading ? 'Calculating...' : 'Calculate'}
+                                    </button>
+                                    
+                                    {calculationResult && !calculationResult.error && (
+                                        <div className="result-card mt-4">
+                                            <div className="text-sm text-gray-400 mb-2">Investment Results</div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Investment:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.investmentAmount)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Tokens Received:</span>
+                                                <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()}</span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Current Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.currentValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>Current P&L:</span>
+                                                <span className={`font-medium ${calculationResult.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.currentPnL)} ({calculationResult.currentPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>ATH Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.athValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between mb-2">
+                                                <span>ATH P&L:</span>
+                                                <span className={`font-medium ${calculationResult.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.athPnL)} ({calculationResult.athPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                            
+                                            <div className="border-t border-gray-700 my-2"></div>
+                                            
+                                            <div className="flex justify-between">
+                                                <span>ATL Value:</span>
+                                                <span className="font-medium">{formatAmount(calculationResult.lowestValue)}</span>
+                                            </div>
+                                            
+                                            <div className="flex justify-between">
+                                                <span>ATL P&L:</span>
+                                                <span className={`font-medium ${calculationResult.lowestPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                                    {formatAmount(calculationResult.lowestPnL)} ({calculationResult.lowestPnLPercent.toFixed(2)}%)
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                    
+                                    {calculationResult && calculationResult.error && (
+                                        <div className="result-card mt-4">
+                                            <div className="text-red-400 text-center">
+                                                {calculationResult.error}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -671,23 +1130,38 @@
                                             </div>
                                             <div className="investor-stats">
                                                 <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
-                                                    <div className="investor-stat-label">Total Invested</div>
+                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.skate_total || 0)}</div>
+                                                    <div className="investor-stat-label">Skate Investment</div>
                                                 </div>
                                                 <div className="investor-stat">
-                                                    <div className="investor-stat-value">{selectedInvestor.sales_participated}</div>
-                                                    <div className="investor-stat-label">Sales Participated</div>
+                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                                    <div className="investor-stat-label">Total Invested (All Sales)</div>
                                                 </div>
                                             </div>
+                                            {/* Sales Table */}
                                             <div className="mt-6">
-                                                <h3 className="text-lg font-semibold mb-3">Investment History</h3>
-                                                <div className="space-y-2">
-                                                    {selectedInvestor.sales.map((sale, index) => (
-                                                        <div key={index} className="flex justify-between items-center p-2 bg-gray-800 rounded">
-                                                            <span className="capitalize">{sale.sale}</span>
-                                                            <span className="font-mono">{formatAmount(sale.amount)}</span>
-                                                        </div>
-                                                    ))}
+                                                <h3 className="font-bold text-lg mb-3">All Sales</h3>
+                                                <div className="sales-table-container">
+                                                    <table className="data-table">
+                                                        <thead>
+                                                            <tr className="table-header">
+                                                                <th>Sale</th>
+                                                                <th>Amount</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {selectedInvestor.sales.map((sale, index) => (
+                                                                <tr key={index} className={`table-row ${sale.sale.toLowerCase() === 'skate' ? 'skate-sale' : ''}`}>
+                                                                    <td>
+                                                                        <span className={`sale-badge ${sale.sale.toLowerCase() === 'skate' ? 'skate' : 'other'}`}>
+                                                                            {sale.sale.toLowerCase() === 'skate' ? '★ ' : ''}{sale.sale.toUpperCase()}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td>{formatAmount(sale.amount)}</td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>

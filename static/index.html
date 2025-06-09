@@ -1574,7 +1574,8 @@ const coinGeckoIds = {
     lit: "lit-protocol", // Add Lit Protocol CoinGecko ID
     corn: "corn-3",
     giza: "giza",
-    session: "session-token"
+    session: "session-token",
+    skate: "skate" // Skate token CoinGecko ID
 };
 
 // Store fetched market prices
@@ -1663,9 +1664,19 @@ async function fetchTokenPrices() {
 // Function to get market price display
 function getMarketPrice(saleId) {
     if (marketPrices[saleId]) {
-        return `$${marketPrices[saleId]}`;
+        const price = marketPrices[saleId];
+        // Format price with appropriate decimal places
+        let formattedPrice;
+        if (price < 0.01) {
+            formattedPrice = price.toFixed(6); // 6 decimals for very small prices
+        } else if (price < 1) {
+            formattedPrice = price.toFixed(4); // 4 decimals for sub-dollar prices
+        } else {
+            formattedPrice = price.toFixed(2); // 2 decimals for dollar+ prices
+        }
+        return `$${formattedPrice}`;
     } else if (coinGeckoIds[saleId]) {
-        return `<span class="loading-price">Not Live</span>`;
+        return `<span class="loading-price">Loading...</span>`;
     } else {
         return `<span class="not-live">Not Live</span>`;
     }

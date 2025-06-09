@@ -200,18 +200,21 @@
         .corn-color { color: #ff931e; }
         .giza-color { color: #ffd166; }
         .session-color { color: #24f2d2; }
+        .skate-color { color: #c5ff33; }
         
         .fuel-button { background: #00f58c; color: #000; }
         .silencio-button { background: #284ee9; }
         .corn-button { background: #ff931e; color: #000; }
         .giza-button { background: #ffd166; color: #000; }
         .session-button { background: #24f2d2; color: #000; }
+        .skate-button { background: #c5ff33; color: #000; }
         
         .fuel-button:hover { background: #34f9a7; }
         .silencio-button:hover { background: #4367f0; }
         .corn-button:hover { background: #ffa545; }
         .giza-button:hover { background: #ffda85; }
         .session-button:hover { background: #40f5da; }
+        .skate-button:hover { background: #d7ff66; }
         
         @media (max-width: 768px) {
             .roi-grid {
@@ -446,6 +449,52 @@
                     <div id="session-result" class="result-card hidden"></div>
                 </div>
             </div>
+
+            <!-- Skate Card -->
+            <div class="roi-card" style="border: 1px solid #c5ff33">
+                <div class="roi-header">
+                    <img src="/static/skate.jpg" alt="Skate Logo" class="roi-logo">
+                    <h2 class="roi-title skate-color">SKATE</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value skate-color">$0.08</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="skate-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="skate-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="skate-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="skate-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="skate-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="skate-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button skate-button" onclick="calculateSkateROI()">Calculate</button>
+                    <div id="skate-result" class="result-card hidden"></div>
+                    
+                    <div class="mt-4 text-center">
+                        <a href="/skate-calculator" class="inline-block bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+                            Advanced Calculator
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -476,6 +525,11 @@
                 salePrice: 0.2,
                 tokenId: 'session-token',
                 color: '#24f2d2'
+            },
+            skate: {
+                salePrice: 0.08,
+                tokenId: 'skate',
+                color: '#c5ff33'
             }
         };
 
@@ -485,7 +539,8 @@
             fuel: { current: 0, ath: 0, atl: 0 },
             silencio: { current: 0, ath: 0, atl: 0 },
             giza: { current: 0, ath: 0, atl: 0 },
-            session: { current: 0, ath: 0, atl: 0 }
+            session: { current: 0, ath: 0, atl: 0 },
+            skate: { current: 0, ath: 0, atl: 0 }
         };
 
         // Format currency helper
@@ -609,6 +664,16 @@
             }
             const result = calculateROI('session', amount);
             updateCalculationUI('session', result);
+        }
+
+        function calculateSkateROI() {
+            const amount = parseFloat(document.getElementById('skate-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            const result = calculateROI('skate', amount);
+            updateCalculationUI('skate', result);
         }
 
         // Update price displays
