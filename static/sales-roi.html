@@ -4,257 +4,1311 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legion Sales ROI</title>
+    <link rel="icon" type="image/png" href="legion.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
-            color: white;
-            font-family: 'Rajdhani', sans-serif;
+            font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f0f14 0%, #1a1a25 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            position: relative;
             overflow-x: hidden;
         }
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
-        .header-section {
-            background: #1a1b26;
-            padding: 2rem;
-            border-bottom: 1px solid rgba(255, 87, 34, 0.1);
-            margin-bottom: 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Geometric background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 87, 34, 0.1) 0%, transparent 25%),
+                radial-gradient(circle at 75% 75%, rgba(255, 87, 34, 0.05) 0%, transparent 25%),
+                linear-gradient(45deg, transparent 30%, rgba(255, 87, 34, 0.02) 30%, rgba(255, 87, 34, 0.02) 70%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(255, 87, 34, 0.02) 30%, rgba(255, 87, 34, 0.02) 70%, transparent 70%);
+            background-size: 400px 400px, 600px 600px, 120px 120px, 120px 120px;
+            background-position: 0 0, 100% 100%, 0 0, 0 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Header styling */
+        .header {
+            background: linear-gradient(135deg, 
+                rgba(15, 15, 20, 0.95) 0%, 
+                rgba(26, 26, 37, 0.9) 50%, 
+                rgba(15, 15, 20, 0.95) 100%
+            );
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 87, 34, 0.2);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
             gap: 1rem;
         }
 
-        .logo-section {
-            display: flex;
-            align-items: center;
-        }
-
-        .legion-logo {
-            color: #FF5722;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(255, 87, 34, 0.3);
-        }
-
-        .nav-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .page-title {
-            color: #FF5722;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
+        /* Header title with traveling light animation */
+        .header-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
             font-weight: 700;
-            letter-spacing: 2px;
+            background: linear-gradient(
+                45deg,
+                #ffffff 25%,
+                #ff5722 50%,
+                #ffffff 75%
+            );
+            background-size: 400% 400%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: travelingLight 3s ease-in-out infinite;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-shadow: 0 0 30px rgba(255, 87, 34, 0.3);
+            position: relative;
         }
 
-        .dashboard-link {
+        @keyframes travelingLight {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* Mode Toggle */
+        .mode-toggle {
             display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #b0b0b0;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: color 0.2s;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 255, 255, 0.02) 50%, 
+                rgba(255, 87, 34, 0.03) 100%
+            );
+            border-radius: 12px;
+            padding: 4px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
-        .dashboard-link:hover {
-            color: #ffffff;
-        }
-
-        .dashboard-link i {
-            font-size: 0.875rem;
-        }
-
-        .back-button {
-            background: rgba(255, 87, 34, 0.1);
-            color: #FF5722;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-            text-decoration: none;
+        .mode-toggle button {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Rajdhani', sans-serif;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
-        .back-button:hover {
-            background: rgba(255, 87, 34, 0.2);
+
+        .mode-toggle button.active {
+            background: linear-gradient(135deg, 
+                rgba(255, 87, 34, 0.2) 0%, 
+                rgba(255, 87, 34, 0.1) 100%
+            );
+            color: #ff5722;
+            box-shadow: 
+                0 2px 10px rgba(255, 87, 34, 0.2),
+                inset 0 1px 0 rgba(255, 87, 34, 0.1);
+        }
+
+        .mode-toggle button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.9);
             transform: translateY(-1px);
         }
-        .description-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 16px;
-            margin: 16px 0;
-            line-height: 1.6;
+
+        .nav-button {
+            background: linear-gradient(135deg, 
+                rgba(255, 87, 34, 0.1) 0%, 
+                rgba(255, 87, 34, 0.05) 100%
+            );
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            color: #ff5722;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: 'Rajdhani', sans-serif;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
+
+        .nav-button:hover {
+            background: linear-gradient(135deg, 
+                rgba(255, 87, 34, 0.2) 0%, 
+                rgba(255, 87, 34, 0.1) 100%
+            );
+            border-color: rgba(255, 87, 34, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 20px rgba(255, 87, 34, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Simple Mode Table Styles */
+        .simple-table-container {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 255, 255, 0.02) 50%, 
+                rgba(255, 87, 34, 0.02) 100%
+            );
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            border-radius: 0 0 16px 16px;
+            border-top: none;
+            overflow: hidden;
+            display: none;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .simple-table-container.active {
+            display: block;
+        }
+
+        #simple-view {
+            display: none;
+        }
+
+        #simple-view.active {
+            display: block;
+        }
+
+        /* Filter controls styling */
+        .filter-controls {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.08) 0%, 
+                rgba(255, 255, 255, 0.03) 50%, 
+                rgba(255, 87, 34, 0.05) 100%
+            );
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            border-radius: 16px 16px 0 0;
+            margin-bottom: 0;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .filter-input {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 255, 255, 0.02) 100%
+            );
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: #ff5722;
+            box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
+        }
+
+        .filter-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .clear-filter {
+            background: linear-gradient(135deg, 
+                rgba(255, 87, 34, 0.1) 0%, 
+                rgba(255, 87, 34, 0.05) 100%
+            );
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            color: #ff5722;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .clear-filter:hover {
+            background: linear-gradient(135deg, 
+                rgba(255, 87, 34, 0.2) 0%, 
+                rgba(255, 87, 34, 0.1) 100%
+            );
+            transform: translateY(-1px);
+        }
+
+        .roi-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .roi-table th,
+        .roi-table td {
+            padding: 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 87, 34, 0.1);
+        }
+
+        .roi-table th {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 87, 34, 0.03) 100%
+            );
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .roi-table th:hover {
+            background: linear-gradient(135deg, 
+                rgba(255, 87, 34, 0.15) 0%, 
+                rgba(255, 87, 34, 0.08) 100%
+            );
+            color: #ff5722;
+        }
+
+        .roi-table th.sorted {
+            background: linear-gradient(135deg, 
+                rgba(255, 87, 34, 0.2) 0%, 
+                rgba(255, 87, 34, 0.1) 100%
+            );
+            color: #ff5722;
+        }
+
+        .roi-table th::after {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .roi-table th.sorted.asc::after {
+            border-bottom: 6px solid #ff5722;
+            opacity: 1;
+        }
+
+        .roi-table th.sorted.desc::after {
+            border-top: 6px solid #ff5722;
+            opacity: 1;
+        }
+
+        .roi-table tbody tr {
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .roi-table tbody tr:hover {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.03) 0%, 
+                rgba(255, 87, 34, 0.02) 100%
+            );
+        }
+
+        .roi-table tbody tr.hidden {
+            display: none;
+        }
+
+        .project-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .project-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            object-fit: contain;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+        }
+
+        .project-name {
+            font-weight: 700;
+            font-size: 1rem;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 0.05em;
+        }
+
+        .roi-positive {
+            color: #22c55e;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .roi-negative {
+            color: #ef4444;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .price-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Advanced View ROI Cards */
         .roi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-top: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
+
         .roi-card {
-            background: #23272b;
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            height: auto;
-            min-height: 400px;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.08) 0%, 
+                rgba(255, 255, 255, 0.03) 50%, 
+                rgba(255, 87, 34, 0.05) 100%
+            );
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
+
+
+
         .roi-header {
             display: flex;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .roi-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            object-fit: contain;
+            border: 2px solid rgba(255, 87, 34, 0.3);
+        }
+
+        .roi-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-pair {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 1rem;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 87, 34, 0.02) 100%
+            );
+            border-radius: 8px;
+            border: 1px solid rgba(255, 87, 34, 0.1);
+            min-height: 70px;
+            gap: 0.5rem;
+        }
+
+        .stat-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .calculator-section {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.03) 0%, 
+                rgba(255, 87, 34, 0.02) 100%
+            );
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 87, 34, 0.1);
+        }
+
+        .calculator-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #ff5722;
+            letter-spacing: 0.05em;
+            text-align: center;
+        }
+
+        .calculator-input {
+            width: 100%;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 255, 255, 0.02) 100%
+            );
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #ffffff;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 500;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .calculator-input:focus {
+            outline: none;
+        }
+
+        .calculator-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .calculator-button {
+            width: 100%;
+            background: linear-gradient(135deg, 
+                rgba(255, 87, 34, 0.15) 0%, 
+                rgba(255, 87, 34, 0.1) 100%
+            );
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            color: #ff5722;
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            text-align: center;
+            letter-spacing: 0.05em;
+        }
+
+
+
+        .result-card {
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 87, 34, 0.03) 100%
+            );
+            border-radius: 8px;
+            padding: 1.25rem;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Project-specific colors */
+        .giza-color { color: #fff8dc; }
+        .corn-color { color: #ffd700; }
+        .fuel-color { color: #00ff7f; }
+        .silencio-color { color: #a9a9a9; }
+
+        /* Footer Styling */
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 87, 34, 0.2);
+            background: linear-gradient(135deg, 
+                rgba(15, 15, 20, 0.8) 0%, 
+                rgba(26, 26, 37, 0.6) 100%
+            );
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .footer a {
+            color: #ff5722;
+            text-decoration: none;
+            font-weight: 600;
+            font-family: 'Rajdhani', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+        }
+
+        /* Custom Scrollbar Styling to Match Theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(21, 21, 31, 0.6);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(255, 87, 34, 0.6), rgba(255, 87, 34, 0.4));
+            border-radius: 10px;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(255, 87, 34, 0.8), rgba(255, 87, 34, 0.6));
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: rgba(21, 21, 31, 0.6);
+        }
+
+        /* Firefox scrollbar styling */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 87, 34, 0.6) rgba(21, 21, 31, 0.6);
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 0 1rem;
+            }
+
+            .header-title {
+                font-size: 1.25rem;
+                text-align: center;
+            }
+
+            .mode-toggle {
+                order: -1;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .nav-button {
+                align-self: stretch;
+                justify-content: center;
+            }
+
+            .main-container {
+                padding: 1rem;
+            }
+
+            /* Simple Table Mobile Styles */
+            .simple-table-container {
+                border-radius: 12px;
+                margin: 0 -0.5rem;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                position: relative;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+
+            .filter-input {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .roi-table {
+                font-size: 0.85rem;
+                min-width: 700px; /* Ensures horizontal scroll */
+                width: 100%;
+            }
+
+            .roi-table th,
+            .roi-table td {
+                padding: 0.75rem 0.5rem;
+                white-space: nowrap;
+            }
+
+            .roi-table th {
+                font-size: 0.8rem;
+                min-width: 100px;
+            }
+
+            .roi-table th:first-child,
+            .roi-table td:first-child {
+                min-width: 120px;
+                position: sticky;
+                left: 0;
+                background: rgba(10, 10, 10, 0.95);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                z-index: 1;
+                border-right: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .roi-table th:first-child {
+                background: rgba(10, 10, 10, 0.98);
+                border-right: 1px solid rgba(255, 87, 34, 0.3);
+            }
+
+            .project-info {
+                gap: 0.5rem;
+            }
+
+            .project-logo {
+                width: 24px;
+                height: 24px;
+            }
+
+            .project-name {
+                font-size: 0.9rem;
+            }
+
+            .price-value {
+                font-size: 0.8rem;
+                font-weight: 500;
+            }
+
+            /* Advanced Grid Mobile Styles */
+            .roi-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .roi-card {
+                padding: 1.25rem;
+                border-radius: 12px;
+            }
+
+            .roi-header {
+                margin-bottom: 1.25rem;
+            }
+
+            .roi-logo {
+                width: 36px;
+                height: 36px;
+            }
+
+            .roi-title {
+                font-size: 1.25rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .stat-pair {
+                padding: 0.75rem;
+            }
+
+            .calculator-input {
+                padding: 0.75rem;
+                font-size: 1rem;
+            }
+
+            .calculator-button {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.75rem 0;
+            }
+
+            .header-title {
+                font-size: 1.1rem;
+            }
+
+            .mode-toggle button {
+                padding: 0.6rem 1.25rem;
+                font-size: 0.85rem;
+            }
+
+            /* Keep table scrollable, more compact */
+            .roi-table {
+                font-size: 0.8rem;
+                min-width: 650px; /* Slightly smaller for very small screens */
+            }
+
+            .roi-table th,
+            .roi-table td {
+                padding: 0.6rem 0.4rem;
+            }
+
+            .roi-table th {
+                min-width: 90px;
+            }
+
+            .roi-table th:first-child,
+            .roi-table td:first-child {
+                min-width: 110px;
+                background: rgba(10, 10, 10, 0.95);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-right: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .roi-table th:first-child {
+                background: rgba(10, 10, 10, 0.98);
+                border-right: 1px solid rgba(255, 87, 34, 0.3);
+            }
+
+            .project-logo {
+                width: 20px;
+                height: 20px;
+            }
+
+            .project-name {
+                font-size: 0.8rem;
+                font-weight: 600;
+            }
+
+            .price-value {
+                font-size: 0.75rem;
+            }
+
+            /* Advanced view adjustments */
+            .roi-card {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                gap: 0.5rem;
+            }
+
+            .stat-pair {
+                padding: 0.6rem;
+            }
+
+            .stat-label {
+                font-size: 0.8rem;
+            }
+
+            .stat-value {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Improve typography across all screen sizes */
+        .roi-table th {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+        }
+
+        .project-name {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+        }
+
+        .price-value {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .roi-positive,
+        .roi-negative {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        /* Custom scrollbar for table */
+        .simple-table-container::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .simple-table-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .simple-table-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 87, 34, 0.6);
+            border-radius: 3px;
+        }
+
+        .simple-table-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 87, 34, 0.8);
+        }
+
+        /* ROI Grid */
+        .roi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        /* ROI Card */
+        .roi-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .roi-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .roi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+        }
+
+        /* Project-specific border colors */
+        .giza-card { border-color: rgba(255, 209, 102, 0.3); }
+        .giza-card::before { background: linear-gradient(90deg, transparent, rgba(255, 209, 102, 0.6), transparent); }
+
+        .corn-card { border-color: rgba(255, 147, 30, 0.3); }
+        .corn-card::before { background: linear-gradient(90deg, transparent, rgba(255, 147, 30, 0.6), transparent); }
+
+        .fuel-card { border-color: rgba(0, 245, 140, 0.3); }
+        .fuel-card::before { background: linear-gradient(90deg, transparent, rgba(0, 245, 140, 0.6), transparent); }
+
+        .silencio-card { border-color: rgba(40, 78, 233, 0.3); }
+        .silencio-card::before { background: linear-gradient(90deg, transparent, rgba(40, 78, 233, 0.6), transparent); }
+
+        .session-card { border-color: rgba(36, 242, 210, 0.3); }
+        .session-card::before { background: linear-gradient(90deg, transparent, rgba(36, 242, 210, 0.6), transparent); }
+
+        .skate-card { border-color: rgba(197, 255, 51, 0.3); }
+        .skate-card::before { background: linear-gradient(90deg, transparent, rgba(197, 255, 51, 0.6), transparent); }
+
+        .resolv-card { border-color: rgba(102, 150, 174, 0.3); }
+        .resolv-card::before { background: linear-gradient(90deg, transparent, rgba(102, 150, 174, 0.6), transparent); }
+
+        .fragmetric-card { border-color: rgba(0, 125, 58, 0.3); }
+        .fragmetric-card::before { background: linear-gradient(90deg, transparent, rgba(0, 125, 58, 0.6), transparent); }
+
+        /* ROI Header */
+        .roi-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .roi-logo {
             width: 40px;
             height: 40px;
-            margin-right: 12px;
+            margin-right: 1rem;
             border-radius: 8px;
+            object-fit: contain;
         }
+
         .roi-title {
             font-size: 1.5rem;
-            font-weight: bold;
+            font-weight: 700;
         }
+
+        /* Project-specific colors */
+        .giza-color { color: #ffd166; }
+        .corn-color { color: #ff931e; }
+        .fuel-color { color: #00f58c; }
+        .silencio-color { color: #284ee9; }
+        .session-color { color: #24f2d2; }
+        .skate-color { color: #c5ff33; }
+        .resolv-color { color: #6696ae; }
+        .fragmetric-color { color: #007d3a; }
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
+
         .stat-pair {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
         }
+
+        .stat-pair:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         .stat-label {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
             margin-bottom: 0.5rem;
         }
+
         .stat-value {
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.125rem;
+            font-weight: 600;
         }
+
+        /* Calculator Section */
         .calculator-section {
-            background: #181c1f;
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1.25rem;
         }
+
+        .calculator-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #ffffff;
+        }
+
         .calculator-input {
             width: 100%;
-            background: #23272b;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 4px;
-            margin: 8px 0;
+            color: #ffffff;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
         }
+
+        .calculator-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .calculator-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
         .calculator-button {
             width: 100%;
-            background: #284ee9;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 4px;
-            margin-top: 8px;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: none;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
         }
-        .calculator-button:hover {
-            background: #3a5ff0;
+
+        /* Project-specific button colors */
+        .giza-button {
+            background: rgba(255, 209, 102, 0.15);
+            color: #ffd166;
+            border: 1px solid rgba(255, 209, 102, 0.3);
         }
+
+        .giza-button:hover {
+            background: rgba(255, 209, 102, 0.25);
+            border-color: rgba(255, 209, 102, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .corn-button {
+            background: rgba(255, 147, 30, 0.15);
+            color: #ff931e;
+            border: 1px solid rgba(255, 147, 30, 0.3);
+        }
+
+        .corn-button:hover {
+            background: rgba(255, 147, 30, 0.25);
+            border-color: rgba(255, 147, 30, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .fuel-button {
+            background: rgba(0, 245, 140, 0.15);
+            color: #00f58c;
+            border: 1px solid rgba(0, 245, 140, 0.3);
+        }
+
+        .fuel-button:hover {
+            background: rgba(0, 245, 140, 0.25);
+            border-color: rgba(0, 245, 140, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .silencio-button {
+            background: rgba(40, 78, 233, 0.15);
+            color: #284ee9;
+            border: 1px solid rgba(40, 78, 233, 0.3);
+        }
+
+        .silencio-button:hover {
+            background: rgba(40, 78, 233, 0.25);
+            border-color: rgba(40, 78, 233, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .session-button {
+            background: rgba(36, 242, 210, 0.15);
+            color: #24f2d2;
+            border: 1px solid rgba(36, 242, 210, 0.3);
+        }
+
+        .session-button:hover {
+            background: rgba(36, 242, 210, 0.25);
+            border-color: rgba(36, 242, 210, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .skate-button {
+            background: rgba(197, 255, 51, 0.15);
+            color: #c5ff33;
+            border: 1px solid rgba(197, 255, 51, 0.3);
+        }
+
+        .skate-button:hover {
+            background: rgba(197, 255, 51, 0.25);
+            border-color: rgba(197, 255, 51, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .resolv-button {
+            background: rgba(102, 150, 174, 0.15);
+            color: #6696ae;
+            border: 1px solid rgba(102, 150, 174, 0.3);
+        }
+
+        .resolv-button:hover {
+            background: rgba(102, 150, 174, 0.25);
+            border-color: rgba(102, 150, 174, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .fragmetric-button {
+            background: rgba(0, 125, 58, 0.15);
+            color: #007d3a;
+            border: 1px solid rgba(0, 125, 58, 0.3);
+        }
+
+        .fragmetric-button:hover {
+            background: rgba(0, 125, 58, 0.25);
+            border-color: rgba(0, 125, 58, 0.5);
+            transform: translateY(-1px);
+        }
+
+        /* Result Card */
         .result-card {
-            background: #23272b;
-            border-radius: 4px;
-            padding: 12px;
-            margin-top: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            display: none;
         }
-        .profit-positive { color: #3dd656; }
-        .profit-negative { color: #ff6b6b; }
-        
-        /* Project-specific colors */
-        .fuel-color { color: #00f58c; }
-        .silencio-color { color: #284ee9; }
-        .corn-color { color: #ff931e; }
-        .giza-color { color: #ffd166; }
-        .session-color { color: #24f2d2; }
-        .skate-color { color: #c5ff33; }
-        .resolv-color { color: #6696ae; }
-        
-        .fuel-button { background: #00f58c; color: #000; }
-        .silencio-button { background: #284ee9; }
-        .corn-button { background: #ff931e; color: #000; }
-        .giza-button { background: #ffd166; color: #000; }
-        .session-button { background: #24f2d2; color: #000; }
-        .skate-button { background: #c5ff33; color: #000; }
-        .resolv-button { background: #6696ae; color: #000; }
-        
-        .fuel-button:hover { background: #34f9a7; }
-        .silencio-button:hover { background: #4367f0; }
-        .corn-button:hover { background: #ffa545; }
-        .giza-button:hover { background: #ffda85; }
-        .session-button:hover { background: #40f5da; }
-        .skate-button:hover { background: #d7ff66; }
-        .resolv-button:hover { background: #7aa7bd; }
-        
+
+        .result-card.show {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .profit-positive { color: #22c55e; }
+        .profit-negative { color: #ef4444; }
+
+        /* Responsive design */
         @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+            }
+
+            .header-content {
+                padding: 0 1rem;
+            }
+
             .roi-grid {
                 grid-template-columns: 1fr;
+                gap: 1.5rem;
             }
+
             .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
             }
-            .header-section {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
+
+            .header-title {
+                font-size: 1.25rem;
             }
-            .legion-logo {
-                font-size: 2rem;
+
+            .roi-title {
+                font-size: 1.25rem;
             }
-            .page-title {
-                font-size: 1.1rem;
-            }
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <!-- Header Section -->
-        <div class="header-section">
-            <div class="page-title">LEGION SALES ROI</div>
-            <a href="/dashboard" class="back-button">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="header-title">LEGION SALES ROI</h1>
+            <div class="mode-toggle">
+                <button id="simple-mode-btn" class="active" onclick="switchMode('simple')">Simple</button>
+                <button id="advanced-mode-btn" onclick="switchMode('advanced')">Advanced</button>
+            </div>
+            <a href="/dashboard" class="nav-button">
                 <i class="fas fa-arrow-left"></i>
                 Back to Dashboard
             </a>
         </div>
+    </header>
 
-        <!-- ROI Cards Grid -->
-        <div class="roi-grid">
+    <!-- Main Content -->
+    <main class="main-container">
+        <!-- Simple Table View -->
+        <div id="simple-view" class="active">
+            <div class="filter-controls">
+                <label for="search-input" style="color: rgba(255, 255, 255, 0.7); margin-right: 0.5rem;">Search:</label>
+                <input type="text" id="search-input" class="filter-input" placeholder="Search projects...">
+                <button class="clear-filter" onclick="clearFilters()">Clear</button>
+            </div>
+            <div class="simple-table-container active">
+                <table class="roi-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('project')" data-column="project">Project</th>
+                        <th onclick="sortTable('salePrice')" data-column="salePrice">Sale Price</th>
+                        <th onclick="sortTable('currentPrice')" data-column="currentPrice">Current Price</th>
+                        <th onclick="sortTable('currentRoi')" data-column="currentRoi">Current ROI</th>
+                        <th onclick="sortTable('athPrice')" data-column="athPrice">ATH Price</th>
+                        <th onclick="sortTable('athRoi')" data-column="athRoi">ATH ROI</th>
+                    </tr>
+                </thead>
+                <tbody id="roi-table-body">
+                    <!-- Table rows will be populated by JavaScript -->
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <!-- Advanced Grid View -->
+        <div class="roi-grid" id="advanced-view" style="display: none;">
             <!-- Giza Card -->
-            <div class="roi-card" style="border: 1px solid #ffd166">
+            <div class="roi-card giza-card">
                 <div class="roi-header">
                     <img src="/static/giza.jpg" alt="Giza Logo" class="roi-logo">
                     <h2 class="roi-title giza-color">GIZA</h2>
@@ -263,6 +1317,10 @@
                     <div class="stat-pair">
                         <div class="stat-label">Sale Price</div>
                         <div class="stat-value giza-color">$0.045</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="giza-current">Loading...</div>
                     </div>
                     <div class="stat-pair">
                         <div class="stat-label">Current ROI</div>
@@ -286,15 +1344,15 @@
                     </div>
                 </div>
                 <div class="calculator-section">
-                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <h3 class="calculator-title">ROI Calculator</h3>
                     <input type="number" class="calculator-input" id="giza-input" placeholder="Enter USDC amount">
                     <button class="calculator-button giza-button" onclick="calculateGizaROI()">Calculate</button>
-                    <div id="giza-result" class="result-card hidden"></div>
+                    <div id="giza-result" class="result-card"></div>
                 </div>
             </div>
 
             <!-- Corn Card -->
-            <div class="roi-card" style="border: 1px solid #ff931e">
+            <div class="roi-card corn-card">
                 <div class="roi-header">
                     <img src="/static/corn.png" alt="Corn Logo" class="roi-logo">
                     <h2 class="roi-title corn-color">CORN</h2>
@@ -303,6 +1361,10 @@
                     <div class="stat-pair">
                         <div class="stat-label">Sale Price</div>
                         <div class="stat-value corn-color">$0.0714</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="corn-current">Loading...</div>
                     </div>
                     <div class="stat-pair">
                         <div class="stat-label">Current ROI</div>
@@ -326,15 +1388,15 @@
                     </div>
                 </div>
                 <div class="calculator-section">
-                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <h3 class="calculator-title">ROI Calculator</h3>
                     <input type="number" class="calculator-input" id="corn-input" placeholder="Enter USDC amount">
                     <button class="calculator-button corn-button" onclick="calculateCornROI()">Calculate</button>
-                    <div id="corn-result" class="result-card hidden"></div>
+                    <div id="corn-result" class="result-card"></div>
                 </div>
             </div>
 
             <!-- Fuel Card -->
-            <div class="roi-card" style="border: 1px solid #00f58c">
+            <div class="roi-card fuel-card">
                 <div class="roi-header">
                     <img src="/static/fuel.png" alt="Fuel Logo" class="roi-logo">
                     <h2 class="roi-title fuel-color">FUEL</h2>
@@ -343,6 +1405,10 @@
                     <div class="stat-pair">
                         <div class="stat-label">Sale Price</div>
                         <div class="stat-value fuel-color">$0.02</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="fuel-current">Loading...</div>
                     </div>
                     <div class="stat-pair">
                         <div class="stat-label">Current ROI</div>
@@ -366,15 +1432,15 @@
                     </div>
                 </div>
                 <div class="calculator-section">
-                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <h3 class="calculator-title">ROI Calculator</h3>
                     <input type="number" class="calculator-input" id="fuel-input" placeholder="Enter USDC amount">
                     <button class="calculator-button fuel-button" onclick="calculateFuelROI()">Calculate</button>
-                    <div id="fuel-result" class="result-card hidden"></div>
+                    <div id="fuel-result" class="result-card"></div>
                 </div>
             </div>
 
             <!-- Silencio Card -->
-            <div class="roi-card" style="border: 1px solid #284ee9">
+            <div class="roi-card silencio-card">
                 <div class="roi-header">
                     <img src="/static/silencio.png" alt="Silencio Logo" class="roi-logo">
                     <h2 class="roi-title silencio-color">SILENCIO</h2>
@@ -383,6 +1449,10 @@
                     <div class="stat-pair">
                         <div class="stat-label">Sale Price</div>
                         <div class="stat-value silencio-color">$0.0006</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="silencio-current">Loading...</div>
                     </div>
                     <div class="stat-pair">
                         <div class="stat-label">Current ROI</div>
@@ -406,15 +1476,15 @@
                     </div>
                 </div>
                 <div class="calculator-section">
-                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <h3 class="calculator-title">ROI Calculator</h3>
                     <input type="number" class="calculator-input" id="silencio-input" placeholder="Enter USDC amount">
                     <button class="calculator-button silencio-button" onclick="calculateSilencioROI()">Calculate</button>
-                    <div id="silencio-result" class="result-card hidden"></div>
+                    <div id="silencio-result" class="result-card"></div>
                 </div>
             </div>
 
             <!-- Session Card -->
-            <div class="roi-card" style="border: 1px solid #24f2d2">
+            <div class="roi-card session-card">
                 <div class="roi-header">
                     <img src="/static/session.png" alt="Session Logo" class="roi-logo">
                     <h2 class="roi-title session-color">SESSION</h2>
@@ -423,6 +1493,10 @@
                     <div class="stat-pair">
                         <div class="stat-label">Sale Price</div>
                         <div class="stat-value session-color">$0.20</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="session-current">Loading...</div>
                     </div>
                     <div class="stat-pair">
                         <div class="stat-label">Current ROI</div>
@@ -446,55 +1520,15 @@
                     </div>
                 </div>
                 <div class="calculator-section">
-                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <h3 class="calculator-title">ROI Calculator</h3>
                     <input type="number" class="calculator-input" id="session-input" placeholder="Enter USDC amount">
                     <button class="calculator-button session-button" onclick="calculateSessionROI()">Calculate</button>
-                    <div id="session-result" class="result-card hidden"></div>
+                    <div id="session-result" class="result-card"></div>
                 </div>
             </div>
 
-            <!-- Resolv Card -->
-            <div class="roi-card" style="border: 1px solid #6696ae">
-                <div class="roi-header">
-                    <img src="/static/resolv.png" alt="Resolv Logo" class="roi-logo">
-                    <h2 class="roi-title resolv-color">RESOLV</h2>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-pair">
-                        <div class="stat-label">Sale Price</div>
-                        <div class="stat-value resolv-color">$0.10</div>
-                    </div>
-                    <div class="stat-pair">
-                        <div class="stat-label">Current ROI</div>
-                        <div class="stat-value" id="resolv-current-roi">Loading...</div>
-                    </div>
-                    <div class="stat-pair">
-                        <div class="stat-label">All-Time High</div>
-                        <div class="stat-value" id="resolv-ath">Loading...</div>
-                    </div>
-                    <div class="stat-pair">
-                        <div class="stat-label">All-Time High ROI</div>
-                        <div class="stat-value" id="resolv-ath-roi">Loading...</div>
-                    </div>
-                    <div class="stat-pair">
-                        <div class="stat-label">All-Time Low</div>
-                        <div class="stat-value" id="resolv-atl">Loading...</div>
-                    </div>
-                    <div class="stat-pair">
-                        <div class="stat-label">All-Time Low ROI</div>
-                        <div class="stat-value" id="resolv-atl-roi">Loading...</div>
-                    </div>
-                </div>
-                <div class="calculator-section">
-                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
-                    <input type="number" class="calculator-input" id="resolv-input" placeholder="Enter USDC amount">
-                    <button class="calculator-button resolv-button" onclick="calculateResolvROI()">Calculate</button>
-                    <div id="resolv-result" class="result-card hidden"></div>
-                </div>
-            </div>
-            
             <!-- Skate Card -->
-            <div class="roi-card" style="border: 1px solid #c5ff33">
+            <div class="roi-card skate-card">
                 <div class="roi-header">
                     <img src="/static/skate.jpg" alt="Skate Logo" class="roi-logo">
                     <h2 class="roi-title skate-color">SKATE</h2>
@@ -503,6 +1537,10 @@
                     <div class="stat-pair">
                         <div class="stat-label">Sale Price</div>
                         <div class="stat-value skate-color">$0.08</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="skate-current">Loading...</div>
                     </div>
                     <div class="stat-pair">
                         <div class="stat-label">Current ROI</div>
@@ -526,20 +1564,108 @@
                     </div>
                 </div>
                 <div class="calculator-section">
-                    <h3 class="font-semibold mb-2">ROI Calculator</h3>
+                    <h3 class="calculator-title">ROI Calculator</h3>
                     <input type="number" class="calculator-input" id="skate-input" placeholder="Enter USDC amount">
                     <button class="calculator-button skate-button" onclick="calculateSkateROI()">Calculate</button>
-                    <div id="skate-result" class="result-card hidden"></div>
-                    
-                    <div class="mt-4 text-center">
-                        <a href="/skate-calculator" class="inline-block bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
-                            Advanced Calculator
-                        </a>
-                    </div>
+                    <div id="skate-result" class="result-card"></div>
                 </div>
             </div>
+
+            <!-- Resolv Card -->
+            <div class="roi-card resolv-card">
+                <div class="roi-header">
+                    <img src="/static/resolv.png" alt="Resolv Logo" class="roi-logo">
+                    <h2 class="roi-title resolv-color">RESOLV</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value resolv-color">$0.10</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="resolv-current">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="resolv-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="resolv-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="resolv-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="resolv-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="resolv-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="calculator-title">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="resolv-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button resolv-button" onclick="calculateResolvROI()">Calculate</button>
+                    <div id="resolv-result" class="result-card"></div>
+                </div>
+            </div>
+
+            <!-- Fragmetric Card -->
+            <div class="roi-card fragmetric-card">
+                <div class="roi-header">
+                    <img src="/static/fragmetric.png" alt="Fragmetric Logo" class="roi-logo">
+                    <h2 class="roi-title fragmetric-color">FRAGMETRIC</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value fragmetric-color">$0.20</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="fragmetric-current">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="fragmetric-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="fragmetric-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="fragmetric-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="fragmetric-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="fragmetric-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="calculator-title">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="fragmetric-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button fragmetric-button" onclick="calculateFragmetricROI()">Calculate</button>
+                    <div id="fragmetric-result" class="result-card"></div>
+                </div>
+            </div>
+                    </div>
         </div>
-    </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Created by <a href="https://twitter.com/Magicianafk" target="_blank" rel="noopener noreferrer">@Magicianafk</a> ❤️</p>
+        </div>
+    </main>
 
     <script>
         // Sale configurations
@@ -578,6 +1704,11 @@
                 salePrice: 0.1,
                 tokenId: 'resolv',
                 color: '#6696ae'
+            },
+            fragmetric: {
+                salePrice: 0.2,
+                tokenId: 'fragmetric',
+                color: '#007d3a'
             }
         };
 
@@ -589,8 +1720,208 @@
             giza: { current: 0, ath: 0, atl: 0 },
             session: { current: 0, ath: 0, atl: 0 },
             skate: { current: 0, ath: 0, atl: 0 },
-            resolv: { current: 0, ath: 0, atl: 0 }
+            resolv: { current: 0, ath: 0, atl: 0 },
+            fragmetric: { current: 0, ath: 0, atl: 0 }
         };
+
+        // Current view mode and sorting
+        let currentMode = 'simple';
+        let currentSort = { column: 'currentRoi', direction: 'desc' };
+        let filteredData = [];
+
+        // Switch between modes
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update button states
+            document.getElementById('simple-mode-btn').classList.toggle('active', mode === 'simple');
+            document.getElementById('advanced-mode-btn').classList.toggle('active', mode === 'advanced');
+            
+            // Show/hide views
+            const simpleView = document.getElementById('simple-view');
+            const advancedView = document.getElementById('advanced-view');
+            
+            if (mode === 'simple') {
+                simpleView.classList.add('active');
+                advancedView.style.display = 'none';
+                populateSimpleTable();
+            } else {
+                simpleView.classList.remove('active');
+                advancedView.style.display = 'grid';
+            }
+        }
+
+        // Populate simple table
+        function populateSimpleTable() {
+            const tbody = document.getElementById('roi-table-body');
+            tbody.innerHTML = '';
+            
+            filteredData = Object.keys(SALES_CONFIG).map(saleId => {
+                const config = SALES_CONFIG[saleId];
+                const prices = priceData[saleId];
+                const currentRoi = ((prices.current - config.salePrice) / config.salePrice) * 100;
+                const athRoi = ((prices.ath - config.salePrice) / config.salePrice) * 100;
+                
+                return {
+                    id: saleId,
+                    project: saleId.toUpperCase(),
+                    salePrice: config.salePrice,
+                    currentPrice: prices.current,
+                    currentRoi: currentRoi,
+                    athPrice: prices.ath,
+                    athRoi: athRoi,
+                    color: config.color,
+                    logo: getProjectLogo(saleId)
+                };
+            });
+            
+            // Apply default sorting by highest ROI
+            applySorting();
+            
+            // Update sorting indicator
+            document.querySelectorAll('.roi-table th').forEach(th => {
+                th.classList.remove('sorted', 'asc', 'desc');
+            });
+            const header = document.querySelector(`[data-column="${currentSort.column}"]`);
+            if (header) {
+                header.classList.add('sorted', currentSort.direction);
+            }
+            
+            renderTableRows();
+        }
+
+        // Get project logo
+        function getProjectLogo(saleId) {
+            const logoMap = {
+                giza: '/static/giza.jpg',
+                corn: '/static/corn.png',
+                fuel: '/static/fuel.png',
+                silencio: '/static/silencio.png',
+                session: '/static/session.png',
+                skate: '/static/skate.jpg',
+                resolv: '/static/resolv.svg',
+                fragmetric: '/static/fragmetric.png'
+            };
+            return logoMap[saleId] || '';
+        }
+
+        // Render table rows
+        function renderTableRows() {
+            const tbody = document.getElementById('roi-table-body');
+            tbody.innerHTML = '';
+            
+            filteredData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td data-label="Project">
+                        <div class="project-info">
+                            <img src="${row.logo}" alt="${row.project} Logo" class="project-logo">
+                            <span class="project-name" style="color: ${row.color}">${row.project}</span>
+                        </div>
+                    </td>
+                    <td data-label="Sale Price" class="price-value">${formatCurrency(row.salePrice)}</td>
+                    <td data-label="Current Price" class="price-value">${formatCurrency(row.currentPrice, 6)}</td>
+                    <td data-label="Current ROI" class="${row.currentRoi >= 0 ? 'roi-positive' : 'roi-negative'}">${row.currentRoi.toFixed(2)}%</td>
+                    <td data-label="ATH Price" class="price-value">${formatCurrency(row.athPrice, 6)}</td>
+                    <td data-label="ATH ROI" class="${row.athRoi >= 0 ? 'roi-positive' : 'roi-negative'}">${row.athRoi.toFixed(2)}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Sort table
+        function sortTable(column) {
+            const header = document.querySelector(`[data-column="${column}"]`);
+            
+            // Remove previous sorting indicators
+            document.querySelectorAll('.roi-table th').forEach(th => {
+                th.classList.remove('sorted', 'asc', 'desc');
+            });
+            
+            // Determine sort direction
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.direction = 'asc';
+            }
+            currentSort.column = column;
+            
+            // Add sorting indicator
+            header.classList.add('sorted', currentSort.direction);
+            
+            applySorting();
+            renderTableRows();
+        }
+
+        // Apply sorting
+        function applySorting() {
+            filteredData.sort((a, b) => {
+                let aVal = a[currentSort.column];
+                let bVal = b[currentSort.column];
+                
+                if (currentSort.column === 'project') {
+                    aVal = aVal.toLowerCase();
+                    bVal = bVal.toLowerCase();
+                }
+                
+                if (typeof aVal === 'string') {
+                    return currentSort.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+                } else {
+                    return currentSort.direction === 'asc' ? aVal - bVal : bVal - aVal;
+                }
+            });
+        }
+
+        // Search functionality
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                
+                if (searchTerm === '') {
+                    filteredData = Object.keys(SALES_CONFIG).map(saleId => {
+                        const config = SALES_CONFIG[saleId];
+                        const prices = priceData[saleId];
+                        const currentRoi = ((prices.current - config.salePrice) / config.salePrice) * 100;
+                        const athRoi = ((prices.ath - config.salePrice) / config.salePrice) * 100;
+                        
+                        return {
+                            id: saleId,
+                            project: saleId.toUpperCase(),
+                            salePrice: config.salePrice,
+                            currentPrice: prices.current,
+                            currentRoi: currentRoi,
+                            athPrice: prices.ath,
+                            athRoi: athRoi,
+                            color: config.color,
+                            logo: getProjectLogo(saleId)
+                        };
+                    });
+                } else {
+                    filteredData = filteredData.filter(row => 
+                        row.project.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                if (currentSort.column) {
+                    applySorting();
+                }
+                renderTableRows();
+            });
+        }
+
+        // Clear filters
+        function clearFilters() {
+            document.getElementById('search-input').value = '';
+            currentSort = { column: null, direction: 'asc' };
+            
+            // Remove sorting indicators
+            document.querySelectorAll('.roi-table th').forEach(th => {
+                th.classList.remove('sorted', 'asc', 'desc');
+            });
+            
+            populateSimpleTable();
+        }
 
         // Format currency helper
         function formatCurrency(amount, decimals = 2) {
@@ -608,6 +1939,8 @@
         function calculateROI(saleId, amount) {
             const config = SALES_CONFIG[saleId];
             const prices = priceData[saleId];
+            
+            console.log(`Calculating ROI for ${saleId}:`, { config, prices, amount });
             
             const tokensReceived = amount / config.salePrice;
             const currentValue = tokensReceived * prices.current;
@@ -633,35 +1966,35 @@
         function updateCalculationUI(saleId, result) {
             const resultElement = document.getElementById(`${saleId}-result`);
             resultElement.innerHTML = `
-                <div class="text-sm text-gray-400 mb-2">Investment Results</div>
-                <div class="flex justify-between mb-2">
+                <div style="color: #9ca3af; font-size: 0.875rem; margin-bottom: 0.5rem;">Investment Results</div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                     <span>Tokens Received:</span>
-                    <span class="font-medium">${result.tokensReceived.toLocaleString()}</span>
+                    <span style="font-weight: 500;">${result.tokensReceived.toLocaleString()}</span>
                 </div>
-                <div class="border-t border-gray-700 my-2"></div>
-                <div class="flex justify-between mb-2">
+                <div style="border-top: 1px solid #374151; margin: 0.5rem 0;"></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                     <span>Current Value:</span>
-                    <span class="font-medium">${formatCurrency(result.currentValue)}</span>
+                    <span style="font-weight: 500;">${formatCurrency(result.currentValue)}</span>
                 </div>
-                <div class="flex justify-between mb-2">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                     <span>Current P&L:</span>
-                    <span class="font-medium ${result.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}">
+                    <span style="font-weight: 500; color: ${result.currentPnL >= 0 ? '#22c55e' : '#ef4444'};">
                         ${formatCurrency(result.currentPnL)} (${result.currentROI.toFixed(2)}%)
                     </span>
                 </div>
-                <div class="border-t border-gray-700 my-2"></div>
-                <div class="flex justify-between mb-2">
+                <div style="border-top: 1px solid #374151; margin: 0.5rem 0;"></div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                     <span>ATH Value:</span>
-                    <span class="font-medium">${formatCurrency(result.athValue)}</span>
+                    <span style="font-weight: 500;">${formatCurrency(result.athValue)}</span>
                 </div>
-                <div class="flex justify-between">
+                <div style="display: flex; justify-content: space-between;">
                     <span>ATH P&L:</span>
-                    <span class="font-medium ${result.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}">
+                    <span style="font-weight: 500; color: ${result.athPnL >= 0 ? '#22c55e' : '#ef4444'};">
                         ${formatCurrency(result.athPnL)} (${result.athROI.toFixed(2)}%)
                     </span>
                 </div>
             `;
-            resultElement.classList.remove('hidden');
+            resultElement.style.display = 'block';
         }
 
         // Calculator functions for each token
@@ -671,6 +2004,13 @@
                 alert('Please enter a valid amount');
                 return;
             }
+            
+            // Check if price data is loaded
+            if (!priceData.corn || priceData.corn.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
             const result = calculateROI('corn', amount);
             updateCalculationUI('corn', result);
         }
@@ -681,6 +2021,13 @@
                 alert('Please enter a valid amount');
                 return;
             }
+            
+            // Check if price data is loaded
+            if (!priceData.fuel || priceData.fuel.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
             const result = calculateROI('fuel', amount);
             updateCalculationUI('fuel', result);
         }
@@ -691,6 +2038,13 @@
                 alert('Please enter a valid amount');
                 return;
             }
+            
+            // Check if price data is loaded
+            if (!priceData.silencio || priceData.silencio.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
             const result = calculateROI('silencio', amount);
             updateCalculationUI('silencio', result);
         }
@@ -701,6 +2055,13 @@
                 alert('Please enter a valid amount');
                 return;
             }
+            
+            // Check if price data is loaded
+            if (!priceData.giza || priceData.giza.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
             const result = calculateROI('giza', amount);
             updateCalculationUI('giza', result);
         }
@@ -711,6 +2072,13 @@
                 alert('Please enter a valid amount');
                 return;
             }
+            
+            // Check if price data is loaded
+            if (!priceData.session || priceData.session.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
             const result = calculateROI('session', amount);
             updateCalculationUI('session', result);
         }
@@ -721,6 +2089,13 @@
                 alert('Please enter a valid amount');
                 return;
             }
+            
+            // Check if price data is loaded
+            if (!priceData.skate || priceData.skate.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
             const result = calculateROI('skate', amount);
             updateCalculationUI('skate', result);
         }
@@ -731,8 +2106,32 @@
                 alert('Please enter a valid amount');
                 return;
             }
+            
+            // Check if price data is loaded
+            if (!priceData.resolv || priceData.resolv.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
             const result = calculateROI('resolv', amount);
             updateCalculationUI('resolv', result);
+        }
+
+        function calculateFragmetricROI() {
+            const amount = parseFloat(document.getElementById('fragmetric-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            // Check if price data is loaded
+            if (!priceData.fragmetric || priceData.fragmetric.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
+            const result = calculateROI('fragmetric', amount);
+            updateCalculationUI('fragmetric', result);
         }
 
         // Update price displays
@@ -747,6 +2146,7 @@
                 const atlRoi = ((prices.atl - config.salePrice) / config.salePrice) * 100;
                 
                 // Update price displays
+                document.getElementById(`${saleId}-current`).textContent = formatCurrency(prices.current, 6);
                 document.getElementById(`${saleId}-ath`).textContent = formatCurrency(prices.ath, 6);
                 document.getElementById(`${saleId}-atl`).textContent = formatCurrency(prices.atl, 6);
                 
@@ -780,6 +2180,11 @@
                     };
                 }
                 updatePriceDisplays();
+                
+                // Update simple table if we're in simple mode
+                if (currentMode === 'simple') {
+                    populateSimpleTable();
+                }
             } catch (error) {
                 console.error('Error fetching prices:', error);
             }
@@ -787,6 +2192,10 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            setupSearch();
+            // Populate simple table immediately (will show with loading/zero values initially)
+            populateSimpleTable();
+            // Fetch prices which will update the table when loaded
             fetchPrices();
             // Refresh prices every 5 minutes
             setInterval(fetchPrices, 300000);
