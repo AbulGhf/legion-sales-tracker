@@ -516,7 +516,7 @@ def intuition_investors():
 
 # Route handlers
 @app.route('/')
-def welcome():
+def home():
     return send_from_directory('static', 'welcome.html')
 
 @app.route('/dashboard')
@@ -535,15 +535,98 @@ def skate_calculator():
     """Redirect to skate page which has the advanced calculator"""
     return send_from_directory('static', 'skate.html')
 
-# HTML pages for each sale
+# Clean URL routes for each page (without .html extension)
+@app.route('/almanak')
+def almanak():
+    return send_from_directory('static', 'almanak.html')
+
+@app.route('/corn')
+def corn():
+    return send_from_directory('static', 'corn.html')
+
+@app.route('/electron')
+def electron():
+    return send_from_directory('static', 'electron.html')
+
+@app.route('/enclave')
+def enclave():
+    return send_from_directory('static', 'enclave.html')
+
+@app.route('/fragmetric')
+def fragmetric():
+    return send_from_directory('static', 'fragmetric.html')
+
+@app.route('/fuel')
+def fuel():
+    return send_from_directory('static', 'fuel.html')
+
+@app.route('/giza')
+def giza():
+    return send_from_directory('static', 'giza.html')
+
+@app.route('/intuition')
+def intuition():
+    return send_from_directory('static', 'intuition.html')
+
+@app.route('/lit')
+def lit():
+    return send_from_directory('static', 'lit.html')
+
+@app.route('/nil')
+def nil():
+    return send_from_directory('static', 'nil.html')
+
+@app.route('/pulse')
+def pulse():
+    return send_from_directory('static', 'pulse.html')
+
+@app.route('/resolv')
+def resolv():
+    return send_from_directory('static', 'resolv.html')
+
+@app.route('/session')
+def session():
+    return send_from_directory('static', 'session.html')
+
+@app.route('/silencio')
+def silencio():
+    return send_from_directory('static', 'silencio.html')
+
+@app.route('/skate')
+def skate():
+    return send_from_directory('static', 'skate.html')
+
+@app.route('/sales-roi')
+def sales_roi():
+    return send_from_directory('static', 'sales-roi.html')
+
+@app.route('/top-investors')
+def top_investors_page():
+    return send_from_directory('static', 'top-investors.html')
+
+@app.route('/welcome')
+def welcome_page():
+    return send_from_directory('static', 'welcome.html')
+
+@app.route('/index')
+def index_page():
+    return send_from_directory('static', 'index.html')
+
+# Static file serving for images and direct .html requests
 @app.route('/<path:filename>')
 def serve_static(filename):
-    if filename.endswith(('.jpg', '.png', '.gif')):
+    if filename.endswith(('.jpg', '.png', '.gif', '.svg', '.jpeg', '.webp')):
         return send_from_directory('static', filename)
     elif filename.endswith('.html'):
         return send_from_directory('static', filename)
+    elif filename.endswith('.txt'):
+        return send_from_directory('static', filename)
     else:
-        return send_from_directory('static', f'{filename}.html')
+        # For any other requests, try to serve as static file
+        try:
+            return send_from_directory('static', filename)
+        except:
+            return "Page not found", 404
 
 @app.route('/api/lit/total-investment', methods=['GET'])
 def lit_total_investment():

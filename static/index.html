@@ -1570,10 +1570,10 @@
                 <div class="left-column">
                     <!-- Navigation Buttons -->
                     <div class="left-nav-section">
-                        <a href="/top-investors.html" class="nav-button">
+                        <a href="/top-investors" class="nav-button">
                             <i class="fas fa-users"></i> Top Investors
                         </a>
-                        <a href="/sales-roi.html" class="nav-button">
+                        <a href="/sales-roi" class="nav-button">
                             <i class="fas fa-chart-line"></i> Sales ROI
                         </a>
                     </div>
@@ -2099,7 +2099,7 @@ function createSaleRow(sale) {
         <div class="token-sale-price ${sale.className}-color">${sale.tokenSalePrice}</div>
         <div class="token-price ${sale.className}-color">${sale.upcoming ? 'Not Live' : getMarketPrice(sale.id)}</div>
         <div>
-            <a href="${sale.upcoming ? 'https://legion.cc/app/invest' : `/${sale.id}.html`}" target="_blank" class="action-button ${sale.className}-button">${sale.upcoming ? 'Upcoming' : 'View Details'}</a>
+                            <a href="${sale.upcoming ? 'https://legion.cc/app/invest' : `/${sale.id}`}" target="_blank" class="action-button ${sale.className}-button">${sale.upcoming ? 'Upcoming' : 'View Details'}</a>
         </div>
     `;
     
