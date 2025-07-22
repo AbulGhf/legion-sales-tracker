@@ -10,11 +10,17 @@
     <meta name="app-version" content="1.2.2">
     <title>Legion Sale Trackers</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="legion.png">
+    <link rel="shortcut icon" type="image/png" href="legion.png">
+    
     <!-- Preload critical resources -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js" as="script">
     
     <!-- Load Chart.js synchronously to prevent race conditions -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <!-- Load Chart.js datalabels plugin for percentage display -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
     
     <!-- Load custom app.js with versioning -->
     <script>
@@ -45,21 +51,41 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
         
-        /* Modern background gradient for the entire page */
+        /* Modern glass-morphism background with geometric patterns */
         body {
             background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
+            background-attachment: fixed;
             color: white;
             font-family: 'Rajdhani', sans-serif;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* Update header with gradient */
+        /* Add subtle geometric background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 87, 34, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 87, 34, 0.05) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.01) 50%, transparent 60%);
+            background-size: 400px 400px, 600px 600px, 100px 100px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Modernized header with glass effect */
         .main-header {
-            background: linear-gradient(90deg, #13131f 0%, #1f1f2c 100%);
-            border-bottom: 1px solid #FF5722;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            padding: 0.75rem 0;
-            margin-bottom: 1rem;
+            background: rgba(19, 19, 31, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 87, 34, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 1rem 0;
+            margin-bottom: 2rem;
             position: relative;
             width: 100%;
         }
@@ -67,82 +93,225 @@
         .header-content {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             position: relative;
-        }
-
-        /* Logo image styling */
-        .header-logo-image {
-            height: 40px;
-            margin-right: 0.75rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
 
         .header-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
+            font-size: 2.5rem;
             font-weight: 800;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             text-transform: uppercase;
             color: #e0e0e0;
-            text-shadow: 0 0 15px rgba(255, 87, 34, 0.4);
-            margin-right: auto; /* Push it to the left */
+            text-shadow: 0 0 20px rgba(255, 87, 34, 0.4);
+            position: relative;
+            text-align: center;
+            background: linear-gradient(
+                90deg,
+                #e0e0e0 0%,
+                #e0e0e0 30%,
+                #ff5722 40%,
+                #ffab40 50%,
+                #ff5722 60%,
+                #e0e0e0 70%,
+                #e0e0e0 100%
+            );
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: traveling-light-header 4s ease-in-out infinite;
+        }
+
+        @keyframes traveling-light-header {
+            0% {
+                background-position: -200% 0;
+            }
+            50% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Add glow effect overlay for header title */
+        .header-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                transparent 30%,
+                rgba(255, 87, 34, 0.7) 40%,
+                rgba(255, 171, 64, 0.9) 50%,
+                rgba(255, 87, 34, 0.7) 60%,
+                transparent 70%,
+                transparent 100%
+            );
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: traveling-glow-header 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes traveling-glow-header {
+            0% {
+                background-position: -200% 0;
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                background-position: 200% 0;
+                opacity: 0;
+            }
         }
         
-        .header-nav {
+        /* Left column navigation section */
+        .left-nav-section {
             display: flex;
-            align-items: center;
-            margin-left: 1rem;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            justify-content: space-between;
         }
         
         .nav-button {
-            background: linear-gradient(145deg, #2a2a3d 0%, #333348 100%);
-            border: 1px solid #FF5722;
+            background: rgba(255, 87, 34, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 87, 34, 0.3);
             color: #ffffff;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
             font-size: 0.9rem;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             transition: all 0.3s ease;
             text-decoration: none;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            text-align: center;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.15), transparent);
+            transition: left 0.4s ease;
+        }
+
+        .nav-button:hover::before {
+            left: 100%;
         }
         
         .nav-button:hover {
-            background: linear-gradient(145deg, #333348 0%, #3a3a52 100%);
+            background: rgba(255, 87, 34, 0.15);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 8px 20px rgba(255, 87, 34, 0.2);
+            border-color: rgba(255, 87, 34, 0.5);
         }
 
-        /* New container layout styles */
+        .nav-button i {
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .header-title {
+                font-size: 2rem;
+                letter-spacing: 2px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 1.75rem;
+                letter-spacing: 1px;
+            }
+            
+            .left-nav-section {
+                gap: 0.75rem;
+            }
+            
+            .nav-button {
+                font-size: 0.8rem;
+                padding: 0.6rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-title {
+                font-size: 1.5rem;
+                letter-spacing: 0.5px;
+            }
+            
+            .left-nav-section {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .nav-button {
+                width: 100%;
+                font-size: 0.85rem;
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* Modern container with glass-morphism */
         .dashboard-container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem;
-            background: linear-gradient(0deg, rgba(20, 20, 30, 0.3) 0%, rgba(15, 15, 25, 0.3) 100%);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 87, 34, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            padding: 2rem;
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
 
-        /* Adjust spacing between main sections */
+        /* Enhanced grid layout */
         .top-section {
             display: grid;
-            grid-template-columns: 380px 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1rem;
+            grid-template-columns: 400px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
 
         .bottom-section {
             margin-bottom: 1rem;
         }
 
-        /* Consistent bottom section height */
+        /* Enhanced bottom section */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            height: 450px;
+            gap: 2rem;
+            height: 500px;
         }
 
         .stats-row .stats-card {
@@ -151,24 +320,37 @@
             flex-direction: column;
         }
 
-        /* Card styling with gradients */
+        /* Modern card styling with glass effect */
         .stats-card {
-            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(255, 87, 34, 0.1);
+            background: rgba(21, 21, 31, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 87, 34, 0.15);
             position: relative;
             overflow: hidden;
+            transition: all 0.3s ease;
         }
 
-        /* Full-width stats cards for better space usage */
-        .left-column .stats-card {
-            margin-bottom: 1rem;
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.5), transparent);
         }
 
-        /* Enhanced live feed - taller */
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 87, 34, 0.3);
+        }
+
+        /* Enhanced live feed card */
         .live-feed-card {
             flex: 1;
             display: flex;
@@ -176,99 +358,207 @@
         }
 
         .stats-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #e0e0e0;
-            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 87, 34, 0.2);
         }
 
-        /* Center chart titles and make them larger */
+        /* Enhanced chart titles */
         #investor-count .stats-title {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             text-align: center;
             justify-content: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
         }
 
         #investment-distribution .stats-title {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             text-align: center;
             justify-content: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
         }
 
         .stats-title i {
-            font-size: 1rem;
-            color: #666666;
+            font-size: 1.1rem;
+            color: rgba(255, 87, 34, 0.8);
         }
 
         .stat-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
+            gap: 1rem;
         }
 
-        /* Stats items with gradients */
+        /* Enhanced stats items with glass effect */
         .stat-item {
-            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
-            border-radius: 8px;
-            padding: 1.25rem 1rem;
+            background: rgba(29, 29, 40, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.3), transparent);
         }
 
         .stat-item:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 87, 34, 0.3);
         }
 
         .stat-label {
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             color: #b0b0b0;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
         }
 
         .stat-value {
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             font-weight: 700;
             color: #FF5722;
         }
 
         .stat-value.legion-stat {
             color: #FF5722;
+            text-shadow: 0 0 10px rgba(255, 87, 34, 0.3);
         }
 
-        /* Make charts take up all available space */
+        /* Enhanced chart containers with glassmorphism */
         .chart-container {
             flex: 1;
             position: relative;
             height: auto !important;
             margin-top: 0;
+            background: rgba(15, 15, 25, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            padding: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        /* Investor count chart - make bars taller */
         #investor-chart-container {
             height: 90%; 
             margin-top: 1rem;
+            background: rgba(15, 15, 25, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            padding: 1rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        /* Table container with fixed headers */
+        /* Modern table container with glass effect */
         .table-container {
-            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            background: rgba(21, 21, 31, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             height: 100%;
             display: flex;
             flex-direction: column;
-            border: 1px solid rgba(255, 87, 34, 0.1);
+            border: 1px solid rgba(255, 87, 34, 0.15);
             position: relative;
+        }
+
+        .table-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.5), transparent);
+        }
+
+        /* Enhanced filter bar */
+        .filter-bar {
+            background: rgba(26, 26, 37, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 87, 34, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-button {
+            background: rgba(255, 87, 34, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .filter-button:hover {
+            background: rgba(255, 87, 34, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.2);
+        }
+
+        .filter-button.active {
+            background: rgba(255, 87, 34, 0.3);
+            border-color: rgba(255, 87, 34, 0.5);
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.2);
+        }
+
+        .search-container {
+            margin-left: auto;
+            position: relative;
+        }
+
+        .search-input {
+            background: rgba(29, 29, 40, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            border-radius: 12px;
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            color: #ffffff;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(255, 87, 34, 0.5);
+            box-shadow: 0 0 15px rgba(255, 87, 34, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 87, 34, 0.6);
+            font-size: 0.9rem;
         }
 
         /* Table scroll container */
@@ -277,24 +567,39 @@
             overflow: auto;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
-            scrollbar-color: #FF5722 #242433;
+            scrollbar-color: rgba(255, 87, 34, 0.6) rgba(36, 36, 51, 0.8);
+        }
+
+        .table-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-scroll-container::-webkit-scrollbar-track {
+            background: rgba(36, 36, 51, 0.8);
+            border-radius: 4px;
+        }
+
+        .table-scroll-container::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 87, 34, 0.6);
+            border-radius: 4px;
         }
 
         .table-content {
             min-width: 900px;
         }
 
-        /* Table header */
+        /* Enhanced table header */
         .table-header {
             position: sticky;
             top: 0;
             z-index: 10;
-            background: #1a1a25;
-            border-bottom: 1px solid rgba(255, 87, 34, 0.2);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background: rgba(26, 26, 37, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 87, 34, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
-        /* Table row */
+        /* Enhanced table rows */
         .table-row {
             display: grid;
             grid-template-columns: 60px minmax(140px, 0.8fr) minmax(140px, 1fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) 120px;
@@ -329,94 +634,7 @@
             }
         }
 
-        .filter-bar {
-            background: linear-gradient(90deg, #1d1d28 0%, #242433 100%);
-            border-bottom: 1px solid #2a2a3a;
-            padding: 0.75rem 1rem;
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            scrollbar-color: #FF5722 #242433;
-        }
 
-        .filter-bar::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .filter-bar::-webkit-scrollbar-track {
-            background: #242433;
-        }
-
-        .filter-bar::-webkit-scrollbar-thumb {
-            background-color: #FF5722;
-            border-radius: 3px;
-        }
-
-        .filter-button {
-            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
-            border: 1px solid #333343;
-            color: #e0e0e0;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            margin-right: 4px;
-        }
-
-        .filter-button:hover {
-            background: linear-gradient(145deg, #242433 0%, #2a2a3d 100%);
-            border-color: #FF5722;
-            transform: translateY(-2px);
-        }
-
-        .filter-button.active {
-            background: linear-gradient(145deg, #2a2a3d 0%, #333348 100%);
-            border-color: #FF5722;
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(255, 87, 34, 0.2);
-        }
-
-        .search-container {
-            margin-left: auto;
-            position: relative;
-            margin-top: 0.25rem;
-            margin-bottom: 0.25rem;
-            width: 200px;
-        }
-
-        /* Search input styling */
-        .search-input {
-            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
-            border: 1px solid #333343;
-            color: #ffffff;
-            padding: 0.35rem 1rem 0.35rem 2.5rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            width: 100%;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #FF5722;
-            box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #777777;
-        }
 
         /* Table body */
         .table-body {
@@ -438,32 +656,36 @@
             border-radius: 3px;
         }
 
-        /* Updated table row - removed bottom border */
+        /* Enhanced table rows with glass effect */
         .table-row {
             display: grid;
             grid-template-columns: 60px minmax(140px, 0.8fr) minmax(140px, 1fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) minmax(100px, 0.6fr) 120px;
-            padding: 0.75rem 1rem;
+            padding: 1rem;
             align-items: center;
-            transition: all 0.2s ease;
-            min-width: 900px; /* Ensure minimum width for scrolling */
-            border-bottom: none; /* Remove the black border patterns */
+            transition: all 0.3s ease;
+            min-width: 900px;
+            border-bottom: none;
             position: relative;
+            border-radius: 8px;
+            margin: 0.25rem 0.5rem;
         }
 
-        /* Updated table row hover effect - cleaner, with subtle highlight */
-        .table-row:hover {
-            background: rgba(255, 87, 34, 0.05);
+        .table-row:not(.table-header):hover {
+            background: rgba(255, 87, 34, 0.1);
+            backdrop-filter: blur(5px);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
-        /* Add subtle separators between rows instead of dark borders */
-        .table-row:not(:last-child)::after {
+        /* Subtle separators with modern styling */
+        .table-row:not(.table-header):not(:last-child)::after {
             content: '';
             position: absolute;
             left: 1rem;
             right: 1rem;
-            bottom: 0;
+            bottom: -0.125rem;
             height: 1px;
-            background: rgba(255, 255, 255, 0.05);
+            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.2), transparent);
         }
 
         /* Loading skeleton */
@@ -576,95 +798,132 @@
             font-weight: 500;
         }
 
-        /* Action button styling */
+        /* Enhanced action button styling with glass effect */
         .action-button {
             display: inline-block;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
+            padding: 0.75rem 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
             font-weight: 600;
             text-align: center;
             font-size: 0.85rem;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+        }
+
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
         }
 
         .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Live feed card special styling */
+        /* Enhanced live feed with glass effect */
         .live-feed {
-            max-height: 350px;
+            max-height: 380px;
             overflow-y: auto;
             scrollbar-width: thin;
-            scrollbar-color: #FF5722 #242433;
+            scrollbar-color: rgba(255, 87, 34, 0.6) rgba(36, 36, 51, 0.8);
             flex: 1;
+            padding: 0.5rem;
         }
 
         .live-feed::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
 
         .live-feed::-webkit-scrollbar-track {
-            background: #242433;
-            border-radius: 3px;
+            background: rgba(36, 36, 51, 0.8);
+            border-radius: 4px;
         }
 
         .live-feed::-webkit-scrollbar-thumb {
-            background-color: #FF5722;
-            border-radius: 3px;
+            background-color: rgba(255, 87, 34, 0.6);
+            border-radius: 4px;
         }
 
         .feed-item {
-            background: rgba(40, 40, 40, 0.6);
-            margin: 4px;
-            border-radius: 4px;
-            padding: 10px 15px;
+            background: rgba(29, 29, 40, 0.6);
+            backdrop-filter: blur(10px);
+            margin: 0.5rem 0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
             font-size: 0.9rem;
             display: flex;
             align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feed-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.3), transparent);
         }
 
         .feed-item:hover {
-            background: rgba(50, 50, 50, 0.8);
-        }
-
-        .feed-item:last-child {
-            border-bottom: none;
+            background: rgba(29, 29, 40, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 87, 34, 0.3);
         }
 
         .feed-logo {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 12px;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            margin-right: 0.75rem;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
         }
 
         .feed-address {
-            color: #b0b0b0;
-            font-family: monospace;
+            color: #c0c0c0;
+            font-family: 'Courier New', monospace;
             text-decoration: none;
-            transition: color 0.2s ease;
+            transition: all 0.3s ease;
             flex: 1;
+            font-weight: 500;
         }
 
         .feed-address:hover {
             color: #ffffff;
             text-decoration: underline;
+            text-shadow: 0 0 8px rgba(255, 87, 34, 0.3);
         }
 
         .feed-amount {
             font-weight: 700;
             margin-left: auto;
-            margin-right: 10px;
-            font-family: monospace;
+            margin-right: 0.75rem;
+            font-family: 'Courier New', monospace;
+            color: #FF5722;
+            text-shadow: 0 0 8px rgba(255, 87, 34, 0.2);
         }
 
         .feed-time {
-            color: #777;
+            color: #999;
             font-size: 0.75rem;
             width: 60px;
             text-align: right;
+            font-weight: 500;
         }
 
         /* Project-specific styles */
@@ -1132,6 +1391,12 @@
             /* Preserve chart aspect ratio */
             .chart-container {
                 min-height: 300px;
+                background: rgba(15, 15, 25, 0.6);
+                backdrop-filter: blur(15px);
+                border-radius: 16px;
+                border: 1px solid rgba(255, 87, 34, 0.2);
+                padding: 1rem;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             }
             
             /* Fixed filter bar */
@@ -1291,16 +1556,7 @@
     <header class="main-header">
         <div class="container mx-auto px-4">
             <div class="header-content">
-                <img src="/legion.png" alt="Legion" class="header-logo-image">
-                <h1 class="header-title">LEGION SALE TRACKERS</h1>
-                <div class="header-nav">
-                    <a href="/top-investors.html" class="nav-button">
-                        <i class="fas fa-users mr-2"></i> Top Investors
-                    </a>
-                    <a href="/sales-roi.html" class="nav-button ml-2">
-                        <i class="fas fa-chart-line mr-2"></i> Sales ROI
-                    </a>
-                </div>
+                <h1 class="header-title" data-text="LEGION SALE TRACKER">LEGION SALE TRACKER</h1>
             </div>
         </div>
     </header>
@@ -1312,6 +1568,16 @@
             <div class="top-section">
                 <!-- Left Column - Stats and Charts -->
                 <div class="left-column">
+                    <!-- Navigation Buttons -->
+                    <div class="left-nav-section">
+                        <a href="/top-investors.html" class="nav-button">
+                            <i class="fas fa-users"></i> Top Investors
+                        </a>
+                        <a href="/sales-roi.html" class="nav-button">
+                            <i class="fas fa-chart-line"></i> Sales ROI
+                        </a>
+                    </div>
+                    
                     <!-- Live Feed - Taller -->
                     <div class="stats-card live-feed-card">
                         <div class="stats-title">
@@ -1499,7 +1765,7 @@
                     <div class="stats-card" id="investment-distribution">
                         <div class="stats-title">
                             <span>Investment Distribution</span>
-                            <i class="fas fa-chart-pie"></i>
+                            <i class="fas fa-chart-bar"></i>
                         </div>
                         <div class="chart-container">
                             <canvas id="investment-chart"></canvas>
@@ -1565,7 +1831,8 @@ const tokenSalePrices = {
     corn: "0.0714",
     giza: "0.045",
     session: "0.2",
-    resolv: "0.1"  // Added Resolv sale price
+    resolv: "0.1",  // Added Resolv sale price
+    fragmetric: "0.2"  // Added Fragmetric sale price
 };
 
 // Token CoinGecko IDs
@@ -1577,7 +1844,8 @@ const coinGeckoIds = {
     giza: "giza",
     session: "session-token",
     skate: "skate", // Skate token CoinGecko ID
-    resolv: "resolv" // Added Resolv CoinGecko ID
+    resolv: "resolv", // Added Resolv CoinGecko ID
+    fragmetric: "fragmetric" // Added Fragmetric CoinGecko ID
 };
 
 // Store fetched market prices
@@ -2080,50 +2348,95 @@ function updateCharts() {
     const ctx1 = document.getElementById('investment-chart').getContext('2d');
     const ctx2 = document.getElementById('investor-chart').getContext('2d');
     
-    // Prepare chart data
-    const labels = activeAndCompletedSales.map(sale => sale.name);
-    const investmentValues = activeAndCompletedSales.map(sale => sale.invested);
-    const investorValues = activeAndCompletedSales.map(sale => sale.investors);
-    const backgroundColors = activeAndCompletedSales.map(sale => chartColors[sale.id]);
+    // Prepare chart data and sort by investment amount (highest to lowest)
+    const sortedByInvestment = activeAndCompletedSales
+        .map(sale => ({
+            name: sale.name,
+            invested: sale.invested,
+            investors: sale.investors,
+            color: chartColors[sale.id]
+        }))
+        .sort((a, b) => b.invested - a.invested);
+    
+    // Prepare chart data and sort by investor count (highest to lowest)
+    const sortedByInvestors = activeAndCompletedSales
+        .map(sale => ({
+            name: sale.name,
+            invested: sale.invested,
+            investors: sale.investors,
+            color: chartColors[sale.id]
+        }))
+        .sort((a, b) => b.investors - a.investors);
+    
+    // Data for investment chart (sorted by investment amount)
+    const investmentLabels = sortedByInvestment.map(sale => sale.name);
+    const investmentValues = sortedByInvestment.map(sale => sale.invested);
+    const investmentColors = sortedByInvestment.map(sale => sale.color);
+    
+    // Data for investor chart (sorted by investor count)
+    const investorLabels = sortedByInvestors.map(sale => sale.name);
+    const investorValues = sortedByInvestors.map(sale => sale.investors);
+    const investorColors = sortedByInvestors.map(sale => sale.color);
     
     // Destroy existing charts if any
     if (investmentChart) investmentChart.destroy();
     if (investorChart) investorChart.destroy();
     
-    // Create the investment distribution chart
+    // Register the datalabels plugin
+    Chart.register(ChartDataLabels);
+    
+    // Create the investment distribution chart (horizontal bar chart)
     investmentChart = new Chart(ctx1, {
-        type: 'doughnut',
+        type: 'bar',
+        plugins: [ChartDataLabels],
         data: {
-            labels: labels,
+            labels: investmentLabels,
             datasets: [{
+                label: 'Investment Amount',
                 data: investmentValues,
-                backgroundColor: backgroundColors,
-                borderWidth: 0
+                backgroundColor: investmentColors.map(color => color + '80'), // Add transparency for glassy effect
+                borderWidth: 1,
+                borderColor: investmentColors.map(color => color + 'CC'), // Semi-transparent border
+                borderRadius: 12,
+                borderSkipped: false,
+                barThickness: window.innerWidth < 768 ? 10 : 14
             }]
         },
         options: {
+            indexAxis: 'y', // This makes it horizontal
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            hover: {
+                mode: null // Disable hover animations
+            },
+            animation: {
+                duration: 0 // Disable animations
+            },
             plugins: {
                 legend: {
-                    position: window.innerWidth < 768 ? 'bottom' : 'right',
-                    labels: {
-                        color: '#b0b0b0',
-                        font: {
-                            family: "'Rajdhani', sans-serif",
-                            size: window.innerWidth < 768 ? 9 : 11
-                        },
-                        boxWidth: window.innerWidth < 768 ? 8 : 12,
-                        padding: window.innerWidth < 768 ? 6 : 10
-                    }
+                    display: false
                 },
                 tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(15, 15, 25, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#b0b0b0',
+                    borderColor: 'rgba(255, 87, 34, 0.3)',
+                    borderWidth: 1,
+                    cornerRadius: 12,
                     titleFont: {
                         size: 14,
-                        weight: 'bold'
+                        weight: 'bold',
+                        family: "'Rajdhani', sans-serif"
                     },
                     bodyFont: {
-                        size: 13
+                        size: 13,
+                        family: "'Rajdhani', sans-serif"
                     },
                     padding: 12,
                     callbacks: {
@@ -2137,40 +2450,111 @@ function updateCharts() {
                             return `Amount: ${formatCurrency(value)} (${percentage}%)`;
                         }
                     }
+                },
+                datalabels: {
+                    display: true,
+                    anchor: 'center',
+                    align: 'center',
+                    color: '#ffffff',
+                    font: {
+                        family: "'Rajdhani', sans-serif",
+                        size: window.innerWidth < 768 ? 10 : 12,
+                        weight: 'bold'
+                    },
+                    formatter: function(value, context) {
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = ((value / total) * 100).toFixed(1);
+                        return percentage + '%';
+                    }
                 }
             },
-            cutout: '65%'
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.08)',
+                        lineWidth: 1
+                    },
+                    ticks: {
+                        color: '#b0b0b0',
+                        font: {
+                            family: "'Rajdhani', sans-serif",
+                            size: window.innerWidth < 768 ? 10 : 12,
+                            weight: '500'
+                        },
+                        callback: function(value) {
+                            return formatCurrency(value);
+                        }
+                    }
+                },
+                y: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: '#b0b0b0',
+                        font: {
+                            family: "'Rajdhani', sans-serif",
+                            size: window.innerWidth < 768 ? 10 : 12,
+                            weight: '500'
+                        }
+                    }
+                }
+            }
         }
     });
 
     // Create the investor count chart
     investorChart = new Chart(ctx2, {
         type: 'bar',
+        plugins: [ChartDataLabels], // Enable datalabels for this chart
         data: {
-            labels: labels,
+            labels: investorLabels,
             datasets: [{
                 label: 'Investors',
                 data: investorValues,
-                backgroundColor: backgroundColors,
-                borderWidth: 0,
-                borderRadius: 4,
-                barThickness: window.innerWidth < 768 ? 14 : 20 // Adjust bar thickness for mobile
+                backgroundColor: investorColors.map(color => color + '80'), // Add transparency for glassy effect
+                borderWidth: 1,
+                borderColor: investorColors.map(color => color + 'CC'), // Semi-transparent border
+                borderRadius: 12,
+                borderSkipped: false,
+                barThickness: window.innerWidth < 768 ? 10 : 16
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            hover: {
+                mode: null // Disable hover animations
+            },
+            animation: {
+                duration: 0 // Disable animations
+            },
             plugins: {
                 legend: {
                     display: false
                 },
                 tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(15, 15, 25, 0.9)',
+                    backdropFilter: 'blur(10px)',
+                    titleColor: '#ffffff',
+                    bodyColor: '#b0b0b0',
+                    borderColor: 'rgba(255, 87, 34, 0.3)',
+                    borderWidth: 1,
+                    cornerRadius: 12,
                     titleFont: {
                         size: 14,
-                        weight: 'bold'
+                        weight: 'bold',
+                        family: "'Rajdhani', sans-serif"
                     },
                     bodyFont: {
-                        size: 13
+                        size: 13,
+                        family: "'Rajdhani', sans-serif"
                     },
                     padding: 12,
                     callbacks: {
@@ -2180,6 +2564,21 @@ function updateCharts() {
                         label: function(context) {
                             return `${context.raw.toLocaleString()} investors`;
                         }
+                    }
+                },
+                datalabels: {
+                    display: true,
+                    anchor: 'center',
+                    align: 'center',
+                    color: '#ffffff',
+                    rotation: -90, // Rotate text vertically
+                    font: {
+                        family: "'Rajdhani', sans-serif",
+                        size: window.innerWidth < 768 ? 10 : 12,
+                        weight: 'bold'
+                    },
+                    formatter: function(value, context) {
+                        return value.toLocaleString();
                     }
                 }
             },
@@ -2192,20 +2591,25 @@ function updateCharts() {
                         color: '#b0b0b0',
                         font: {
                             family: "'Rajdhani', sans-serif",
-                            size: window.innerWidth < 768 ? 9 : 11
-                        }
+                            size: window.innerWidth < 768 ? 10 : 12,
+                            weight: '500'
+                        },
+                        maxRotation: 45,
+                        minRotation: 0
                     }
                 },
                 y: {
                     beginAtZero: true,
                     grid: {
-                        color: 'rgba(255, 255, 255, 0.1)'
+                        color: 'rgba(255, 255, 255, 0.08)',
+                        lineWidth: 1
                     },
                     ticks: {
                         color: '#b0b0b0',
                         font: {
                             family: "'Rajdhani', sans-serif",
-                            size: window.innerWidth < 768 ? 9 : 11
+                            size: window.innerWidth < 768 ? 10 : 12,
+                            weight: '500'
                         },
                         callback: function(value) {
                             return value.toLocaleString();
@@ -2555,6 +2959,13 @@ function initLiveFeed() {
     });
 }
     </script>
+    
+    <!-- Branding Footer -->
+    <div style="text-align: center; padding: 2rem 0; margin-top: 3rem; border-top: 1px solid rgba(255, 87, 34, 0.2); background: rgba(20, 20, 30, 0.4); backdrop-filter: blur(10px);">
+        <p style="color: rgba(255, 255, 255, 0.6); font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; margin: 0;">
+            Created by <a href="https://twitter.com/Magicianafk" target="_blank" rel="noopener noreferrer" style="color: #ff5722; text-decoration: none; font-weight: 600; transition: color 0.3s ease;">@Magicianafk</a> <span style="color: #ff6b6b;">❤️</span>
+        </p>
+    </div>
     
     <!-- Analytics is now loaded dynamically through initApp() -->
 </body>

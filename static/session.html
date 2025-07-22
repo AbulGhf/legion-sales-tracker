@@ -15,10 +15,25 @@
     <style>
         /* Basic styles */
         body {
-            background-color: #0f1a1a;
-            background-image: linear-gradient(to bottom, #1a2a2a, #0f1a1a);
+            background-color: #101010;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23222222' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23333333'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        /* iOS 26 Glassy Style */
+        .ios-glass {
+            background: rgba(45, 45, 45, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Session color */
+        .neon-color {
+            color: #3b82f6;
         }
         
         /* Main container */
@@ -28,102 +43,102 @@
             padding: 20px;
         }
         
-        /* Back button */
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            transition: background-color 0.2s;
-        }
-        
-        .back-button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Header */
+        /* Header card */
         .header-card {
-            background-color: #0f1a1a;
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.8) 0%, rgba(96, 165, 250, 0.8) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border: 1px solid rgba(36, 242, 210, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         
         .header-title {
             font-size: 2rem;
-            font-weight: bold;
-            color: #24f2d2;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000;
         }
         
         /* Cards */
         .card {
-            background-color: #121827;
-            border-radius: 8px;
-            overflow: hidden;
+            background: rgba(28, 28, 30, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
             margin-bottom: 20px;
-            border: 1px solid rgba(36, 242, 210, 0.15);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
         }
         
         .card-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 4px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
         
         .card-subtitle {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
+            margin-bottom: 16px;
         }
         
         /* Amount display */
         .amount-display {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #24f2d2;
-            margin: 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 16px 0;
+            color: #3b82f6;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
-        /* Stats box */
+        /* Stats section */
         .stats-section {
+            background: rgba(28, 28, 30, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 16px;
             margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         
         .stats-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
         }
         
         .stats-card {
-            background-color: #121827;
-            border-left: 4px solid #24f2d2;
-            padding: 15px;
-            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .stats-card:last-child {
+            border-bottom: none;
         }
         
         .stats-label {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
         }
         
         .stats-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #24f2d2;
+            font-weight: 500;
         }
         
         /* Table */
         .table-container {
-            width: 100%;
             overflow-x: auto;
-            border-radius: 8px;
         }
         
         .data-table {
@@ -132,135 +147,156 @@
             border-spacing: 0;
         }
         
-        .table-header {
-            background-color: #222222;
-            padding: 15px;
-            text-align: left;
-            font-weight: bold;
-        }
-        
         .table-header th {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(36, 242, 210, 0.1);
-        }
-        
-        .table-header th:first-child {
-            border-top-left-radius: 8px;
-        }
-        
-        .table-header th:last-child {
-            border-top-right-radius: 8px;
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: normal;
+            color: rgba(235, 235, 245, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .table-row td {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(36, 242, 210, 0.05);
-        }
-        
-        .table-row:nth-child(odd) {
-            background-color: rgba(32, 32, 32, 0.6);
-        }
-        
-        .table-row:nth-child(even) {
-            background-color: rgba(40, 40, 40, 0.6);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .table-row:hover {
-            background-color: rgba(50, 50, 50, 0.8);
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
-        /* Rank badge */
+        /* Address cell */
+        .address-cell a {
+            color: #3b82f6;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        
+        .address-cell a:hover {
+            text-decoration: none;
+            opacity: 0.8;
+        }
+        
+        /* Rank badges */
         .rank-badge {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 28px;
             height: 28px;
-            background-color: #24f2d2;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
             color: #000;
-            font-weight: bold;
-            border-radius: 50%;
-        }
-        
-        /* Address */
-        .address-cell {
-            font-family: monospace;
-            color: #24f2d2;
-        }
-        
-        .address-cell a:hover {
-            text-decoration: underline;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         /* Pagination */
         .pagination {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            gap: 10px;
-        }
-        
-        .pagination-button {
-            background-color: #fffdf0;
-            color: #181818;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .pagination-button:disabled {
-            background-color: #444444;
-            color: #aaaaaa;
-            cursor: not-allowed;
+            padding: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .pagination-info {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 8px 12px;
-            border-radius: 4px;
+            color: rgba(235, 235, 245, 0.6);
         }
         
-        /* Calculator styles */
-        .calculator-card {
-            background-color: #121827;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            border: 1px solid rgba(36, 242, 210, 0.15);
-            padding: 20px;
-        }
-        
-        .calculator-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid rgba(36, 242, 210, 0.3);
-            border-radius: 6px;
-            background: rgba(0, 25, 25, 0.8);
+        .pagination-button {
+            background: rgba(59, 130, 246, 0.2);
             color: white;
-            font-size: 1rem;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+        
+        .pagination-button:hover:not(:disabled) {
+            background: rgba(59, 130, 246, 0.4);
+            transform: translateY(-1px);
+        }
+        
+        .pagination-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Calculator */
+        .calculator-input {
+            background: rgba(28, 28, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            width: 100%;
+            transition: all 0.2s ease;
         }
         
         .calculator-input:focus {
             outline: none;
-            border-color: #24f2d2;
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+        
+        .tab-button {
+            background: rgba(28, 28, 30, 0.5);
+            color: rgba(235, 235, 245, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 16px;
+            flex: 1;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .tab-button.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: white;
+            border-color: rgba(59, 130, 246, 0.4);
         }
         
         .result-card {
-            border: 1px solid rgba(36, 242, 210, 0.1);
-            border-radius: 8px;
+            background: rgba(28, 28, 30, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
             padding: 16px;
+            margin-top: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         
-        .price-card {
-            background-color: rgba(18, 24, 39, 0.8);
-            border-radius: 6px;
-            padding: 12px;
-            display: flex;
-            justify-content: space-between;
+        .profit-positive {
+            color: #30d158;
+        }
+        
+        .profit-negative {
+            color: #ff453a;
+        }
+        
+        /* Back button */
+        .back-button {
+            display: inline-flex;
             align-items: center;
+            padding: 8px 16px;
+            margin-bottom: 16px;
+            background: rgba(44, 44, 46, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .back-button:hover {
+            background: rgba(60, 60, 67, 0.6);
+            transform: translateY(-1px);
         }
         
         /* Investor Modal Styles */
@@ -270,7 +306,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -278,89 +316,82 @@
         }
 
         .investor-modal-content {
-            background-color: #1a1a1a;
-            border-radius: 8px;
+            background: rgba(28, 28, 30, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
             padding: 2rem;
             position: relative;
             width: 90%;
             max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .investor-modal-close {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
+            top: 16px;
+            right: 20px;
+            font-size: 24px;
             cursor: pointer;
-            color: #666;
+            color: rgba(235, 235, 245, 0.6);
             transition: color 0.2s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: rgba(60, 60, 67, 0.3);
         }
 
         .investor-modal-close:hover {
-            color: #fff;
-        }
-
-        .investor-details {
-            color: #fff;
+            color: white;
+            background: rgba(60, 60, 67, 0.5);
         }
 
         .investor-details h2 {
             font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: #fff;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .investor-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
+            gap: 16px;
+            margin: 20px 0;
         }
 
         .investor-stat {
-            background-color: #2a2a2a;
-            padding: 1rem;
-            border-radius: 6px;
+            background: rgba(44, 44, 46, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 16px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .investor-stat-value {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
         .investor-stat-label {
-            color: #888;
-            font-size: 0.875rem;
+            color: rgba(235, 235, 245, 0.6);
+            font-size: 0.9rem;
         }
 
-        /* Update address cell to use handleInvestorClick */
-        .address-cell a {
-            color: #3b82f6;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .address-cell a:hover {
-            text-decoration: underline;
-        }
-
-        /* Sales table in investor modal */
-        .sales-table-container {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 1rem;
-            border: 1px solid rgba(255, 253, 240, 0.1);
-            border-radius: 6px;
-        }
-
-        .giza-sale {
-            background-color: rgba(255, 253, 240, 0.1) !important;
+        .session-sale {
+            background: rgba(59, 130, 246, 0.15);
+            border-left: 3px solid #3b82f6;
+            border-radius: 8px;
         }
 
         /* Sale type badge */
@@ -372,83 +403,26 @@
             font-weight: bold;
         }
 
-        .sale-badge.giza {
-            background-color: #fffdf0;
-            color: #121827;
+        .sale-badge.session {
+            background-color: #3b82f6;
+            color: #ffffff;
         }
 
         .sale-badge.other {
             background-color: #2a2a2a;
-            color: #fffdf0;
+            color: #3b82f6;
         }
 
-        /* Giza Token Calculator Styles */
-        .calculator-card {
-            background: linear-gradient(135deg, rgba(60, 45, 0, 0.7) 0%, rgba(85, 65, 0, 0.7) 100%);
-            border-color: rgba(255, 209, 102, 0.2);
-            padding: 1rem;
-            border-radius: 8px;
+        /* Sales table in investor modal */
+        .sales-table-container {
+            max-height: 300px;
+            overflow-y: auto;
             margin-top: 1rem;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
         }
 
-        .calculator-input {
-            background: linear-gradient(135deg, rgba(25, 20, 0, 0.8) 0%, rgba(35, 30, 0, 0.8) 100%);
-            border-color: rgba(255, 209, 102, 0.3);
-            padding: 0.5rem;
-            border-radius: 4px;
-            width: 100%;
-        }
-
-        .result-card {
-            background: linear-gradient(135deg, rgba(40, 30, 0, 0.8) 0%, rgba(60, 45, 0, 0.8) 100%);
-            border-color: rgba(255, 209, 102, 0.1);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-
-        .price-card {
-            border-left: 4px solid #ffd166;
-            padding: 0.5rem;
-        }
-
-        /* Tab button styles */
-        .tab-button {
-            padding: 0.5rem 1rem;
-            background: rgba(36, 242, 210, 0.1);
-            border: 1px solid rgba(36, 242, 210, 0.3);
-            color: #24f2d2;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex: 1;
-            text-align: center;
-        }
-
-        .tab-button:first-child {
-            border-radius: 4px 0 0 4px;
-        }
-
-        .tab-button:last-child {
-            border-radius: 0 4px 4px 0;
-        }
-
-        .tab-button.active {
-            background: rgba(36, 242, 210, 0.2);
-            border-color: #24f2d2;
-        }
-
-        .tab-button:hover:not(.active) {
-            background: rgba(36, 242, 210, 0.15);
-        }
-
-        /* Color classes for P&L */
-        .profit-positive {
-            color: #10b981;
-        }
-
-        .profit-negative {
-            color: #ef4444;
-        }
+    
     </style>
 </head>
 <body>
@@ -475,7 +449,7 @@
             
             // New state for token price data
             const [priceData, setPriceData] = React.useState({
-                salePrice: 0.045, // Fixed sale price for Giza
+                salePrice: 0.2, // Fixed sale price for Session
                 currentPrice: 0,
                 athPrice: 0,
                 lowestPrice: 0,
@@ -492,12 +466,12 @@
             
             // Add state for calculator input
             const [inputValue, setInputValue] = React.useState('');
-            const [calculatorMode, setCalculatorMode] = React.useState('amount'); // 'amount' or 'address'
+            const [calculatorMode, setCalculatorMode] = React.useState('amount'); // 'amount' or 'address' or 'tokens'
             const [calculationResult, setCalculationResult] = React.useState(null);
             const [calculatorLoading, setCalculatorLoading] = React.useState(false);
             
             // Constants
-            const depositsPerPage = 15;
+            const depositsPerPage = 10;
             const COINGECKO_API_KEY = 'CG-4Fnx2x1Ga65oHP6HufVGevXh';
             const SESSION_TOKEN_ID = 'session-token';  // Session token ID
             
@@ -630,171 +604,150 @@
                     
                     setLoading(false);
                 } catch (err) {
-                    console.error("Error fetching data:", err);
+                    console.error('Error fetching data:', err);
                     setError(err.message);
                     setLoading(false);
                 }
             };
             
-            // Format date to a readable format
-            const formatDate = (dateString) => {
-                const options = { year: 'numeric', month: 'short', day: 'numeric' };
-                return new Date(dateString).toLocaleDateString(undefined, options);
-            };
-            
-            // Update the formatAmount function to optionally format as currency
-            const formatAmount = (amount, isCurrency = true) => {
-                if (isCurrency) {
-                    return amount.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                } else {
-                    return amount.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                }
-            };
-            
-            // Format wallet address to shorter format
-            const formatAddress = (address) => {
-                if (!address) return '';
-                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
-            };
-            
-            // Sort deposits based on current sort order
-            const sortedDeposits = React.useMemo(() => {
-                return [...deposits].sort((a, b) => {
-                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
-                });
-            }, [deposits, sortOrder]);
-            
-            // Toggle sort order
-            const toggleSortOrder = () => {
-                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            };
-            
-            // Pagination calculations
-            const indexOfLastDeposit = currentPage * depositsPerPage;
-            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
-            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
-            const totalPages = Math.max(1, Math.ceil(deposits.length / depositsPerPage));
-            
-            // Add handleInvestorClick function
+            // Handle investor click to show modal
             const handleInvestorClick = async (address) => {
+                setShowModal(true);
+                setInvestorLoading(true);
+                setSelectedInvestor(null);
+                
                 try {
-                    setInvestorLoading(true);
-                    setShowModal(true);
-                    setSelectedInvestor(null);
-                    
-                    console.log(`Fetching investor details for address: ${address}`);
                     const response = await fetch(`/api/investor/${address}`);
-                    console.log('Response status:', response.status);
-                    
                     if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Error response:', errorText);
-                        throw new Error(`Failed to fetch investor details: ${response.status} ${errorText}`);
+                        throw new Error('Failed to fetch investor details');
                     }
-                    
                     const data = await response.json();
-                    console.log('Received data:', data);
-                    
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
-
-                    // Keep all sales data instead of filtering
-                    const allSales = data.sales;
-                    
-                    if (allSales.length === 0) {
-                        throw new Error('No sales found for this address');
-                    }
-
-                                                        // Calculate Session sales for stats
-                                    const sessionSales = allSales.filter(sale => sale.sale.toLowerCase() === 'session');
-                                    const sessionTotal = sessionSales.reduce((sum, sale) => sum + sale.amount, 0);
-
-                                    setSelectedInvestor({
-                                        address,
-                                        total_invested: allSales.reduce((sum, sale) => sum + sale.amount, 0),
-                                        session_total: sessionTotal,
-                                        sales_participated: allSales.length,
-                                        session_sales: sessionSales.length,
-                                        sales: allSales
-                                    });
-                } catch (error) {
-                    console.error('Error in handleInvestorClick:', error);
-                    setSelectedInvestor(null);
+                    setSelectedInvestor(data);
+                } catch (err) {
+                    console.error('Error fetching investor details:', err);
                 } finally {
                     setInvestorLoading(false);
                 }
             };
-
-            // Add closeModal function
+            
+            // Close modal
             const closeModal = () => {
                 setShowModal(false);
                 setSelectedInvestor(null);
             };
-
-            // Handle calculator function
+            
+            // Handle calculator mode switch
+            const switchCalculatorMode = (mode) => {
+                setCalculatorMode(mode);
+                setInputValue('');
+                setCalculationResult(null);
+            };
+            
+            // Handle input change
+            const handleInputChange = (e) => {
+                setInputValue(e.target.value);
+            };
+            
+            // Handle calculate button
             const handleCalculate = async () => {
+                if (!inputValue || priceData.loading) return;
+                
+                setCalculatorLoading(true);
+                setCalculationResult(null);
+                
                 try {
-                    setCalculatorLoading(true);
-                    setCalculationResult(null);
-                    
-                    if (calculatorMode === 'address') {
-                        // Address mode - fetch investor data
-                        const response = await fetch(`/api/investor/${inputValue.trim()}`);
-                        if (!response.ok) {
-                            throw new Error('Address not found or invalid');
-                        }
-                        const data = await response.json();
-                        
-                        const sessionSales = data.sales.filter(sale => sale.sale.toLowerCase() === 'session');
-                        const sessionTotal = sessionSales.reduce((sum, sale) => sum + sale.amount, 0);
-                        
-                        if (sessionTotal === 0) {
-                            setCalculationResult({ error: 'This address did not participate in the Session sale.' });
-                            return;
-                        }
-                        
-                        const pnlData = calculatePnL(sessionTotal);
-                        setCalculationResult({
-                            investmentAmount: sessionTotal,
-                            ...pnlData
-                        });
-                    } else {
-                        // Amount mode - calculate based on input
+                    if (calculatorMode === 'amount') {
                         const amount = parseFloat(inputValue);
                         if (isNaN(amount) || amount <= 0) {
-                            setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
-                            return;
+                            throw new Error('Please enter a valid amount');
                         }
                         
-                        const pnlData = calculatePnL(amount);
+                        const result = calculatePnL(amount);
                         setCalculationResult({
-                            investmentAmount: amount,
-                            ...pnlData
+                            ...result,
+                            investmentAmount: amount
+                        });
+                    } else if (calculatorMode === 'tokens') {
+                        const tokens = parseFloat(inputValue);
+                        if (isNaN(tokens) || tokens <= 0) {
+                            throw new Error('Please enter a valid token amount');
+                        }
+                        
+                        const investmentAmount = tokens * priceData.salePrice;
+                        const result = calculatePnL(investmentAmount);
+                        setCalculationResult({
+                            ...result,
+                            investmentAmount
+                        });
+                    } else if (calculatorMode === 'address') {
+                        const address = inputValue.trim();
+                        if (!address.startsWith('0x') || address.length !== 42) {
+                            throw new Error('Please enter a valid Ethereum address');
+                        }
+                        
+                        // Fetch investment for this address
+                        const response = await fetch(`/api/session/address/${address}`);
+                        if (!response.ok) {
+                            throw new Error('Address not found or failed to fetch data');
+                        }
+                        
+                        const data = await response.json();
+                        const investmentAmount = data.amount || 0;
+                        
+                        if (investmentAmount === 0) {
+                            throw new Error('No Session investment found for this address');
+                        }
+                        
+                        const result = calculatePnL(investmentAmount);
+                        setCalculationResult({
+                            ...result,
+                            investmentAmount
                         });
                     }
-                } catch (error) {
-                    setCalculationResult({ error: error.message });
+                } catch (err) {
+                    setCalculationResult({
+                        error: err.message
+                    });
                 } finally {
                     setCalculatorLoading(false);
                 }
             };
             
+            // Utility functions
+            const formatAmount = (amount, isPrice = false) => {
+                if (amount === null || amount === undefined || isNaN(amount)) return isPrice ? '$0.00' : '$0';
+                if (amount === 0) return isPrice ? '$0.00' : '$0';
+                if (amount < 0.01 && isPrice) return `$${amount.toFixed(6)}`;
+                if (amount < 1 && isPrice) return `$${amount.toFixed(4)}`;
+                return `$${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            };
+            
+            const formatAddress = (address) => {
+                return `${address.slice(0, 6)}...${address.slice(-4)}`;
+            };
+            
+            const toggleSortOrder = () => {
+                setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
+                setCurrentPage(1);
+            };
+            
+            // Pagination calculations
+            const sortedDeposits = [...deposits].sort((a, b) => {
+                return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
+            });
+            
+            const totalPages = Math.ceil(sortedDeposits.length / depositsPerPage);
+            const indexOfLastDeposit = currentPage * depositsPerPage;
+            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
+            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
+            
             // Show loading state
             if (loading) {
                 return (
-                    <div className="flex items-center justify-center h-screen">
-                        <div className="text-center p-8 card max-w-md">
+                    <div className="main-container">
+                        <div className="card p-8 text-center">
                             <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                            <p className="mb-6">Loading Session Sale Data...</p>
+                            <div>Loading Session data...</div>
                         </div>
                     </div>
                 );
@@ -836,15 +789,15 @@
                     {/* Token Price Stats Card */}
                     <div className="card p-4 mb-4">
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-                                                    <div className="flex items-center mb-4 md:mb-0">
-                            <img src="/static/session.png" alt="Session Logo" className="w-8 h-8 mr-3" onerror="this.src='session.png'" />
-                            <span className="text-lg font-semibold">Session Price Stats</span>
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
-                            <div className="text-center">
-                                <div className="text-gray-400 text-sm">Sale Price</div>
-                                <div className="font-bold">$0.20</div>
+                            <div className="flex items-center mb-4 md:mb-0">
+                                <img src="/static/session.png" alt="Session Logo" className="w-8 h-8 mr-3" />
+                                <span className="text-lg font-semibold">Session Price Stats</span>
                             </div>
+                            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Sale Price</div>
+                                    <div className="font-bold">$0.20</div>
+                                </div>
                                 <div className="text-center">
                                     <div className="text-gray-400 text-sm">Current Price</div>
                                     <div className="font-bold">
@@ -916,22 +869,22 @@
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Average</div>
-                                    <div className="stats-value">{formatAmount(stats.average)}</div>
+                                    <div className="stats-value">{formatAmount(stats.average || 0)}</div>
                                 </div>
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Median</div>
-                                    <div className="stats-value">{formatAmount(stats.median)}</div>
+                                    <div className="stats-value">{formatAmount(stats.median || 0)}</div>
                                 </div>
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Highest</div>
-                                    <div className="stats-value">{formatAmount(stats.highest)}</div>
+                                    <div className="stats-value">{formatAmount(stats.highest || 0)}</div>
                                 </div>
                                 
                                 <div className="stats-card">
                                     <div className="stats-label">Lowest</div>
-                                    <div className="stats-value">{formatAmount(stats.lowest)}</div>
+                                    <div className="stats-value">{formatAmount(stats.lowest || 0)}</div>
                                 </div>
                             </div>
                             
@@ -943,13 +896,19 @@
                                 <div className="flex mb-4">
                                     <button 
                                         className={`tab-button ${calculatorMode === 'amount' ? 'active' : ''}`}
-                                        onClick={() => setCalculatorMode('amount')}
+                                        onClick={() => switchCalculatorMode('amount')}
                                     >
                                         USDC Amount
                                     </button>
                                     <button 
+                                        className={`tab-button ${calculatorMode === 'tokens' ? 'active' : ''}`}
+                                        onClick={() => switchCalculatorMode('tokens')}
+                                    >
+                                        Token Amount
+                                    </button>
+                                    <button 
                                         className={`tab-button ${calculatorMode === 'address' ? 'active' : ''}`}
-                                        onClick={() => setCalculatorMode('address')}
+                                        onClick={() => switchCalculatorMode('address')}
                                     >
                                         Wallet Address
                                     </button>
@@ -964,7 +923,18 @@
                                                 className="calculator-input" 
                                                 placeholder="e.g. 1000" 
                                                 value={inputValue}
-                                                onChange={(e) => setInputValue(e.target.value)}
+                                                onChange={handleInputChange}
+                                            />
+                                        </div>
+                                    ) : calculatorMode === 'tokens' ? (
+                                        <div>
+                                            <label className="block text-sm mb-1">Enter Token Amount</label>
+                                            <input 
+                                                type="number" 
+                                                className="calculator-input" 
+                                                placeholder="e.g. 10000" 
+                                                value={inputValue}
+                                                onChange={handleInputChange}
                                             />
                                         </div>
                                     ) : (
@@ -975,7 +945,7 @@
                                                 className="calculator-input" 
                                                 placeholder="0x..." 
                                                 value={inputValue}
-                                                onChange={(e) => setInputValue(e.target.value)}
+                                                onChange={handleInputChange}
                                             />
                                         </div>
                                     )}
@@ -999,7 +969,7 @@
                                             
                                             <div className="flex justify-between mb-2">
                                                 <span>Tokens Received:</span>
-                                                <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()}</span>
+                                                <span className="font-medium">{calculationResult.tokensReceived ? calculationResult.tokensReceived.toLocaleString() : '0'}</span>
                                             </div>
                                             
                                             <div className="border-t border-gray-700 my-2"></div>
@@ -1087,9 +1057,10 @@
                                                     </td>
                                                     <td className="address-cell">
                                                         <a
-                                                            href="#"
+                                                            href="javascript:void(0)"
                                                             onClick={(e) => {
                                                                 e.preventDefault();
+                                                                e.stopPropagation();
                                                                 handleInvestorClick(deposit.address);
                                                             }}
                                                             title={deposit.address}
@@ -1157,11 +1128,11 @@
                                             </div>
                                             <div className="investor-stats">
                                                 <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.session_total)}</div>
+                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.session_total || 0)}</div>
                                                     <div className="investor-stat-label">Session Investment</div>
                                                 </div>
                                                 <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested || 0)}</div>
                                                     <div className="investor-stat-label">Total Invested (All Sales)</div>
                                                 </div>
                                             </div>
@@ -1178,14 +1149,14 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            {selectedInvestor.sales.map((sale, index) => (
-                                                                <tr key={index} className={`table-row ${sale.sale.toLowerCase() === 'session' ? 'session-sale' : ''}`}>
+                                                            {(selectedInvestor.sales || []).map((sale, index) => (
+                                                                <tr key={index} className={`table-row ${sale.sale && sale.sale.toLowerCase() === 'session' ? 'session-sale' : ''}`}>
                                                                     <td>
-                                                                        <span className={`sale-badge ${sale.sale.toLowerCase() === 'session' ? 'session' : 'other'}`}>
-                                                                            {sale.sale.toLowerCase() === 'session' ? '★ ' : ''}{sale.sale.toUpperCase()}
+                                                                        <span className={`sale-badge ${sale.sale && sale.sale.toLowerCase() === 'session' ? 'session' : 'other'}`}>
+                                                                            {sale.sale && sale.sale.toLowerCase() === 'session' ? '★ ' : ''}{sale.sale ? sale.sale.toUpperCase() : 'UNKNOWN'}
                                                                         </span>
                                                                     </td>
-                                                                    <td>{formatAmount(sale.amount)}</td>
+                                                                    <td>{formatAmount(sale.amount || 0)}</td>
                                                                 </tr>
                                                             ))}
                                                         </tbody>

@@ -10,193 +10,405 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
     <!-- Load Tailwind -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <!-- Load Font Awesome for icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /* Basic styles */
+        :root {
+            --primary-color: #007d3a;
+            --secondary-color: #00a84d;
+            --background-color: #0d1a0d;
+            --card-background: rgba(28, 40, 28, 0.7);
+            --header-gradient-start: rgba(0, 125, 58, 0.8);
+            --header-gradient-end: rgba(0, 168, 77, 0.8);
+            --profit-positive: #30d158;
+            --profit-negative: #ff453a;
+        }
+
         body {
-            background-color: #0d1a0d;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(0, 125, 58, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 30%, rgba(0, 125, 58, 0.08) 0%, transparent 40%),
-                linear-gradient(to bottom, #0d1a0d, #071207);
+            background-color: var(--background-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23003d1d' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23007d3a'%3E%3Ccircle cx='769' cy='229' r='3'/%3E%3Ccircle cx='539' cy='269' r='3'/%3E%3Ccircle cx='603' cy='493' r='3'/%3E%3Ccircle cx='731' cy='737' r='3'/%3E%3Ccircle cx='520' cy='660' r='3'/%3E%3Ccircle cx='309' cy='538' r='3'/%3E%3Ccircle cx='295' cy='764' r='3'/%3E%3Ccircle cx='40' cy='599' r='3'/%3E%3Ccircle cx='102' cy='382' r='3'/%3E%3Ccircle cx='127' cy='80' r='3'/%3E%3Ccircle cx='370' cy='105' r='3'/%3E%3Ccircle cx='578' cy='42' r='3'/%3E%3Ccircle cx='237' cy='261' r='3'/%3E%3Ccircle cx='390' cy='382' r='3'/%3E%3C/g%3E%3C/svg%3E");
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-        
-        /* Fragmetric color */
+
+        .ios-glass {
+            background: rgba(45, 58, 45, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 125, 58, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
         .neon-color {
-            color: #007d3a;
+            color: var(--primary-color);
         }
         
-        /* Main container */
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
-        /* Header card */
+
         .header-card {
-            background: linear-gradient(90deg, #006931 0%, #007d3a 100%);
-            border-radius: 12px;
+            background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
             border: 1px solid rgba(0, 125, 58, 0.15);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 125, 58, 0.15);
-            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
-        
-        .header-card:hover {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 125, 58, 0.2);
-            transform: translateY(-2px);
-        }
-        
+
         .header-title {
-            font-size: 2.2rem;
-            font-weight: bold;
-            color: white;
-            text-shadow: 0 0 10px rgba(0, 125, 58, 0.5);
+            font-size: 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff;
         }
         
-        /* Cards */
         .card {
-            background-color: rgba(26, 26, 26, 0.8);
-            background-image: 
-                linear-gradient(to bottom, rgba(26, 26, 26, 0.9), rgba(15, 15, 15, 0.95));
-            border-radius: 12px;
-            overflow: hidden;
+            background: var(--card-background);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
             margin-bottom: 20px;
-            border: 1px solid rgba(0, 125, 58, 0.15);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 125, 58, 0.08);
+            overflow: hidden;
         }
-        
-        .card:hover {
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 12px rgba(0, 125, 58, 0.1);
-            transform: translateY(-2px);
-        }
-        
+
         .card-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-bottom: 6px;
-            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
-        
+
         .card-subtitle {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
+            margin-bottom: 16px;
         }
-        
-        /* Amount display */
+
         .amount-display {
-            font-size: 2.2rem;
-            font-weight: bold;
-            color: #007d3a;
-            margin: 12px 0;
-            text-shadow: 0 0 10px rgba(0, 125, 58, 0.3);
-            transition: all 0.3s ease;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 16px 0;
+            color: var(--primary-color);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
-        .card:hover .amount-display {
-            text-shadow: 0 0 15px rgba(0, 125, 58, 0.5);
-        }
-        
-        /* Stats box */
         .stats-section {
+            background: var(--card-background);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 16px;
             margin-top: 20px;
+            border: 1px solid rgba(0, 125, 58, 0.08);
         }
-        
+
         .stats-title {
             font-size: 1.25rem;
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .stats-card {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            color: #ffffff;
-            text-shadow: 0 0 8px rgba(0, 125, 58, 0.3);
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 125, 58, 0.06);
         }
-        
-        .stats-card {
-            background-color: rgba(18, 24, 39, 0.7);
-            border-left: 4px solid #007d3a;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+
+        .stats-card:last-child {
+            border-bottom: none;
         }
-        
-        .stats-card:hover {
-            background-color: rgba(25, 33, 48, 0.8);
-            transform: translateX(4px);
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
-        }
-        
+
         .stats-label {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
         }
-        
+
         .stats-value {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #007d3a;
-            text-shadow: 0 0 8px rgba(0, 125, 58, 0.2);
+            font-weight: 500;
+            color: var(--primary-color);
         }
         
-        /* Table */
         .table-container {
-            width: 100%;
             overflow-x: auto;
-            border-radius: 8px;
         }
-        
+
         .data-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
-        
-        .table-header {
-            background-color: rgba(0, 125, 58, 0.8);
-            padding: 15px;
-            text-align: left;
-            font-weight: bold;
-        }
-        
+
         .table-header th {
-            padding: 12px 15px;
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: normal;
+            color: rgba(235, 235, 245, 0.6);
             border-bottom: 1px solid rgba(0, 125, 58, 0.1);
         }
-        
-        .table-header th:first-child {
-            border-top-left-radius: 8px;
-        }
-        
-        .table-header th:last-child {
-            border-top-right-radius: 8px;
-        }
-        
+
         .table-row td {
-            padding: 12px 15px;
+            padding: 12px 16px;
             border-bottom: 1px solid rgba(0, 125, 58, 0.05);
         }
-        
-        .table-row:nth-child(odd) {
-            background-color: rgba(30, 30, 30, 0.6);
+
+        .table-row:hover {
+            background-color: rgba(0, 125, 58, 0.05);
         }
-        
-        .table-row:nth-child(even) {
-            background-color: rgba(40, 40, 40, 0.6);
+
+        .address-cell a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
         }
-        
+
+        .address-cell a:hover {
+            opacity: 0.8;
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-top: 1px solid rgba(0, 125, 58, 0.05);
+        }
+
+        .pagination-info {
+            color: rgba(235, 235, 245, 0.6);
+        }
+
+        .pagination-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-button:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .pagination-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .back-button {
+            background: rgba(0, 125, 58, 0.1);
+            border: 1px solid rgba(0, 125, 58, 0.3);
+            color: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(0, 125, 58, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Modal styles */
+        .investor-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .investor-modal-content {
+            background: rgba(28, 40, 28, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 125, 58, 0.1);
+        }
+
+        .investor-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: rgba(235, 235, 245, 0.6);
+            transition: color 0.2s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: rgba(0, 125, 58, 0.3);
+        }
+
+        .investor-modal-close:hover {
+            color: white;
+            background: rgba(0, 125, 58, 0.5);
+        }
+
+        .investor-details h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 125, 58, 0.1);
+        }
+
+        .investor-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .investor-stat {
+            background: rgba(44, 55, 44, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid rgba(0, 125, 58, 0.08);
+        }
+
+        .investor-stat-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .investor-stat-label {
+            color: rgba(235, 235, 245, 0.6);
+            font-size: 0.9rem;
+        }
+
+        .fragmetric-sale {
+            background: rgba(0, 125, 58, 0.15);
+            border-left: 3px solid var(--primary-color);
+            border-radius: 8px;
+        }
+
+        .sale-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .sale-badge.fragmetric {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .sale-badge.other {
+            background-color: #2a2a2a;
+            color: var(--primary-color);
+        }
+
+        .sales-table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            border: 1px solid rgba(0, 125, 58, 0.1);
+            border-radius: 12px;
+        }
+
+        .tab-button {
+            padding: 8px 16px;
+            margin-right: 8px;
+            border: 1px solid rgba(0, 125, 58, 0.3);
+            background: transparent;
+            color: var(--primary-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-button.active,
+        .tab-button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .calculator-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(0, 125, 58, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 125, 58, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        .calculator-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(0, 125, 58, 0.2);
+        }
+
+        .result-card {
+            background: rgba(0, 125, 58, 0.1);
+            border: 1px solid rgba(0, 125, 58, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .profit-positive {
+            color: var(--profit-positive);
+        }
+
+        .profit-negative {
+            color: var(--profit-negative);
+        }
+
         .table-row:hover {
             background-color: rgba(0, 125, 58, 0.2);
         }
@@ -453,6 +665,155 @@
             font-size: 0.875rem;
             color: #b0b0b0;
         }
+
+        .vesting-option {
+            background: rgba(0, 125, 58, 0.1);
+            border: 1px solid rgba(0, 125, 58, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .vesting-option:hover {
+            background: rgba(0, 125, 58, 0.2);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .vesting-fdv {
+            font-size: 14px;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .vesting-price {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        .vesting-terms {
+            font-size: 12px;
+            color: #9ca3af;
+            line-height: 1.4;
+        }
+
+        .price-stats-grid {
+            margin-bottom: 20px;
+        }
+
+        /* Vesting component styles */
+        .vesting-container {
+            background: var(--card-background);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 125, 58, 0.08);
+        }
+
+        .vesting-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .vesting-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .countdown-timer {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: rgba(235, 235, 245, 0.8);
+        }
+
+        .progress-section {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 125, 58, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill.shimmer {
+            background: linear-gradient(90deg, 
+                var(--primary-color), 
+                var(--secondary-color), 
+                var(--primary-color));
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .vesting-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .info-box {
+            background: rgba(0, 125, 58, 0.05);
+            border: 1px solid rgba(0, 125, 58, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: rgba(235, 235, 245, 0.6);
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @media (max-width: 768px) {
+            .vesting-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .vesting-info {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -461,98 +822,609 @@
     
     <!-- React app script -->
     <script type="text/babel">
-        // Main app component
-        function LegionTracker() {
-            // State hooks
+        const CONFIG = {
+            pageTitle: "Fragmetric Legion Sale Tracker",
+            projectName: "Fragmetric",
+            logoSrc: "fragmetric.png",
+            logoAlt: "Fragmetric Logo",
+            favicon: "fragmetric.png",
+            apiEndpoints: {
+                totalInvestment: "/api/fragmetric/total-investment",
+                deposits: "/api/fragmetric/deposits",
+                investor: "/api/investor/:address",
+                price: "/api/proxy/coingecko/price/:tokenId",
+            },
+            coingecko: {
+                apiKey: "CG-4Fnx2x1Ga65oHP6HufVGevXh",
+                tokenId: "fragmetric",
+            },
+            salePrice: 0.20,
+            vestingConfig: {
+                tgeDate: new Date("2026-06-20T16:00:00Z"), // TGE: June 20, 2026 - TGE has not occurred yet
+                immediateUnlockPercent: 10, // 10% at TGE
+                lockupMonths: 12, // 12-month lockup after TGE
+                vestingMonths: 24, // 24-month linear vesting after lockup
+                tokenSymbol: "FRAG"
+            },
+            colors: {
+                primary: "#007d3a",
+                secondary: "#00a84d",
+                background: "#0d1a0d",
+                cardBackground: "rgba(28, 40, 28, 0.7)",
+                headerGradientStart: "rgba(0, 125, 58, 0.8)",
+                headerGradientEnd: "rgba(0, 168, 77, 0.8)",
+                positiveProfit: "#30d158",
+                negativeProfit: "#ff453a",
+            },
+            depositsPerPage: 10,
+            backLink: "/dashboard",
+            backLinkText: "Back to Dashboard",
+            calculatorModes: ["amount", "tokens", "address"],
+            calculatorPlaceholders: {
+                amount: "e.g. 1000",
+                tokens: "e.g. 10000",
+                address: "0x...",
+            },
+            calculatorLabels: {
+                amount: "Enter USDC Investment Amount",
+                tokens: "Enter Token Amount",
+                address: "Enter Wallet Address",
+            },
+        };
+
+        // Set page title and favicon dynamically
+        document.title = CONFIG.pageTitle;
+        if (CONFIG.favicon) {
+            const favicon = document.createElement("link");
+            favicon.rel = "icon";
+            favicon.href = CONFIG.favicon;
+            document.head.appendChild(favicon);
+        }
+
+        function PriceStats({ priceData, formatAmount }) {
+            return (
+                <div className="card p-4 mb-4">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                        <div className="flex items-center mb-4 md:mb-0">
+                            <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="w-8 h-8 mr-3" onError={(e) => e.target.src = CONFIG.logoSrc.replace('.png', '.jpg')} />
+                            <span className="text-lg font-semibold">{CONFIG.projectName} Price Stats</span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Sale Price</div>
+                                <div className="font-bold">{formatAmount(CONFIG.salePrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Current Price</div>
+                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.currentPrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">All-Time High</div>
+                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.athPrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">All-Time Low</div>
+                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.lowestPrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Current ROI</div>
+                                <div className={`font-bold ${priceData.currentRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                    {priceData.loading ? "Loading..." : priceData.error ? "N/A" : `${priceData.currentRoi.toFixed(2)}%`}
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">ATH ROI</div>
+                                <div className={`font-bold ${priceData.athRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                    {priceData.loading ? "Loading..." : priceData.error ? "N/A" : `${priceData.athRoi.toFixed(2)}%`}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // VestingProgress Component
+        const VestingProgress = () => {
+            const [timeLeft, setTimeLeft] = React.useState({});
+            const [phase, setPhase] = React.useState('pre-tge'); // pre-tge, immediate, lockup, vesting, complete
+
+            React.useEffect(() => {
+                const updateCountdown = () => {
+                    const now = new Date();
+                    const tgeDate = CONFIG.vestingConfig.tgeDate;
+                    const lockupEndDate = new Date(tgeDate.getTime() + (CONFIG.vestingConfig.lockupMonths * 30 * 24 * 60 * 60 * 1000));
+                    const vestingEndDate = new Date(lockupEndDate.getTime() + (CONFIG.vestingConfig.vestingMonths * 30 * 24 * 60 * 60 * 1000));
+
+                    let targetDate, currentPhase, timeDiff;
+
+                    if (now < tgeDate) {
+                        currentPhase = 'pre-tge';
+                        targetDate = tgeDate;
+                        timeDiff = targetDate - now;
+                    } else if (now < lockupEndDate) {
+                        currentPhase = 'lockup';
+                        targetDate = lockupEndDate;
+                        timeDiff = targetDate - now;
+                    } else if (now < vestingEndDate) {
+                        currentPhase = 'vesting';
+                        targetDate = vestingEndDate;
+                        timeDiff = targetDate - now;
+                    } else {
+                        currentPhase = 'complete';
+                        timeDiff = 0;
+                    }
+
+                    setPhase(currentPhase);
+
+                    if (timeDiff > 0) {
+                        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                        setTimeLeft({ days, hours, minutes, seconds });
+                    } else {
+                        setTimeLeft({});
+                    }
+                };
+
+                updateCountdown();
+                const interval = setInterval(updateCountdown, 1000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const getProgressData = () => {
+                const now = new Date();
+                const tgeDate = CONFIG.vestingConfig.tgeDate;
+                const lockupEndDate = new Date(tgeDate.getTime() + (CONFIG.vestingConfig.lockupMonths * 30 * 24 * 60 * 60 * 1000));
+                const vestingEndDate = new Date(lockupEndDate.getTime() + (CONFIG.vestingConfig.vestingMonths * 30 * 24 * 60 * 60 * 1000));
+
+                switch (phase) {
+                    case 'pre-tge':
+                        return {
+                            progress: 0,
+                            unlocked: 0,
+                            title: "Token Generation Event",
+                            subtitle: "TGE has not occurred yet"
+                        };
+                    case 'lockup':
+                        return {
+                            progress: 10, // Show the immediate unlock portion
+                            unlocked: CONFIG.vestingConfig.immediateUnlockPercent,
+                            title: "Lockup Period",
+                            subtitle: `${CONFIG.vestingConfig.immediateUnlockPercent}% unlocked at TGE, remaining in lockup`
+                        };
+                    case 'vesting':
+                        const vestingStart = lockupEndDate;
+                        const vestingDuration = vestingEndDate - vestingStart;
+                        const vestingElapsed = now - vestingStart;
+                        const vestingProgress = Math.min(vestingElapsed / vestingDuration, 1);
+                        const additionalUnlocked = (100 - CONFIG.vestingConfig.immediateUnlockPercent) * vestingProgress;
+                        const totalUnlocked = CONFIG.vestingConfig.immediateUnlockPercent + additionalUnlocked;
+                        
+                        return {
+                            progress: 10 + (vestingProgress * 90), // 10% immediate + progress through remaining 90%
+                            unlocked: totalUnlocked,
+                            title: "Vesting in Progress",
+                            subtitle: "Tokens are being unlocked linearly"
+                        };
+                    case 'complete':
+                        return {
+                            progress: 100,
+                            unlocked: 100,
+                            title: "Vesting Complete",
+                            subtitle: "All tokens have been unlocked"
+                        };
+                    default:
+                        return { progress: 0, unlocked: 0, title: "", subtitle: "" };
+                }
+            };
+
+            const formatCountdown = () => {
+                if (Object.keys(timeLeft).length === 0) return "";
+                const { days, hours, minutes, seconds } = timeLeft;
+                return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            };
+
+            const getCountdownLabel = () => {
+                switch (phase) {
+                    case 'pre-tge': return "Until TGE";
+                    case 'lockup': return "Until Lockup Ends";
+                    case 'vesting': return "Until Fully Unlocked";
+                    default: return "";
+                }
+            };
+
+            const progressData = getProgressData();
+
+            return (
+                <div className="vesting-container">
+                    <div className="vesting-header">
+                        <div className="vesting-title">{progressData.title}</div>
+                        {Object.keys(timeLeft).length > 0 && (
+                            <div className="countdown-timer">
+                                {formatCountdown()} {getCountdownLabel()}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="progress-section">
+                        <div className="progress-bar">
+                            <div 
+                                className={`progress-fill ${phase === 'vesting' ? 'shimmer' : ''}`}
+                                style={{ width: `${progressData.progress}%` }}
+                            ></div>
+                        </div>
+                        <div className="progress-text">
+                            {progressData.unlocked.toFixed(1)}% Unlocked
+                        </div>
+                    </div>
+
+                    <div className="vesting-info">
+                        <div className="info-box">
+                            <div className="info-label">TGE Date</div>
+                            <div className="info-value">
+                                {CONFIG.vestingConfig.tgeDate.toLocaleDateString()} {CONFIG.vestingConfig.tgeDate.toLocaleTimeString()}
+                            </div>
+                        </div>
+                        <div className="info-box">
+                            <div className="info-label">Immediate Unlock</div>
+                            <div className="info-value">{CONFIG.vestingConfig.immediateUnlockPercent}% at TGE</div>
+                        </div>
+                        <div className="info-box">
+                            <div className="info-label">Lockup Period</div>
+                            <div className="info-value">{CONFIG.vestingConfig.lockupMonths} months</div>
+                        </div>
+                        <div className="info-box">
+                            <div className="info-label">Vesting Duration</div>
+                            <div className="info-value">{CONFIG.vestingConfig.vestingMonths} months linear</div>
+                        </div>
+                        <div className="info-box">
+                            <div className="info-label">Full Unlock Date</div>
+                            <div className="info-value">
+                                {new Date(CONFIG.vestingConfig.tgeDate.getTime() + 
+                                    (CONFIG.vestingConfig.lockupMonths + CONFIG.vestingConfig.vestingMonths) * 30 * 24 * 60 * 60 * 1000)
+                                    .toLocaleDateString()}
+                            </div>
+                        </div>
+                        <div className="info-box">
+                            <div className="info-label">Phase</div>
+                            <div className="info-value">{progressData.subtitle}</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        function ROICalculator({ calculatorMode, setCalculatorMode, inputValue, setInputValue, handleCalculate, calculatorLoading, calculationResult, priceData, formatAmount }) {
+            return (
+                <div className="card p-4 mt-4">
+                    <div className="stats-title mb-4">ROI Calculator</div>
+                    <div className="card-subtitle mb-4">Calculate your investment performance</div>
+                    <div className="flex mb-4">
+                        {CONFIG.calculatorModes.map(mode => (
+                            <button
+                                key={mode}
+                                className={`tab-button ${calculatorMode === mode ? 'active' : ''}`}
+                                onClick={() => setCalculatorMode(mode)}
+                            >
+                                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="bg-opacity-30 bg-black p-4 rounded">
+                        <div>
+                            <label className="block text-sm mb-1">{CONFIG.calculatorLabels[calculatorMode]}</label>
+                            <input
+                                type={calculatorMode === 'address' ? 'text' : 'number'}
+                                className="calculator-input"
+                                placeholder={CONFIG.calculatorPlaceholders[calculatorMode]}
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                            />
+                        </div>
+                        <button
+                            className="pagination-button w-full mt-4"
+                            onClick={handleCalculate}
+                            disabled={calculatorLoading || !inputValue || priceData.loading}
+                        >
+                            {calculatorLoading ? 'Calculating...' : 'Calculate'}
+                        </button>
+                        {calculationResult && !calculationResult.error && (
+                            <div className="result-card mt-4">
+                                <div className="text-sm text-gray-400 mb-2">Investment Results</div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Investment:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.investmentAmount)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Tokens Received:</span>
+                                    <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()}</span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Current Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.currentValue)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Current P&L:</span>
+                                    <span className={`font-medium ${calculationResult.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.currentPnL)} ({calculationResult.currentPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>ATH Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.athValue)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>ATH P&L:</span>
+                                    <span className={`font-medium ${calculationResult.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.athPnL)} ({calculationResult.athPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Lowest Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.lowestValue)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Lowest P&L:</span>
+                                    <span className={`font-medium ${calculationResult.lowestPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.lowestPnL)} ({calculationResult.lowestPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                        {calculationResult && calculationResult.error && (
+                            <div className="result-card mt-4 text-red-400">
+                                {calculationResult.error}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function InvestorModal({ showModal, setShowModal, selectedInvestor, investorLoading, formatAmount }) {
+            return showModal ? (
+                <div className="investor-modal">
+                    <div className="investor-modal-content">
+                        <span className="investor-modal-close" onClick={() => setShowModal(false)}>×</span>
+                        <div className="investor-details">
+                            <h2>Investor Details</h2>
+                            {investorLoading && (
+                                <div className="flex items-center justify-center py-8">
+                                    <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                                </div>
+                            )}
+                            {!investorLoading && selectedInvestor && (
+                                <div>
+                                    <div className="mb-4">
+                                        <div className="text-gray-400 text-sm mb-1">Full Address</div>
+                                        <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
+                                    </div>
+                                    <div className="investor-stats">
+                                        <div className="investor-stat">
+                                            <div className="investor-stat-value">{formatAmount(selectedInvestor.fragmetric_total)}</div>
+                                            <div className="investor-stat-label">{CONFIG.projectName} Investment</div>
+                                        </div>
+                                        <div className="investor-stat">
+                                            <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                            <div className="investor-stat-label">Total Invested (All Sales)</div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6">
+                                        <h3 className="font-bold text-lg mb-3">All Sales</h3>
+                                        <div className="sales-table-container">
+                                            <table className="data-table">
+                                                <thead>
+                                                    <tr className="table-header">
+                                                        <th>Sale</th>
+                                                        <th>Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {selectedInvestor.sales.map((sale, index) => (
+                                                        <tr key={index} className={`table-row ${sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? 'fragmetric-sale' : ''}`}>
+                                                            <td>
+                                                                <span className={`sale-badge ${sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? 'fragmetric' : 'other'}`}>
+                                                                    {sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? '★ ' : ''}{sale.sale.toUpperCase()}
+                                                                </span>
+                                                            </td>
+                                                            <td>{formatAmount(sale.amount)}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {!investorLoading && !selectedInvestor && (
+                                <div className="text-red-500 text-center py-4">
+                                    Failed to load investor details
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : null;
+        }
+
+        function TrackerApp() {
             const [deposits, setDeposits] = React.useState([]);
             const [totalInvestment, setTotalInvestment] = React.useState(0);
             const [loading, setLoading] = React.useState(true);
             const [error, setError] = React.useState(null);
             const [sortOrder, setSortOrder] = React.useState('desc');
             const [currentPage, setCurrentPage] = React.useState(1);
-            const [stats, setStats] = React.useState({
-                average: 0,
-                median: 0,
-                highest: 0,
-                lowest: 0
+            const [stats, setStats] = React.useState({ average: 0, median: 0, highest: 0, lowest: 0 });
+            const [priceData, setPriceData] = React.useState({
+                salePrice: CONFIG.salePrice,
+                currentPrice: 0,
+                athPrice: 0,
+                lowestPrice: 0,
+                currentRoi: 0,
+                athRoi: 0,
+                loading: true,
+                error: null,
             });
             const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [showModal, setShowModal] = React.useState(false);
             const [investorLoading, setInvestorLoading] = React.useState(false);
-            
-            // Constants
-            const depositsPerPage = 10;
-            
-            // Function to handle back navigation
-            const handleBack = () => {
-                window.location.href = '/dashboard';
-            };
-            
-            // Fetch data on component mount
+            const [inputValue, setInputValue] = React.useState('');
+            const [calculatorMode, setCalculatorMode] = React.useState(CONFIG.calculatorModes[0]);
+            const [calculationResult, setCalculationResult] = React.useState(null);
+            const [calculatorLoading, setCalculatorLoading] = React.useState(false);
+
             React.useEffect(() => {
                 fetchData();
+                fetchTokenPriceData();
             }, []);
+
+            const handleBack = () => {
+                window.location.href = CONFIG.backLink;
+            };
             
-            // Function to fetch data from fragmetric.json file
             const fetchData = async () => {
                 try {
-                    console.log("Fetching Fragmetric data...");
                     setLoading(true);
-                    
-                    // Fetch Fragmetric deposits from the API endpoint instead of the JSON file directly
-                    const response = await fetch('/api/fragmetric/deposits');
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch Fragmetric data');
-                    }
-                    
-                    const data = await response.json();
-                    console.log("Fragmetric Data:", data);
-                    
-                    // Use the data from the API response
-                    setDeposits(data.deposits || []);
-                    setTotalInvestment(data.deposits.reduce((sum, d) => sum + d.amount, 0) || 0);
-                    
-                    // Calculate statistics
-                    if (data.deposits && data.deposits.length > 0) {
-                        const amounts = data.deposits.map(d => d.amount);
+                    const totalRes = await fetch(CONFIG.apiEndpoints.totalInvestment);
+                    if (!totalRes.ok) throw new Error('Failed to fetch total investment');
+                    const totalData = await totalRes.json();
+                    setTotalInvestment(totalData.total);
+
+                    const depositsRes = await fetch(CONFIG.apiEndpoints.deposits);
+                    if (!depositsRes.ok) throw new Error('Failed to fetch deposits');
+                    const depositsData = await depositsRes.json();
+                    setDeposits(depositsData.deposits || []);
+
+                    if (depositsData.deposits && depositsData.deposits.length > 0) {
+                        const amounts = depositsData.deposits.map(d => d.amount);
                         const sortedAmounts = [...amounts].sort((a, b) => a - b);
-                        
                         setStats({
                             average: amounts.reduce((a, b) => a + b, 0) / amounts.length,
-                            median: sortedAmounts.length % 2 === 0 
-                                ? (sortedAmounts[sortedAmounts.length/2 - 1] + sortedAmounts[sortedAmounts.length/2]) / 2 
-                                : sortedAmounts[Math.floor(sortedAmounts.length/2)],
+                            median: sortedAmounts.length % 2 === 0
+                                ? (sortedAmounts[sortedAmounts.length / 2 - 1] + sortedAmounts[sortedAmounts.length / 2]) / 2
+                                : sortedAmounts[Math.floor(sortedAmounts.length / 2)],
                             highest: Math.max(...amounts),
-                            lowest: Math.min(...amounts)
+                            lowest: Math.min(...amounts),
                         });
                     }
-                    
                     setLoading(false);
                 } catch (err) {
-                    console.error("Error fetching data:", err);
                     setError(err.message);
                     setLoading(false);
                 }
             };
-            
-            // Function to format currency
-            const formatAmount = (amount) => {
-                // Add null check to prevent errors
-                if (amount === undefined || amount === null) {
-                    return '$0.00';
+
+            const fetchTokenPriceData = async () => {
+                try {
+                    const response = await fetch(CONFIG.apiEndpoints.price.replace(':tokenId', CONFIG.coingecko.tokenId));
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch price data');
+                    }
+                    const data = await response.json();
+
+                    const currentPrice = data.current_price || 0;
+                    const athPrice = data.ath || 0;
+                    const lowestPrice = data.atl || 0;
+
+                    const currentRoi = currentPrice > 0 ? ((currentPrice - CONFIG.salePrice) / CONFIG.salePrice) * 100 : 0;
+                    const athRoi = athPrice > 0 ? ((athPrice - CONFIG.salePrice) / CONFIG.salePrice) * 100 : 0;
+
+                    setPriceData({
+                        salePrice: CONFIG.salePrice,
+                        currentPrice,
+                        athPrice,
+                        lowestPrice,
+                        currentRoi,
+                        athRoi,
+                        loading: false,
+                        error: null,
+                    });
+                } catch (error) {
+                    console.error('Error fetching price data:', error);
+                    setPriceData(prev => ({
+                        ...prev,
+                        loading: false,
+                        error: error.message,
+                    }));
                 }
-                return amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
             };
             
-            // Format wallet address to shorter format
+            const formatAmount = (amount, isPrice = false) => {
+                if (amount === null || amount === undefined) return isPrice ? "$0.00" : "$0.00";
+                const value = Number(amount);
+                return new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                    minimumFractionDigits: isPrice ? 4 : 2,
+                    maximumFractionDigits: isPrice ? 4 : 2
+                }).format(value);
+            };
+
             const formatAddress = (address) => {
                 if (!address) return '';
-                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+                return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+            };
+
+            const handleCalculate = async () => {
+                if (!inputValue) return;
+                setCalculatorLoading(true);
+
+                try {
+                    let investmentAmount = 0;
+                    let tokensReceived = 0;
+
+                    if (calculatorMode === 'amount') {
+                        investmentAmount = parseFloat(inputValue);
+                        tokensReceived = investmentAmount / CONFIG.salePrice;
+                    } else if (calculatorMode === 'tokens') {
+                        tokensReceived = parseFloat(inputValue);
+                        investmentAmount = tokensReceived * CONFIG.salePrice;
+                    } else if (calculatorMode === 'address') {
+                        const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', inputValue));
+                        if (!response.ok) throw new Error('Address not found');
+                        const data = await response.json();
+                        
+                        const fragmetricSales = data.sales.filter(sale => sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase());
+                        investmentAmount = fragmetricSales.reduce((sum, sale) => sum + sale.amount, 0);
+                        tokensReceived = investmentAmount / CONFIG.salePrice;
+                    }
+
+                    const currentValue = tokensReceived * (priceData.currentPrice || 0);
+                    const currentPnL = currentValue - investmentAmount;
+                    const currentPnLPercent = investmentAmount > 0 ? (currentPnL / investmentAmount) * 100 : 0;
+
+                    const athValue = tokensReceived * (priceData.athPrice || 0);
+                    const athPnL = athValue - investmentAmount;
+                    const athPnLPercent = investmentAmount > 0 ? (athPnL / investmentAmount) * 100 : 0;
+
+                    const lowestValue = tokensReceived * (priceData.lowestPrice || 0);
+                    const lowestPnL = lowestValue - investmentAmount;
+                    const lowestPnLPercent = investmentAmount > 0 ? (lowestPnL / investmentAmount) * 100 : 0;
+
+                    setCalculationResult({
+                        investmentAmount,
+                        tokensReceived,
+                        currentValue,
+                        currentPnL,
+                        currentPnLPercent,
+                        athValue,
+                        athPnL,
+                        athPnLPercent,
+                        lowestValue,
+                        lowestPnL,
+                        lowestPnLPercent,
+                    });
+                } catch (error) {
+                    setCalculationResult({ error: error.message });
+                }
+
+                setCalculatorLoading(false);
             };
             
             // Sort deposits based on current sort order
@@ -569,61 +1441,33 @@
             };
             
             // Pagination calculations
-            const indexOfLastDeposit = currentPage * depositsPerPage;
-            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
+            const indexOfLastDeposit = currentPage * CONFIG.depositsPerPage;
+            const indexOfFirstDeposit = indexOfLastDeposit - CONFIG.depositsPerPage;
             const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
-            const totalPages = Math.max(1, Math.ceil((deposits && deposits.length ? deposits.length : 0) / depositsPerPage));
+            const totalPages = Math.max(1, Math.ceil((deposits && deposits.length ? deposits.length : 0) / CONFIG.depositsPerPage));
             
-            // Handle investor click - use API endpoint
             const handleInvestorClick = async (address) => {
                 try {
                     setInvestorLoading(true);
                     setShowModal(true);
                     setSelectedInvestor(null);
-                    
-                    // Use the API endpoint to get investor details
-                    const response = await fetch(`/api/investor/${address}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch investor details');
-                    }
-                    
+                    const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', address));
+                    if (!response.ok) throw new Error(`Failed to fetch investor details: ${response.status}`);
                     const data = await response.json();
-                    
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
-
-                    // If API doesn't return the expected structure, use the deposit data
-                    const investorDeposit = deposits.find(d => d.address === address);
-                    
+                    if (data.error) throw new Error(data.error);
+                    const allSales = data.sales;
+                    const fragmetricSales = allSales.filter(sale => sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase());
+                    const fragmetricTotal = fragmetricSales.reduce((sum, sale) => sum + sale.amount, 0);
                     setSelectedInvestor({
                         address,
-                        totalInvested: data.totalInvested || (investorDeposit ? investorDeposit.amount : 0),
-                        projects: data.projects || [
-                            {
-                                name: "Fragmetric",
-                                amount: investorDeposit ? investorDeposit.amount : 0
-                            }
-                        ]
+                        total_invested: allSales.reduce((sum, sale) => sum + sale.amount, 0),
+                        fragmetric_total: fragmetricTotal,
+                        sales_participated: allSales.length,
+                        fragmetric_sales: fragmetricSales.length,
+                        sales: allSales,
                     });
                 } catch (error) {
-                    console.error('Error:', error);
-                    // Use deposit data as fallback if API fails
-                    const investorDeposit = deposits.find(d => d.address === address);
-                    if (investorDeposit) {
-                        setSelectedInvestor({
-                            address,
-                            totalInvested: investorDeposit.amount,
-                            projects: [
-                                {
-                                    name: "Fragmetric",
-                                    amount: investorDeposit.amount
-                                }
-                            ]
-                        });
-                    } else {
-                        setSelectedInvestor(null);
-                    }
+                    setSelectedInvestor(null);
                 } finally {
                     setInvestorLoading(false);
                 }
@@ -662,16 +1506,26 @@
             // Main component render
             return (
                 <div className="main-container">
-                    {/* Back button */}
-                    <button onClick={handleBack} className="back-button">
+                    <a href={CONFIG.backLink} className="back-button">
                         <i className="fas fa-arrow-left mr-2"></i>
-                        Back to Dashboard
-                    </button>
-                    
-                    {/* Header */}
+                        {CONFIG.backLinkText}
+                    </a>
                     <div className="header-card">
-                        <div className="header-title">Fragmetric</div>
-                        <img src="fragmetric.png" alt="Fragmetric Logo" className="h-16" style={{ filter: 'drop-shadow(0 0 8px rgba(0, 125, 58, 0.5))' }} />
+                        <div className="header-title">{CONFIG.projectName}</div>
+                        <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="h-16" />
+                    </div>
+                    <PriceStats priceData={priceData} formatAmount={formatAmount} />
+                    <div className="price-stats-grid">
+                        <div className="card p-4">
+                            <div className="stats-title mb-4">Vesting Terms</div>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div className="vesting-option">
+                                    <div className="vesting-fdv">FDV $125,000,000</div>
+                                    <div className="vesting-price">$0.20 per FRAG</div>
+                                    <div className="vesting-terms">10% at TGE, remaining 90% subject to 12-month lockup, followed by 24-month monthly linear unlock</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     {/* Main Content Grid */}
@@ -712,17 +1566,25 @@
                                     <div className="stats-value">{formatAmount(stats.lowest)}</div>
                                 </div>
                             </div>
+                            <ROICalculator
+                                calculatorMode={calculatorMode}
+                                setCalculatorMode={setCalculatorMode}
+                                inputValue={inputValue}
+                                setInputValue={setInputValue}
+                                handleCalculate={handleCalculate}
+                                calculatorLoading={calculatorLoading}
+                                calculationResult={calculationResult}
+                                priceData={priceData}
+                                formatAmount={formatAmount}
+                            />
                         </div>
                         
                         {/* Right Column - Investors Table */}
                         <div className="md:col-span-2">
                             <div className="card">
-                                <div className="p-4 border-b border-gray-800 flex items-center">
-                                    <i className="fas fa-chart-line mr-3 text-green-600"></i>
-                                    <div>
-                                        <div className="card-title">Top Investors</div>
-                                        <div className="card-subtitle">Ranked by investment amount</div>
-                                    </div>
+                                <div className="p-4 border-b border-gray-800">
+                                    <div className="card-title">Top Investors</div>
+                                    <div className="card-subtitle">Ranked by investment amount</div>
                                 </div>
                                 
                                 <div className="table-container">
@@ -810,88 +1672,19 @@
                         </div>
                     </div>
                     
-                    <div className="text-center text-gray-500 text-sm mt-6">
-                        Last updated: {new Date().toLocaleString()}
-                    </div>
-                    
-                    {/* Investor Modal */}
-                    {showModal && (
-                        <div className="investor-modal" style={{ display: 'flex' }}>
-                            <div className="investor-modal-content">
-                                <span className="investor-modal-close" onClick={() => setShowModal(false)}>&times;</span>
-                                <div className="investor-details">
-                                    <h2>Investor Details</h2>
-                                    {investorLoading ? (
-                                        <div className="flex items-center justify-center py-8">
-                                            <div className="w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
-                                        </div>
-                                    ) : selectedInvestor ? (
-                                        <div>
-                                            <div className="bg-gray-800 p-3 rounded font-mono mb-4 overflow-auto border-l-4 border-l-green-600">
-                                                <a href={`https://solscan.io/account/${selectedInvestor.address}`} 
-                                                   target="_blank" 
-                                                   rel="noopener noreferrer"
-                                                   className="text-white hover:text-green-400 transition-colors">
-                                                    {selectedInvestor.address}
-                                                    <i className="fas fa-external-link-alt ml-2 text-xs"></i>
-                                                </a>
-                                            </div>
-                                            
-                                            <div className="investor-stats">
-                                                <div className="investor-stat">
-                                                    <div className="investor-stat-value">
-                                                        {formatAmount(selectedInvestor.totalInvested || 0)}
-                                                    </div>
-                                                    <div className="investor-stat-label">Total Invested</div>
-                                                </div>
-                                                
-                                                <div className="investor-stat">
-                                                    <div className="investor-stat-value">
-                                                        {((selectedInvestor.totalInvested && totalInvestment) ? 
-                                                            ((selectedInvestor.totalInvested / totalInvestment) * 100).toFixed(2) : 
-                                                            "0.00")}%
-                                                    </div>
-                                                    <div className="investor-stat-label">% of Total</div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="mt-6 mb-2 font-bold text-green-600">Investment Breakdown</div>
-                                            <div className="bg-gray-800 p-3 rounded border border-green-900">
-                                                <div className="flex justify-between border-b border-green-900 py-2">
-                                                    <span>Project</span>
-                                                    <span>Amount</span>
-                                                </div>
-                                                {(selectedInvestor.projects && selectedInvestor.projects.length > 0) ? (
-                                                    selectedInvestor.projects.map((project, index) => (
-                                                        <div key={project.name || `project-${index}`} className="flex justify-between py-2 border-b border-green-900/30">
-                                                            <span>{project.name || 'Unknown'}</span>
-                                                            <span className="text-green-500 font-mono">{formatAmount(project.amount || 0)}</span>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <div className="flex justify-between py-2 border-b border-green-900/30">
-                                                        <span>No projects found</span>
-                                                        <span className="text-green-500 font-mono">$0.00</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-8 text-red-400">
-                                            <i className="fas fa-exclamation-circle text-2xl mb-2"></i>
-                                            <p>Failed to load investor details.</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <InvestorModal
+                        showModal={showModal}
+                        setShowModal={setShowModal}
+                        selectedInvestor={selectedInvestor}
+                        investorLoading={investorLoading}
+                        formatAmount={formatAmount}
+                    />
                 </div>
             );
         }
         
         // Render the React component
-        ReactDOM.render(<LegionTracker />, document.getElementById('app'));
+        ReactDOM.render(<TrackerApp />, document.getElementById('app'));
     </script>
 </body>
 </html> 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Skate Legion Sale Tracker</title>
+    <title>Resolv Legion Sale Tracker</title>
     <!-- Load React -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
@@ -12,12 +12,12 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #c5ff33;
-            --secondary-color: #8bc20b;
+            --primary-color: #6696ae;
+            --secondary-color: #88b8d0;
             --background-color: #101010;
             --card-background: rgba(28, 28, 30, 0.7);
-            --header-gradient-start: rgba(197, 255, 51, 0.8);
-            --header-gradient-end: rgba(139, 194, 11, 0.8);
+            --header-gradient-start: rgba(102, 150, 174, 0.8);
+            --header-gradient-end: rgba(126, 182, 211, 0.8);
             --profit-positive: #30d158;
             --profit-negative: #ff453a;
         }
@@ -33,7 +33,7 @@
             background: rgba(45, 45, 45, 0.7);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(197, 255, 51, 0.1);
+            border: 1px solid rgba(102, 150, 174, 0.1);
             border-radius: 16px;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
         }
@@ -58,7 +58,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border: 1px solid rgba(197, 255, 51, 0.15);
+            border: 1px solid rgba(102, 150, 174, 0.15);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
@@ -77,7 +77,7 @@
             border-radius: 16px;
             margin-bottom: 20px;
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(197, 255, 51, 0.08);
+            border: 1px solid rgba(102, 150, 174, 0.08);
             overflow: hidden;
         }
 
@@ -109,7 +109,7 @@
             border-radius: 16px;
             padding: 16px;
             margin-top: 20px;
-            border: 1px solid rgba(197, 255, 51, 0.08);
+            border: 1px solid rgba(102, 150, 174, 0.08);
         }
 
         .stats-title {
@@ -122,7 +122,7 @@
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
-            border-bottom: 1px solid rgba(197, 255, 51, 0.06);
+            border-bottom: 1px solid rgba(102, 150, 174, 0.06);
         }
 
         .stats-card:last-child {
@@ -153,16 +153,16 @@
             padding: 12px 16px;
             font-weight: normal;
             color: rgba(235, 235, 245, 0.6);
-            border-bottom: 1px solid rgba(197, 255, 51, 0.1);
+            border-bottom: 1px solid rgba(102, 150, 174, 0.1);
         }
 
         .table-row td {
             padding: 12px 16px;
-            border-bottom: 1px solid rgba(197, 255, 51, 0.05);
+            border-bottom: 1px solid rgba(102, 150, 174, 0.05);
         }
 
         .table-row:hover {
-            background-color: rgba(197, 255, 51, 0.05);
+            background-color: rgba(102, 150, 174, 0.05);
         }
 
         .address-cell a {
@@ -183,7 +183,7 @@
             height: 28px;
             border-radius: 14px;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: #fff;
+            color: #000;
             font-weight: 600;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
@@ -193,7 +193,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 16px;
-            border-top: 1px solid rgba(197, 255, 51, 0.05);
+            border-top: 1px solid rgba(102, 150, 174, 0.05);
         }
 
         .pagination-info {
@@ -201,9 +201,9 @@
         }
 
         .pagination-button {
-            background: rgba(197, 255, 51, 0.1);
+            background: rgba(102, 150, 174, 0.1);
             color: white;
-            border: 1px solid rgba(197, 255, 51, 0.2);
+            border: 1px solid rgba(102, 150, 174, 0.2);
             padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
@@ -211,7 +211,7 @@
         }
 
         .pagination-button:hover:not(:disabled) {
-            background: rgba(197, 255, 51, 0.2);
+            background: rgba(102, 150, 174, 0.2);
             border-color: var(--primary-color);
         }
 
@@ -223,7 +223,7 @@
         .back-button {
             display: inline-flex;
             align-items: center;
-            background: rgba(197, 255, 51, 0.1);
+            background: rgba(102, 150, 174, 0.1);
             color: white;
             padding: 12px 20px;
             border-radius: 12px;
@@ -231,11 +231,11 @@
             text-decoration: none;
             font-weight: 600;
             transition: all 0.2s;
-            border: 1px solid rgba(197, 255, 51, 0.2);
+            border: 1px solid rgba(102, 150, 174, 0.2);
         }
 
         .back-button:hover {
-            background: rgba(197, 255, 51, 0.2);
+            background: rgba(102, 150, 174, 0.2);
             border-color: var(--primary-color);
         }
 
@@ -262,7 +262,7 @@
 
         .calculate-button:hover:not(:disabled) {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(197, 255, 51, 0.3);
+            box-shadow: 0 4px 12px rgba(102, 150, 174, 0.3);
         }
 
         .calculate-button:disabled {
@@ -274,7 +274,7 @@
 
         .tab-button {
             background: transparent;
-            border: 1px solid rgba(197, 255, 51, 0.2);
+            border: 1px solid rgba(102, 150, 174, 0.2);
             color: rgba(255, 255, 255, 0.7);
             padding: 10px 20px;
             border-radius: 8px;
@@ -292,12 +292,12 @@
             background: var(--primary-color);
             color: #fff;
             border-color: var(--primary-color);
-            box-shadow: 0 2px 8px rgba(197, 255, 51, 0.3);
+            box-shadow: 0 2px 8px rgba(102, 150, 174, 0.3);
         }
 
         .tab-button:hover:not(.active) {
-            background: rgba(197, 255, 51, 0.1);
-            border-color: rgba(197, 255, 51, 0.3);
+            background: rgba(102, 150, 174, 0.1);
+            border-color: rgba(102, 150, 174, 0.3);
             transform: translateY(-1px);
         }
 
@@ -312,7 +312,7 @@
             width: 100%;
             padding: 12px 16px;
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(197, 255, 51, 0.2);
+            border: 1px solid rgba(102, 150, 174, 0.2);
             border-radius: 8px;
             color: white;
             font-size: 1rem;
@@ -323,7 +323,7 @@
         .calculator-input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(197, 255, 51, 0.15);
+            box-shadow: 0 0 0 3px rgba(102, 150, 174, 0.15);
             background: rgba(255, 255, 255, 0.12);
         }
 
@@ -333,10 +333,10 @@
         }
 
         .result-card {
-            background: rgba(197, 255, 51, 0.1);
+            background: rgba(102, 150, 174, 0.1);
             padding: 16px;
             border-radius: 12px;
-            border: 1px solid rgba(197, 255, 51, 0.2);
+            border: 1px solid rgba(102, 150, 174, 0.2);
         }
 
         .sale-badge {
@@ -348,7 +348,7 @@
             text-transform: uppercase;
         }
 
-        .sale-badge.corn {
+        .sale-badge.resolv {
             background-color: var(--primary-color);
             color: #ffffff;
         }
@@ -382,7 +382,7 @@
             max-height: 90vh;
             overflow-y: auto;
             position: relative;
-            border: 1px solid rgba(197, 255, 51, 0.15);
+            border: 1px solid rgba(102, 150, 174, 0.15);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
@@ -405,7 +405,7 @@
             font-weight: 600;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 1px solid rgba(197, 255, 51, 0.1);
+            border-bottom: 1px solid rgba(102, 150, 174, 0.1);
         }
 
         .investor-stats {
@@ -422,7 +422,7 @@
             border-radius: 14px;
             padding: 16px;
             text-align: center;
-            border: 1px solid rgba(197, 255, 51, 0.08);
+            border: 1px solid rgba(102, 150, 174, 0.08);
         }
 
         .investor-stat-value {
@@ -436,47 +436,33 @@
             font-size: 0.9rem;
         }
 
-        .skate-sale {
-            background: rgba(197, 255, 51, 0.15);
+        .resolv-sale {
+            background: rgba(102, 150, 174, 0.15);
             border-left: 3px solid var(--primary-color);
             border-radius: 8px;
         }
 
         .progress-container {
-            background: rgba(197, 255, 51, 0.1);
+            background: rgba(102, 150, 174, 0.1);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
-            border: 1px solid rgba(197, 255, 51, 0.2);
+            border: 1px solid rgba(102, 150, 174, 0.2);
         }
 
         .progress-bar {
             width: 100%;
-            height: 12px;
-            background: rgba(197, 255, 51, 0.15);
-            border-radius: 6px;
+            height: 8px;
+            background: rgba(102, 150, 174, 0.2);
+            border-radius: 4px;
             overflow: hidden;
             margin: 12px 0;
-            position: relative;
-        }
-
-        .progress-base {
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            background: rgba(197, 255, 51, 0.4);
-            border-radius: 6px;
-            transition: width 0.3s ease;
         }
 
         .progress-fill {
-            position: absolute;
-            left: 0;
-            top: 0;
             height: 100%;
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-            border-radius: 6px;
+            border-radius: 4px;
             transition: width 0.3s ease;
             position: relative;
         }
@@ -510,7 +496,7 @@
             backdrop-filter: blur(10px);
             border-radius: 8px;
             padding: 12px 8px;
-            border: 1px solid rgba(197, 255, 51, 0.1);
+            border: 1px solid rgba(102, 150, 174, 0.1);
         }
 
         .countdown-number {
@@ -561,28 +547,28 @@
     <div id="app">Loading...</div>
     <script type="text/babel">
         const CONFIG = {
-            pageTitle: "Skate Legion Sale Tracker",
-            projectName: "Skate",
-            logoSrc: "skate.jpg",
-            logoAlt: "Skate Logo",
-            favicon: "skate.jpg",
+            pageTitle: "Resolv Legion Sale Tracker",
+            projectName: "Resolv",
+            logoSrc: "resolv.png",
+            logoAlt: "Resolv Logo",
+            favicon: "resolv.png",
             apiEndpoints: {
-                totalInvestment: "/api/skate/total-investment",
-                deposits: "/api/skate/deposits",
+                totalInvestment: "/api/resolv/total-investment",
+                deposits: "/api/resolv/deposits",
                 investor: "/api/investor/:address",
                 price: "/api/proxy/coingecko/price/:tokenId",
             },
-            salePrice: 0.12, // Current sale price for Skate
+            salePrice: 0.1, // Current sale price for Resolv
             coingecko: {
-                tokenId: "skate",
+                tokenId: "resolv",
             },
             colors: {
-                primary: "#c5ff33",
-                secondary: "#8bc20b",
+                primary: "#6696ae",
+                secondary: "#88b8d0",
                 background: "#101010",
                 cardBackground: "rgba(28, 28, 30, 0.7)",
-                headerGradientStart: "rgba(197, 255, 51, 0.8)",
-                headerGradientEnd: "rgba(139, 194, 11, 0.8)",
+                headerGradientStart: "rgba(102, 150, 174, 0.8)",
+                headerGradientEnd: "rgba(126, 182, 211, 0.8)",
                 positiveProfit: "#30d158",
                 negativeProfit: "#ff453a",
             },
@@ -592,7 +578,7 @@
             calculatorModes: ["amount", "tokens", "address"],
             calculatorPlaceholders: {
                 amount: "e.g. 1000",
-                tokens: "e.g. 8333",
+                tokens: "e.g. 10000",
                 address: "0x...",
             },
             calculatorLabels: {
@@ -601,10 +587,8 @@
                 address: "Enter Wallet Address",
             },
             isUpcoming: false,
-            tgeDate: new Date('2025-06-09T10:00:00Z'), // Jun 9, 2025 at 10:00 UTC
-            firstUnlockDate: new Date('2025-09-09T10:00:00Z'), // 3 months after TGE (40% at TGE + 60% over 3 months)
-            tgeUnlockPercent: 40, // 40% unlocked at TGE
-            vestingDurationMonths: 3, // 3 months linear vesting
+            tgeDate: new Date('2025-06-10T13:00:00Z'), // Jun 10, 2025 at 13:00 UTC
+            firstUnlockDate: new Date('2026-06-10T13:00:00Z'), // 12 months after TGE
         };
 
         // Set page title and favicon dynamically
@@ -619,95 +603,68 @@
         function VestingProgress() {
             const [timeLeft, setTimeLeft] = React.useState({});
             const [progress, setProgress] = React.useState(0);
-            const [unlockedPercent, setUnlockedPercent] = React.useState(0);
 
             React.useEffect(() => {
-                const updateProgress = () => {
+                const updateCountdown = () => {
                     const now = new Date();
                     const tgeDate = CONFIG.tgeDate;
-                    const fullUnlockDate = CONFIG.firstUnlockDate;
+                    const firstUnlockDate = CONFIG.firstUnlockDate;
                     
-                    if (now < tgeDate) {
-                        // Before TGE
-                        setProgress(0);
-                        setUnlockedPercent(0);
-                        
-                        // Calculate time until TGE
-                        const difference = tgeDate.getTime() - now.getTime();
+                    // Calculate progress from TGE to first unlock
+                    const totalDuration = firstUnlockDate.getTime() - tgeDate.getTime();
+                    const elapsed = now.getTime() - tgeDate.getTime();
+                    const progressPercent = Math.max(0, Math.min(100, (elapsed / totalDuration) * 100));
+                    setProgress(progressPercent);
+
+                    // Calculate time remaining until first unlock
+                    const difference = firstUnlockDate.getTime() - now.getTime();
+                    
+                    if (difference > 0) {
                         const days = Math.floor(difference / (1000 * 60 * 60 * 24));
                         const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                         const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
                         const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                        
                         setTimeLeft({ days, hours, minutes, seconds });
-                    } else if (now >= fullUnlockDate) {
-                        // After full unlock
-                        setProgress(100);
-                        setUnlockedPercent(100);
-                        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
                     } else {
-                        // During vesting period
-                        const totalDuration = fullUnlockDate.getTime() - tgeDate.getTime();
-                        const elapsed = now.getTime() - tgeDate.getTime();
-                        const vestingProgress = (elapsed / totalDuration) * 100;
-                        setProgress(Math.min(100, vestingProgress));
-                        
-                        // Calculate unlocked percentage: 40% at TGE + linear vesting
-                        const linearUnlock = (60 * vestingProgress) / 100; // 60% linear over time
-                        setUnlockedPercent(40 + linearUnlock); // 40% initial + linear
-                        
-                        // Calculate time until full unlock
-                        const difference = fullUnlockDate.getTime() - now.getTime();
-                        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-                        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-                        setTimeLeft({ days, hours, minutes, seconds });
+                        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
                     }
                 };
 
-                updateProgress();
-                const interval = setInterval(updateProgress, 1000);
+                updateCountdown();
+                const interval = setInterval(updateCountdown, 1000);
                 return () => clearInterval(interval);
             }, []);
 
-            const isAfterTGE = new Date() >= CONFIG.tgeDate;
-            const isFullyUnlocked = new Date() >= CONFIG.firstUnlockDate;
+            const isUnlocked = new Date() >= CONFIG.firstUnlockDate;
 
             return (
                 <div className="progress-container">
                     <div className="flex items-center justify-between mb-3">
                         <div>
-                            <h3 className="text-lg font-semibold" style={{color: '#c5ff33'}}>
-                                {!isAfterTGE ? '⏳ Time Until TGE' : 
-                                 isFullyUnlocked ? '🎉 Fully Unlocked!' : 
-                                 '📈 Vesting in Progress'}
+                            <h3 className="text-lg font-semibold" style={{color: '#6696ae'}}>
+                                {isUnlocked ? '🎉 First Unlock Available!' : '⏳ Time Until First Unlock'}
                             </h3>
                             <p className="text-sm text-gray-400">
-                                {!isAfterTGE ? 'TGE on June 9, 2025 at 10:00 UTC' :
-                                 isFullyUnlocked ? 'All tokens have been unlocked' :
-                                 'Linear vesting over 3 months after 40% at TGE'}
+                                {isUnlocked 
+                                    ? 'Linear vesting has begun - tokens unlocking monthly for 24 months' 
+                                    : 'Cliff period: 12 months after TGE (Jun 10, 2025)'}
                             </p>
                         </div>
                         <div className="text-right">
-                            <div className="text-2xl font-bold" style={{color: '#c5ff33'}}>
-                                {unlockedPercent.toFixed(1)}%
-                            </div>
-                            <div className="text-xs text-gray-400">Unlocked</div>
+                            <div className="text-2xl font-bold" style={{color: '#6696ae'}}>{progress.toFixed(1)}%</div>
+                            <div className="text-xs text-gray-400">Complete</div>
                         </div>
                     </div>
                     
                     <div className="progress-bar">
                         <div 
-                            className="progress-base" 
-                            style={{ width: `${isAfterTGE ? CONFIG.tgeUnlockPercent : 0}%` }}
-                        ></div>
-                        <div 
                             className="progress-fill" 
-                            style={{ width: `${unlockedPercent}%` }}
+                            style={{ width: `${progress}%` }}
                         ></div>
                     </div>
 
-                    {!isFullyUnlocked && (
+                    {!isUnlocked && (
                         <div className="countdown-grid">
                             <div className="countdown-item">
                                 <div className="countdown-number">{timeLeft.days || 0}</div>
@@ -730,25 +687,7 @@
 
                     <div className="mt-4 text-center">
                         <div className="text-sm text-gray-400">
-                            TGE: Jun 9, 2025 • 40% Immediate • 60% Linear over 3 months
-                        </div>
-                    </div>
-                    
-                    <div className="mt-4 p-4 rounded-lg border" style={{backgroundColor: 'rgba(197, 255, 51, 0.1)', borderColor: 'rgba(197, 255, 51, 0.2)'}}>
-                        <div className="text-sm font-semibold mb-2" style={{color: '#c5ff33'}}>Vesting Schedule</div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                            <div>
-                                <div className="text-gray-400">TGE Unlock</div>
-                                <div className="font-medium">40% immediately</div>
-                            </div>
-                            <div>
-                                <div className="text-gray-400">Linear Vesting</div>
-                                <div className="font-medium">60% over 3 months</div>
-                            </div>
-                            <div>
-                                <div className="text-gray-400">Full Unlock</div>
-                                <div className="font-medium">Sep 9, 2025</div>
-                            </div>
+                            TGE: Jun 10, 2025 • First Unlock: Jun 10, 2026 • Linear Vesting: 24 months
                         </div>
                     </div>
                 </div>
@@ -794,20 +733,20 @@
                             </div>
                         </div>
                     </div>
-                    <div className="mt-4 p-4 rounded-lg border" style={{backgroundColor: 'rgba(197, 255, 51, 0.1)', borderColor: 'rgba(197, 255, 51, 0.2)'}}>
-                        <div className="text-sm font-semibold mb-2" style={{color: '#c5ff33'}}>Vesting Schedule</div>
+                    <div className="mt-4 p-4 bg-opacity-20 rounded-lg border border-opacity-30" style={{backgroundColor: 'rgba(102, 150, 174, 0.2)', borderColor: 'rgba(102, 150, 174, 0.3)'}}>
+                        <div className="text-sm font-semibold mb-2" style={{color: '#6696ae'}}>Vesting Schedule</div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                             <div>
                                 <div className="text-gray-400">TGE Unlock</div>
-                                <div className="font-medium">40% immediately</div>
+                                <div className="font-medium">0% immediately</div>
+                            </div>
+                            <div>
+                                <div className="text-gray-400">Cliff Period</div>
+                                <div className="font-medium">12 months</div>
                             </div>
                             <div>
                                 <div className="text-gray-400">Linear Vesting</div>
-                                <div className="font-medium">60% over 3 months</div>
-                            </div>
-                            <div>
-                                <div className="text-gray-400">Full Unlock</div>
-                                <div className="font-medium">Sep 9, 2025</div>
+                                <div className="font-medium">100% over 24 months</div>
                             </div>
                         </div>
                     </div>
@@ -858,7 +797,7 @@
                                 </div>
                                 <div className="flex justify-between mb-2">
                                     <span>Tokens Received:</span>
-                                    <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()} CORN</span>
+                                    <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()} RESOLV</span>
                                 </div>
                                 <div className="border-t border-gray-700 my-2"></div>
                                 <div className="flex justify-between mb-2">
@@ -905,194 +844,165 @@
             );
         }
 
-        function InvestorModal({ showModal, setShowModal, selectedInvestor, investorLoading, formatAmount }) {
-            return showModal ? (
-                <div className="investor-modal">
-                    <div className="investor-modal-content">
-                        <span className="investor-modal-close" onClick={() => setShowModal(false)}>×</span>
-                        <div className="investor-details">
-                            <h2>Investor Details</h2>
-                            {investorLoading && (
-                                <div className="flex items-center justify-center py-8">
-                                    <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
-                                </div>
-                            )}
-                            {!investorLoading && selectedInvestor && (
-                                <div>
-                                    <div className="mb-4">
-                                        <div className="text-gray-400 text-sm mb-1">Full Address</div>
-                                        <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
-                                    </div>
-                                    <div className="investor-stats">
-                                        <div className="investor-stat">
-                                            <div className="investor-stat-value">{formatAmount(selectedInvestor.skate_total)}</div>
-                                            <div className="investor-stat-label">{CONFIG.projectName} Investment</div>
-                                        </div>
-                                        <div className="investor-stat">
-                                            <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
-                                            <div className="investor-stat-label">Total Invested (All Sales)</div>
-                                        </div>
-                                    </div>
-                                    <div className="mt-6">
-                                        <h3 className="font-bold text-lg mb-3">All Sales</h3>
-                                        <div className="sales-table-container">
-                                            <table className="data-table">
-                                                <thead>
-                                                    <tr className="table-header">
-                                                        <th>Sale</th>
-                                                        <th>Amount</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {selectedInvestor.sales.map((sale, index) => (
-                                                        <tr key={index} className={`table-row ${sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? 'skate-sale' : ''}`}>
-                                                            <td>
-                                                                <span className={`sale-badge ${sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? 'corn' : 'other'}`}>
-                                                                    {sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? '★ ' : ''}{sale.sale.toUpperCase()}
-                                                                </span>
-                                                            </td>
-                                                            <td>{formatAmount(sale.amount)}</td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                            {!investorLoading && !selectedInvestor && (
-                                <div className="text-red-500 text-center py-4">
-                                    Failed to load investor details
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            ) : null;
-        }
-
-        function TrackerApp() {
-            const [loading, setLoading] = React.useState(true);
-            const [error, setError] = React.useState(null);
-            const [deposits, setDeposits] = React.useState([]);
+        function App() {
             const [totalInvestment, setTotalInvestment] = React.useState(0);
-            const [stats, setStats] = React.useState({ average: 0, median: 0, highest: 0, lowest: 0 });
-            const [sortOrder, setSortOrder] = React.useState('desc');
+            const [deposits, setDeposits] = React.useState([]);
+            const [loading, setLoading] = React.useState(true);
             const [currentPage, setCurrentPage] = React.useState(1);
-            const [showModal, setShowModal] = React.useState(false);
             const [selectedInvestor, setSelectedInvestor] = React.useState(null);
-            const [investorLoading, setInvestorLoading] = React.useState(false);
+            const [showInvestorModal, setShowInvestorModal] = React.useState(false);
             const [calculatorMode, setCalculatorMode] = React.useState('amount');
             const [inputValue, setInputValue] = React.useState('');
-            const [calculationResult, setCalculationResult] = React.useState(null);
             const [calculatorLoading, setCalculatorLoading] = React.useState(false);
+            const [calculationResult, setCalculationResult] = React.useState(null);
             const [priceData, setPriceData] = React.useState({
-                salePrice: CONFIG.salePrice,
+                loading: true,
+                error: null,
                 currentPrice: 0,
                 athPrice: 0,
                 lowestPrice: 0,
                 currentRoi: 0,
                 athRoi: 0,
-                loading: true,
-                error: null,
+                salePrice: CONFIG.salePrice
             });
 
-            const formatAmount = (amount, includeDollar = false) => {
-                if (amount === null || amount === undefined || isNaN(amount)) return '$0.00';
-                const formatted = amount.toLocaleString('en-US', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: includeDollar ? 6 : 2
-                });
-                return includeDollar ? `$${formatted}` : `$${formatted}`;
-            };
-
-            const formatAddress = (address) => {
-                return `${address.slice(0, 6)}...${address.slice(-4)}`;
+            const formatAmount = (amount, isPrice = false) => {
+                if (amount === null || amount === undefined || isNaN(amount)) return "$0.00";
+                const num = parseFloat(amount);
+                if (isPrice && num < 1) {
+                    return `$${num.toFixed(6)}`;
+                }
+                return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             };
 
             React.useEffect(() => {
+                const fetchData = async () => {
+                    try {
+                        setLoading(true);
+                        
+                        const [totalResponse, depositsResponse] = await Promise.all([
+                            fetch(CONFIG.apiEndpoints.totalInvestment),
+                            fetch(CONFIG.apiEndpoints.deposits)
+                        ]);
+
+                        if (totalResponse.ok) {
+                            const totalData = await totalResponse.json();
+                            setTotalInvestment(totalData.total || 0);
+                        }
+
+                        if (depositsResponse.ok) {
+                            const depositsData = await depositsResponse.json();
+                            setDeposits(depositsData.deposits || []);
+                        }
+                    } catch (error) {
+                        console.error("Error fetching data:", error);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+
                 fetchData();
-                fetchTokenPriceData();
             }, []);
 
-            const fetchTokenPriceData = async () => {
-                try {
-                    setPriceData(prev => ({ ...prev, loading: true, error: null }));
-                    const apiUrl = CONFIG.apiEndpoints.price.replace(':tokenId', CONFIG.coingecko.tokenId);
-                    const response = await fetch(apiUrl);
-                    if (!response.ok) throw new Error(`Failed to fetch token price data: ${response.status}`);
-                    const data = await response.json();
-                    const currentPrice = data.current_price || 0;
-                    const athPrice = data.ath || 0;
-                    const lowestPrice = data.atl || 0;
-                    const currentRoi = currentPrice > 0 ? ((currentPrice - CONFIG.salePrice) / CONFIG.salePrice) * 100 : 0;
-                    const athRoi = athPrice > 0 ? ((athPrice - CONFIG.salePrice) / CONFIG.salePrice) * 100 : 0;
-                    setPriceData({
-                        salePrice: CONFIG.salePrice,
-                        currentPrice,
-                        athPrice,
-                        lowestPrice,
-                        currentRoi,
-                        athRoi,
-                        loading: false,
-                        error: null,
-                    });
-                } catch (err) {
-                    setPriceData(prev => ({ ...prev, loading: false, error: err.message }));
-                }
-            };
-
-            const fetchData = async () => {
-                try {
-                    setLoading(true);
-                    const [totalResponse, depositsResponse] = await Promise.all([
-                        fetch(CONFIG.apiEndpoints.totalInvestment),
-                        fetch(CONFIG.apiEndpoints.deposits)
-                    ]);
-
-                    if (!totalResponse.ok || !depositsResponse.ok) {
-                        throw new Error('Failed to fetch data');
-                    }
-
-                    const totalData = await totalResponse.json();
-                    const depositsData = await depositsResponse.json();
-
-                    setTotalInvestment(totalData.total);
-                    setDeposits(depositsData.deposits);
-
-                    // Calculate stats
-                    if (depositsData.deposits.length > 0) {
-                        const amounts = depositsData.deposits.map(d => d.amount);
-                        const sortedAmounts = amounts.slice().sort((a, b) => a - b);
-                        setStats({
-                            average: amounts.reduce((a, b) => a + b, 0) / amounts.length,
-                            median: sortedAmounts.length % 2 === 0 
-                                ? (sortedAmounts[sortedAmounts.length/2 - 1] + sortedAmounts[sortedAmounts.length/2]) / 2 
-                                : sortedAmounts[Math.floor(sortedAmounts.length/2)],
-                            highest: Math.max(...amounts),
-                            lowest: Math.min(...amounts)
+            React.useEffect(() => {
+                const fetchPriceData = async () => {
+                    try {
+                        setPriceData(prev => ({ ...prev, loading: true, error: null }));
+                        
+                        const response = await fetch(CONFIG.apiEndpoints.price.replace(':tokenId', CONFIG.coingecko.tokenId));
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        
+                        const currentPrice = data.current_price || 0;
+                        const athPrice = data.ath || 0;
+                        const lowestPrice = data.atl || 0;
+                        const salePrice = CONFIG.salePrice;
+                        
+                        const currentRoi = currentPrice > 0 ? ((currentPrice - salePrice) / salePrice) * 100 : 0;
+                        const athRoi = athPrice > 0 ? ((athPrice - salePrice) / salePrice) * 100 : 0;
+                        
+                        setPriceData({
+                            loading: false,
+                            error: null,
+                            currentPrice,
+                            athPrice,
+                            lowestPrice,
+                            currentRoi,
+                            athRoi,
+                            salePrice
                         });
+                    } catch (error) {
+                        console.error("Error fetching price data:", error);
+                        setPriceData(prev => ({ 
+                            ...prev, 
+                            loading: false, 
+                            error: "Failed to fetch price data" 
+                        }));
                     }
+                };
 
-                    setLoading(false);
-                } catch (err) {
-                    setError(err.message);
-                    setLoading(false);
+                fetchPriceData();
+                const interval = setInterval(fetchPriceData, 30000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const handleCalculate = async () => {
+                if (!inputValue || priceData.loading) return;
+
+                setCalculatorLoading(true);
+                setCalculationResult(null);
+
+                try {
+                    if (calculatorMode === 'address') {
+                        const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', inputValue));
+                        if (!response.ok) {
+                            throw new Error('Investor not found');
+                        }
+                        const investorData = await response.json();
+                        const amount = investorData.total_investment || 0;
+                        calculateROI(amount);
+                    } else if (calculatorMode === 'amount') {
+                        const amount = parseFloat(inputValue);
+                        if (isNaN(amount) || amount <= 0) {
+                            throw new Error('Please enter a valid amount');
+                        }
+                        calculateROI(amount);
+                    } else if (calculatorMode === 'tokens') {
+                        const tokens = parseFloat(inputValue);
+                        if (isNaN(tokens) || tokens <= 0) {
+                            throw new Error('Please enter a valid token amount');
+                        }
+                        const usdcAmount = tokens * priceData.salePrice;
+                        calculateROI(usdcAmount, tokens);
+                    }
+                } catch (error) {
+                    setCalculationResult({ error: error.message });
+                } finally {
+                    setCalculatorLoading(false);
                 }
             };
 
-            const calculatePnL = (investmentAmount) => {
-                const tokensReceived = investmentAmount / priceData.salePrice;
+            const calculateROI = (investmentAmount, providedTokens = null) => {
+                const tokensReceived = providedTokens || (investmentAmount / priceData.salePrice);
+                
                 const currentValue = tokensReceived * priceData.currentPrice;
-                const athValue = tokensReceived * priceData.athPrice;
-                const lowestValue = tokensReceived * priceData.lowestPrice;
                 const currentPnL = currentValue - investmentAmount;
-                const currentPnLPercent = (currentPnL / investmentAmount) * 100;
+                const currentPnLPercent = (priceData.currentPrice / priceData.salePrice - 1) * 100;
+                
+                const athValue = tokensReceived * priceData.athPrice;
                 const athPnL = athValue - investmentAmount;
-                const athPnLPercent = (athPnL / investmentAmount) * 100;
+                const athPnLPercent = (priceData.athPrice / priceData.salePrice - 1) * 100;
+                
+                const lowestValue = tokensReceived * priceData.lowestPrice;
                 const lowestPnL = lowestValue - investmentAmount;
-                const lowestPnLPercent = (lowestPnL / investmentAmount) * 100;
-                return {
+                const lowestPnLPercent = (priceData.lowestPrice / priceData.salePrice - 1) * 100;
+
+                setCalculationResult({
+                    investmentAmount,
                     tokensReceived,
                     currentValue,
                     currentPnL,
@@ -1102,111 +1012,33 @@
                     athPnLPercent,
                     lowestValue,
                     lowestPnL,
-                    lowestPnLPercent,
-                };
-            };
-
-            const handleCalculate = async () => {
-                try {
-                    setCalculatorLoading(true);
-                    setCalculationResult(null);
-                    if (calculatorMode === 'address') {
-                        const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', inputValue.trim()));
-                        if (!response.ok) throw new Error('Address not found or invalid');
-                        const data = await response.json();
-                        const skateSales = data.sales.filter(sale => sale.sale.toLowerCase().includes('skate'));
-                        const skateTotal = skateSales.reduce((sum, sale) => sum + sale.amount, 0);
-                        if (skateTotal === 0) {
-                            setCalculationResult({ error: `This address did not participate in the ${CONFIG.projectName} sale.` });
-                            return;
-                        }
-                        const pnlData = calculatePnL(skateTotal);
-                        setCalculationResult({ type: 'address', investmentAmount: skateTotal, ...pnlData });
-                    } else if (calculatorMode === 'amount') {
-                        const amount = parseFloat(inputValue);
-                        if (isNaN(amount) || amount <= 0) {
-                            setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
-                            return;
-                        }
-                        const pnlData = calculatePnL(amount);
-                        setCalculationResult({ type: 'amount', investmentAmount: amount, ...pnlData });
-                    } else {
-                        const tokens = parseFloat(inputValue);
-                        if (isNaN(tokens) || tokens <= 0) {
-                            setCalculationResult({ error: 'Please enter a valid token amount greater than 0.' });
-                            return;
-                        }
-                        const usdcAmount = tokens * priceData.salePrice;
-                        const pnlData = calculatePnL(usdcAmount);
-                        setCalculationResult({ type: 'tokens', investmentAmount: usdcAmount, tokensReceived: tokens, ...pnlData });
-                    }
-                } catch (error) {
-                    setCalculationResult({ error: error.message });
-                } finally {
-                    setCalculatorLoading(false);
-                }
+                    lowestPnLPercent
+                });
             };
 
             const handleInvestorClick = async (address) => {
                 try {
-                    setInvestorLoading(true);
-                    setShowModal(true);
-                    setSelectedInvestor(null);
-
                     const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', address));
-                    if (!response.ok) throw new Error('Failed to fetch investor details');
-
-                    const data = await response.json();
-                    const skateSales = data.sales.filter(sale => sale.sale.toLowerCase().includes('skate'));
-                    const skateTotal = skateSales.reduce((sum, sale) => sum + sale.amount, 0);
-
-                    setSelectedInvestor({
-                        address,
-                        total_invested: data.total_invested,
-                        sales_participated: data.sales_participated,
-                        skate_total: skateTotal,
-                        sales: data.sales
-                    });
+                    if (response.ok) {
+                        const investorData = await response.json();
+                        setSelectedInvestor(investorData);
+                        setShowInvestorModal(true);
+                    }
                 } catch (error) {
-                    setSelectedInvestor(null);
-                } finally {
-                    setInvestorLoading(false);
+                    console.error("Error fetching investor details:", error);
                 }
             };
 
-            const sortedDeposits = React.useMemo(() => {
-                return [...deposits].sort((a, b) => {
-                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
-                });
-            }, [deposits, sortOrder]);
-
-            const toggleSortOrder = () => {
-                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            };
-
-            const indexOfLastDeposit = currentPage * CONFIG.depositsPerPage;
-            const indexOfFirstDeposit = indexOfLastDeposit - CONFIG.depositsPerPage;
-            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
-            const totalPages = Math.max(1, Math.ceil(deposits.length / CONFIG.depositsPerPage));
+            const totalPages = Math.ceil(deposits.length / CONFIG.depositsPerPage);
+            const startIndex = (currentPage - 1) * CONFIG.depositsPerPage;
+            const endIndex = startIndex + CONFIG.depositsPerPage;
+            const currentDeposits = deposits.slice(startIndex, endIndex);
 
             if (loading) {
                 return (
-                    <div className="flex items-center justify-center h-screen">
-                        <div className="text-center p-8 card max-w-md">
-                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                            <p className="mb-6">Loading {CONFIG.projectName} Sale Data...</p>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (error) {
-                return (
                     <div className="main-container">
-                        <div className="card p-8 text-center">
-                            <h2 className="text-xl text-red-500 mb-4">Error</h2>
-                            <p>{error}</p>
-                            <button onClick={fetchData} className="pagination-button mt-4">Retry</button>
+                        <div className="flex justify-center items-center h-screen">
+                            <div className="text-2xl" style={{color: '#6696ae'}}>Loading...</div>
                         </div>
                     </div>
                 );
@@ -1215,49 +1047,106 @@
             return (
                 <div className="main-container">
                     <a href={CONFIG.backLink} className="back-button">
-                        <i className="fas fa-arrow-left mr-2"></i>
-                        {CONFIG.backLinkText}
+                        ← {CONFIG.backLinkText}
                     </a>
+
                     <div className="header-card">
-                        <div className="header-title">{CONFIG.projectName}</div>
-                        <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="h-16" />
+                        <div className="flex items-center">
+                            <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="w-16 h-16 mr-4" onError={(e) => e.target.src = CONFIG.logoSrc.replace('.png', '.jpg')} />
+                            <div>
+                                <h1 className="header-title">{CONFIG.projectName}</h1>
+                                <p className="text-sm opacity-80">$100M FDV • 12-month lockup + 24-month linear vesting</p>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <div className="amount-display">{formatAmount(totalInvestment)}</div>
+                            <p className="text-sm opacity-80">Total Raised</p>
+                        </div>
                     </div>
-                    
-                    <VestingProgress />
-                    <PriceStats priceData={priceData} formatAmount={formatAmount} />
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="md:col-span-1">
-                            <div className="card p-6 text-center">
-                                <div className="card-title">Total USDC Invested</div>
-                                <div className="amount-display">{formatAmount(totalInvestment)}</div>
-                                <div className="text-gray-400 text-sm">{deposits.length} unique addresses</div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2">
+                            <PriceStats priceData={priceData} formatAmount={formatAmount} />
+                            
+                            <VestingProgress />
+
+                            <div className="card p-4">
+                                <div className="card-title">Investment Activity</div>
+                                <div className="card-subtitle">Recent deposits and transactions</div>
+                                
+                                <div className="table-container">
+                                    <table className="data-table">
+                                        <thead className="table-header">
+                                            <tr>
+                                                <th>Rank</th>
+                                                <th>Address</th>
+                                                <th>Amount</th>
+                                                <th>Tokens</th>
+                                                <th>Sale</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {currentDeposits.map((deposit, index) => (
+                                                <tr key={index} className="table-row">
+                                                    <td>
+                                                        <div className="rank-badge">
+                                                            {startIndex + index + 1}
+                                                        </div>
+                                                    </td>
+                                                    <td className="address-cell">
+                                                        <a 
+                                                            href="#" 
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleInvestorClick(deposit.address);
+                                                            }}
+                                                        >
+                                                            {deposit.address ? `${deposit.address.slice(0, 6)}...${deposit.address.slice(-4)}` : 'N/A'}
+                                                        </a>
+                                                    </td>
+                                                    <td>{formatAmount(deposit.amount)}</td>
+                                                    <td>{deposit.tokens ? `${parseFloat(deposit.tokens).toLocaleString()} RESOLV` : 'N/A'}</td>
+                                                    <td>
+                                                        <span className="sale-badge resolv">
+                                                            RESOLV
+                                                        </span>
+                                                    </td>
+                                                    <td>{new Date(deposit.timestamp).toLocaleDateString()}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                {totalPages > 1 && (
+                                    <div className="pagination">
+                                        <button 
+                                            className="pagination-button"
+                                            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                                            disabled={currentPage === 1}
+                                        >
+                                            Previous
+                                        </button>
+                                        <span className="pagination-info">
+                                            Page {currentPage} of {totalPages}
+                                        </span>
+                                        <button 
+                                            className="pagination-button"
+                                            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                                            disabled={currentPage === totalPages}
+                                        >
+                                            Next
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                            <div className="stats-section">
-                                <div className="stats-title">Investment Stats</div>
-                                <div className="stats-card">
-                                    <div className="stats-label">Average</div>
-                                    <div className="stats-value">{formatAmount(stats.average)}</div>
-                                </div>
-                                <div className="stats-card">
-                                    <div className="stats-label">Median</div>
-                                    <div className="stats-value">{formatAmount(stats.median)}</div>
-                                </div>
-                                <div className="stats-card">
-                                    <div className="stats-label">Highest</div>
-                                    <div className="stats-value">{formatAmount(stats.highest)}</div>
-                                </div>
-                                <div className="stats-card">
-                                    <div className="stats-label">Lowest</div>
-                                    <div className="stats-value">{formatAmount(stats.lowest)}</div>
-                                </div>
-                            </div>
+                        </div>
+
+                        <div>
                             <ROICalculator
                                 calculatorMode={calculatorMode}
-                                setCalculatorMode={(mode) => {
-                                    setCalculatorMode(mode);
-                                    setInputValue('');
-                                    setCalculationResult(null);
-                                }}
+                                setCalculatorMode={setCalculatorMode}
                                 inputValue={inputValue}
                                 setInputValue={setInputValue}
                                 handleCalculate={handleCalculate}
@@ -1266,88 +1155,79 @@
                                 priceData={priceData}
                                 formatAmount={formatAmount}
                             />
-                        </div>
-                        <div className="md:col-span-2">
-                            <div className="card">
-                                <div className="p-4 border-b border-gray-800">
-                                    <div className="card-title">Top Investors</div>
-                                    <div className="card-subtitle">Ranked by investment amount</div>
+
+                            <div className="stats-section">
+                                <div className="stats-title">Sale Statistics</div>
+                                <div className="stats-card">
+                                    <span className="stats-label">FDV</span>
+                                    <span className="stats-value">$100,000,000</span>
                                 </div>
-                                <div className="table-container">
-                                    <table className="data-table">
-                                        <thead>
-                                            <tr className="table-header">
-                                                <th>Rank</th>
-                                                <th>Address</th>
-                                                <th className="cursor-pointer" onClick={toggleSortOrder}>
-                                                    Amount {sortOrder === 'desc' ? '↓' : '↑'}
-                                                </th>
-                                                <th className="text-right">% of Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {currentDeposits.map((deposit, index) => (
-                                                <tr key={deposit.address} className="table-row">
-                                                    <td>
-                                                        {indexOfFirstDeposit + index + 1 <= 3 ? (
-                                                            <span className="rank-badge">{indexOfFirstDeposit + index + 1}</span>
-                                                        ) : (
-                                                            <span>#{indexOfFirstDeposit + index + 1}</span>
-                                                        )}
-                                                    </td>
-                                                    <td className="address-cell">
-                                                        <a 
-                                                            href="#" 
-                                                            onClick={(e) => { 
-                                                                e.preventDefault(); 
-                                                                handleInvestorClick(deposit.address); 
-                                                            }}
-                                                            title={deposit.address}
-                                                        >
-                                                            {formatAddress(deposit.address)}
-                                                        </a>
-                                                    </td>
-                                                    <td className="text-right font-mono">{formatAmount(deposit.amount)}</td>
-                                                    <td className="text-right">{((deposit.amount / totalInvestment) * 100).toFixed(2)}%</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                <div className="stats-card">
+                                    <span className="stats-label">Sale Price</span>
+                                    <span className="stats-value">{formatAmount(CONFIG.salePrice, true)}</span>
                                 </div>
-                                {totalPages > 1 && (
-                                    <div className="pagination">
-                                        <button
-                                            onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                                            disabled={currentPage === 1}
-                                            className="pagination-button"
-                                        >
-                                            Previous
-                                        </button>
-                                        <div className="pagination-info">{currentPage} of {totalPages}</div>
-                                        <button
-                                            onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-                                            disabled={currentPage === totalPages}
-                                            className="pagination-button"
-                                        >
-                                            Next
-                                        </button>
-                                    </div>
-                                )}
+                                <div className="stats-card">
+                                    <span className="stats-label">Total Investors</span>
+                                    <span className="stats-value">{deposits.length}</span>
+                                </div>
+                                <div className="stats-card">
+                                    <span className="stats-label">TGE Date</span>
+                                    <span className="stats-value">Jun 10, 2025</span>
+                                </div>
+                                <div className="stats-card">
+                                    <span className="stats-label">Lockup Period</span>
+                                    <span className="stats-value">12 months</span>
+                                </div>
+                                <div className="stats-card">
+                                    <span className="stats-label">Vesting Period</span>
+                                    <span className="stats-value">24 months</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <InvestorModal
-                        showModal={showModal}
-                        setShowModal={setShowModal}
-                        selectedInvestor={selectedInvestor}
-                        investorLoading={investorLoading}
-                        formatAmount={formatAmount}
-                    />
+
+                    {showInvestorModal && selectedInvestor && (
+                        <div className="investor-modal" onClick={() => setShowInvestorModal(false)}>
+                            <div className="investor-modal-content" onClick={(e) => e.stopPropagation()}>
+                                <div className="investor-modal-close" onClick={() => setShowInvestorModal(false)}>
+                                    ×
+                                </div>
+                                <div className="investor-details">
+                                    <h2>Investor Details</h2>
+                                    <div className="investor-stats">
+                                        <div className="investor-stat">
+                                            <div className="investor-stat-value">{formatAmount(selectedInvestor.total_investment)}</div>
+                                            <div className="investor-stat-label">Total Investment</div>
+                                        </div>
+                                        <div className="investor-stat">
+                                            <div className="investor-stat-value">{selectedInvestor.transaction_count}</div>
+                                            <div className="investor-stat-label">Transactions</div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4">
+                                        <div className="text-sm text-gray-400 mb-2">Wallet Address</div>
+                                        <div className="font-mono text-sm break-all" style={{color: '#6696ae'}}>{selectedInvestor.address}</div>
+                                    </div>
+                                    <div className="mt-4">
+                                        <div className="text-sm text-gray-400 mb-2">Transaction History</div>
+                                        <div className="max-h-40 overflow-y-auto">
+                                            {selectedInvestor.transactions && selectedInvestor.transactions.map((tx, index) => (
+                                                <div key={index} className="flex justify-between items-center py-2 border-b border-gray-700">
+                                                    <span>{formatAmount(tx.amount)}</span>
+                                                    <span className="text-sm text-gray-400">{new Date(tx.timestamp).toLocaleDateString()}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         }
 
-        ReactDOM.render(<TrackerApp />, document.getElementById('app'));
+        ReactDOM.render(<App />, document.getElementById('app'));
     </script>
 </body>
-</html>
+</html> 

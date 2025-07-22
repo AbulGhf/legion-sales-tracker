@@ -4,244 +4,350 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Legion Top Investors</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="legion.png">
+    <link rel="shortcut icon" type="image/png" href="legion.png">
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
         
-        /* Modern background gradient for the entire page */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
+            background-attachment: fixed;
             color: white;
             font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            position: relative;
             overflow-x: hidden;
         }
 
-        /* Update header with gradient */
-        .main-header {
-            background: linear-gradient(90deg, #13131f 0%, #1f1f2c 100%);
-            border-bottom: 1px solid #FF5722;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            padding: 0.75rem 0;
-            margin-bottom: 1rem;
-            position: relative;
+        /* Add subtle geometric background pattern - same as dashboard */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 87, 34, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 87, 34, 0.05) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.01) 50%, transparent 60%);
+            background-size: 400px 400px, 600px 600px, 100px 100px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Header styling - consistent with dashboard */
+        .header {
+            background: rgba(19, 19, 31, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 87, 34, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
             width: 100%;
         }
 
         .header-content {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             position: relative;
-        }
-
-        /* Logo image styling */
-        .header-logo-image {
-            height: 40px;
-            margin-right: 0.75rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
 
         .header-title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 800;
             letter-spacing: 2px;
             text-transform: uppercase;
             color: #e0e0e0;
-            text-shadow: 0 0 15px rgba(255, 87, 34, 0.4);
-            margin-right: auto; /* Push it to the left */
+            text-shadow: 0 0 20px rgba(255, 87, 34, 0.4);
+            position: relative;
+            text-align: center;
+            background: linear-gradient(
+                90deg,
+                #e0e0e0 0%,
+                #e0e0e0 30%,
+                #ff5722 40%,
+                #ffab40 50%,
+                #ff5722 60%,
+                #e0e0e0 70%,
+                #e0e0e0 100%
+            );
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: traveling-light-header 4s ease-in-out infinite;
         }
 
-        .header-nav {
-            display: flex;
-            align-items: center;
-            margin-left: 1rem;
+        @keyframes traveling-light-header {
+            0% {
+                background-position: -200% 0;
+            }
+            50% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
         }
-        
+
+        /* Add glow effect overlay for header title */
+        .header-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                transparent 30%,
+                rgba(255, 87, 34, 0.7) 40%,
+                rgba(255, 171, 64, 0.9) 50%,
+                rgba(255, 87, 34, 0.7) 60%,
+                transparent 70%,
+                transparent 100%
+            );
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: traveling-glow-header 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes traveling-glow-header {
+            0% {
+                background-position: -200% 0;
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                background-position: 200% 0;
+                opacity: 0;
+            }
+        }
+
         .nav-button {
-            background: linear-gradient(145deg, #2a2a3d 0%, #333348 100%);
-            border: 1px solid #FF5722;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 87, 34, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 87, 34, 0.3);
             color: #ffffff;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 16px;
             font-size: 0.9rem;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             transition: all 0.3s ease;
             text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
+
         .nav-button:hover {
-            background: linear-gradient(145deg, #333348 0%, #3a3a52 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+            background: rgba(255, 87, 34, 0.2);
+            transform: translateY(-50%) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 87, 34, 0.2);
+            border-color: rgba(255, 87, 34, 0.5);
         }
 
-        /* Dashboard container */
-        .dashboard-container {
+        .nav-button i {
+            margin-right: 0.5rem;
+        }
+
+        /* Main container - consistent with dashboard */
+        .main-container {
             max-width: 1400px;
-            margin: 0 auto;
-            padding: 1rem;
-            background: linear-gradient(0deg, rgba(20, 20, 30, 0.3) 0%, rgba(15, 15, 25, 0.3) 100%);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 87, 34, 0.1);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
         }
 
-        /* Statistics cards */
-        .stats-card {
-            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(255, 87, 34, 0.1);
+        /* Stats section */
+        .stats-section {
+            background: rgba(21, 21, 31, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 87, 34, 0.15);
             position: relative;
             overflow: hidden;
-        }
-
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.75rem;
-        }
-
-        .stat-item {
-            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
-            border-radius: 8px;
-            padding: 1.25rem 1rem;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.3s ease;
         }
 
-        .stat-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.5), transparent);
         }
+
+
+
+        .stats-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 87, 34, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+
 
         .stat-label {
             font-size: 0.875rem;
-            color: #b0b0b0;
+            color: rgba(255, 255, 255, 0.6);
             margin-bottom: 0.5rem;
         }
 
         .stat-value {
             font-size: 1.25rem;
             font-weight: 700;
-            color: #FF5722;
-        }
-        
-        .stats-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            color: #e0e0e0;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            color: #ff5722;
         }
 
-        /* Table container */
-        .table-container {
-            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        /* Table section */
+        .table-section {
+            background: rgba(21, 21, 31, 0.6);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 87, 34, 0.15);
             overflow: hidden;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid rgba(255, 87, 34, 0.1);
             position: relative;
+            transition: all 0.3s ease;
         }
 
-        .table-header-container {
-            position: sticky;
+        .table-section::before {
+            content: '';
+            position: absolute;
             top: 0;
-            z-index: 10;
-            width: 100%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.5), transparent);
         }
 
-        .table-header {
-            background: #1a1a25;
-            border-bottom: 1px solid rgba(255, 87, 34, 0.2);
-            display: grid;
-            grid-template-columns: 60px minmax(140px, 1fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) 120px;
-            padding: 0.75rem 1rem;
-            font-weight: 600;
-            color: #e0e0e0;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
 
+
+        /* Filter bar */
         .filter-bar {
-            background: linear-gradient(90deg, #1d1d28 0%, #242433 100%);
-            border-bottom: 1px solid #2a2a3a;
-            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.5rem;
             display: flex;
             align-items: center;
+            gap: 1rem;
             flex-wrap: wrap;
-            gap: 8px;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            scrollbar-color: #FF5722 #242433;
         }
 
         .filter-button {
-            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
-            border: 1px solid #333343;
-            color: #e0e0e0;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            display: inline-flex;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-            margin-right: 4px;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        .filter-button:hover {
-            background: linear-gradient(145deg, #242433 0%, #2a2a3d 100%);
-            border-color: #FF5722;
-            transform: translateY(-2px);
-        }
+
 
         .filter-button.active {
-            background: linear-gradient(145deg, #2a2a3d 0%, #333348 100%);
-            border-color: #FF5722;
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(255, 87, 34, 0.2);
+            background: rgba(255, 87, 34, 0.15);
+            border-color: rgba(255, 87, 34, 0.4);
+            color: #ff5722;
         }
 
         .search-container {
             margin-left: auto;
             position: relative;
-            margin-top: 0.25rem;
-            margin-bottom: 0.25rem;
-            width: 200px;
         }
 
         .search-input {
-            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
-            border: 1px solid #333343;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #ffffff;
-            padding: 0.35rem 1rem 0.35rem 2.5rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            width: 100%;
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            width: 250px;
+            transition: all 0.3s ease;
         }
 
         .search-input:focus {
             outline: none;
-            border-color: #FF5722;
-            box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
+            border-color: rgba(255, 87, 34, 0.4);
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .search-icon {
@@ -249,255 +355,160 @@
             left: 0.75rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #777777;
+            color: rgba(255, 255, 255, 0.4);
         }
 
-        /* Table scroll container */
-        .table-scroll-container {
-            flex: 1;
-            overflow-x: auto;
-            overflow-y: visible;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            scrollbar-color: #FF5722 #242433;
-            position: relative;
+        /* Table */
+        .table-header {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: grid;
+            grid-template-columns: 60px 1fr 150px 120px 200px 120px;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-        
-        .table-scroll-container::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .table-scroll-container::-webkit-scrollbar-track {
-            background: #242433;
-            border-radius: 3px;
-        }
-        
-        .table-scroll-container::-webkit-scrollbar-thumb {
-            background-color: #FF5722;
-            border-radius: 3px;
-        }
-        
-        /* Table body */
+
         .table-body {
-            width: 100%;
-            overflow-y: visible;
+            max-height: 600px;
+            overflow-y: auto;
         }
 
-        /* Table row */
         .table-row {
             display: grid;
-            grid-template-columns: 60px minmax(140px, 1fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) 120px;
-            padding: 0.75rem 1rem;
+            grid-template-columns: 60px 1fr 150px 120px 200px 120px;
+            padding: 1rem 1.5rem;
             align-items: center;
-            transition: all 0.2s ease;
-            min-width: 900px;
-            position: relative;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
         }
 
         .table-row:hover {
             background: rgba(255, 87, 34, 0.05);
         }
 
-        .table-row:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 1rem;
-            right: 1rem;
-            bottom: 0;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        /* Loading skeleton */
-        .skeleton-row {
-            display: grid;
-            grid-template-columns: 60px minmax(140px, 1fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) minmax(120px, 0.6fr) 120px;
-            padding: 0.75rem 1rem;
-            align-items: center;
-            position: relative;
-            height: 64px;
-        }
-
-        .skeleton-row:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 1rem;
-            right: 1rem;
-            bottom: 0;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .skeleton {
-            background: linear-gradient(90deg, #222 0%, #333 50%, #222 100%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 4px;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        .skeleton-text {
-            height: 18px;
-            width: 80%;
-        }
-
-        .skeleton-text-lg {
-            height: 24px;
-            width: 70%;
-        }
-
-        .skeleton-button {
-            height: 32px;
-            width: 120px;
-        }
-
-        /* Address styling */
+        /* Table content styling */
         .investor-rank {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: #FF5722;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ff5722;
         }
 
         .investor-address {
-            font-size: 1.125rem;
-            font-weight: 600;
-            font-family: monospace;
-        }
-
-        /* Investment amounts */
-        .investment-amount {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: #FF5722;
-        }
-
-        /* Sale participation */
-        .sales-count {
-            font-size: 1.125rem;
-            font-weight: 600;
-        }
-
-        /* Badge styling for sales */
-        .sale-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-
-        .sale-badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-right: 4px;
-            margin-bottom: 4px;
-        }
-
-        /* Action button styling */
-        .action-button {
-            display: inline-block;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-weight: 600;
-            text-align: center;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-            background-color: #FF5722;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.875rem;
             color: #ffffff;
         }
 
-        .action-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-            background-color: #ff6a3c;
+        .investment-amount {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ff5722;
         }
+
+        .sales-count {
+            font-size: 1rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Sale badges */
+        .sale-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .sale-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(255, 87, 34, 0.1);
+            color: #ff5722;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+        }
+
+        /* Action button */
+        .action-button {
+            background: rgba(255, 87, 34, 0.1);
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            color: #ff5722;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+
 
         /* Pagination */
         .pagination {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-top: 1rem;
-            gap: 0.5rem;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .page-button {
-            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
-            border: 1px solid #333343;
-            color: #e0e0e0;
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
 
-        .page-button:hover:not(.disabled) {
-            background: linear-gradient(145deg, #242433 0%, #2a2a3d 100%);
-            border-color: #FF5722;
-            transform: translateY(-2px);
-        }
+
 
         .page-button.active {
-            background: linear-gradient(145deg, #2a2a3d 0%, #333348 100%);
-            border-color: #FF5722;
-            color: #ffffff;
-            box-shadow: 0 2px 8px rgba(255, 87, 34, 0.2);
+            background: rgba(255, 87, 34, 0.15);
+            border-color: rgba(255, 87, 34, 0.4);
+            color: #ff5722;
         }
 
         .page-button.disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        
+
         .page-jump-input {
-            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
-            border: 1px solid #333343;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             color: #ffffff;
-            padding: 0.35rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            width: 70px;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            width: 80px;
             text-align: center;
         }
-        
+
         .page-jump-input:focus {
             outline: none;
-            border-color: #FF5722;
-            box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
+            border-color: rgba(255, 87, 34, 0.4);
         }
 
-        /* Project-specific colors */
-        .almanak-badge { background-color: #a0c4ff; color: #000000; }
-        .giza-badge { background-color: #ffd166; color: #000000; }
-        .skate-badge { background-color: #c5ff33; color: #000000; }
-        .pulse-badge { background-color: #b14aff; color: #ffffff; }
-        .fuel-badge { background-color: #00f58c; color: #000000; }
-        .electron-badge { background-color: #92c2ff; color: #000000; }
-        .corn-badge { background-color: #ff931e; color: #000000; }
-        .enclave-badge { background-color: #60c2ff; color: #000000; }
-        .nil-badge { background-color: #c9b6e4; color: #000000; }
-        .silencio-badge { background-color: #284ee9; color: #ffffff; }
-        .session-badge { background-color: #24f2d2; color: #000000; }
-        .fragmetric-badge { background-color: #007d3a; color: #ffffff; }
-        .resolv-badge { background-color: #6696ae; color: #ffffff; }
-        .lit-badge { background-color: #fd7244; color: #000000; }
-        .eoracle-badge { background-color: #1b6a58; color: #ffffff; }
-        .overlay-badge { background-color: #545454; color: #ffffff; }
-
-        /* Modal for investor details */
+        /* Modal styling - Glassy appearance */
         .modal-backdrop {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -513,229 +524,365 @@
         }
 
         .modal-content {
-            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 87, 34, 0.2);
-            padding: 1.5rem;
+            background: rgba(15, 15, 20, 0.7);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 2px solid rgba(255, 87, 34, 0.4);
+            border-radius: 24px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            max-width: 600px;
             width: 90%;
-            max-width: 800px;
-            max-height: 90vh;
+            max-height: 80vh;
             overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-            transform: translateY(20px);
-            transition: all 0.3s ease;
+            position: relative;
         }
 
-        .modal-backdrop.active .modal-content {
-            transform: translateY(0);
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 87, 34, 0.8) 20%, 
+                rgba(255, 171, 64, 0.9) 50%, 
+                rgba(255, 87, 34, 0.8) 80%, 
+                transparent
+            );
+            border-radius: 24px 24px 0 0;
+        }
+
+        .modal-content::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                transparent 20%, 
+                transparent 80%, 
+                rgba(255, 87, 34, 0.05) 100%
+            );
+            border-radius: 24px;
+            pointer-events: none;
         }
 
         .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 87, 34, 0.3);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            justify-content: space-between;
+            background: linear-gradient(135deg, 
+                rgba(255, 87, 34, 0.08) 0%, 
+                rgba(255, 87, 34, 0.04) 50%, 
+                rgba(255, 87, 34, 0.08) 100%
+            );
+            backdrop-filter: blur(10px);
+            border-radius: 24px 24px 0 0;
+            position: relative;
+            z-index: 2;
         }
 
         .modal-title {
+            font-family: 'Orbitron', sans-serif;
             font-size: 1.25rem;
             font-weight: 700;
             color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(255, 87, 34, 0.4);
         }
 
         .modal-close {
-            background: none;
-            border: none;
-            color: #888888;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-
-        .modal-close:hover {
+            background: rgba(255, 87, 34, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 87, 34, 0.4);
             color: #ffffff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: none;
+            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.2);
         }
 
         .modal-body {
-            margin-bottom: 1rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.03) 0%, 
+                rgba(255, 255, 255, 0.01) 50%, 
+                rgba(255, 87, 34, 0.02) 100%
+            );
+            backdrop-filter: blur(5px);
+            position: relative;
+            z-index: 1;
         }
 
         .sale-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            margin-bottom: 0.5rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .sale-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            align-items: center;
+            padding: 1rem;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 255, 255, 0.02) 50%, 
+                rgba(255, 87, 34, 0.03) 100%
+            );
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 87, 34, 0.15);
+            transition: all 0.3s ease;
+            margin-bottom: 0.75rem;
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .sale-name {
-            font-weight: 600;
             display: flex;
             align-items: center;
         }
 
         .sale-amount {
-            font-weight: 700;
-            color: #FF5722;
+            font-weight: 600;
+            color: #ff5722;
         }
 
-        /* Mobile styles */
-        @media screen and (max-width: 992px) {
-            .stat-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.1) 25%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.1) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
         }
-        
-        @media screen and (max-width: 768px) {
-            .header-title {
-                font-size: 1.5rem;
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .skeleton-text {
+            height: 16px;
+            width: 80%;
+        }
+
+        .skeleton-text-lg {
+            height: 20px;
+            width: 70%;
+        }
+
+        .skeleton-button {
+            height: 32px;
+            width: 100px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 1rem;
+                gap: 1rem;
             }
-            
-            .header-logo-image {
-                height: 30px;
+
+            .header-content {
+                padding: 0 1rem;
             }
-            
-            .dashboard-container {
-                padding: 0.75rem;
-            }
-            
-            .stat-grid {
+
+            .stats-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .nav-button {
-                padding: 0.4rem 0.8rem;
+
+            .table-header,
+            .table-row {
+                grid-template-columns: 40px 1fr 100px 80px 120px 80px;
+                padding: 0.75rem 1rem;
                 font-size: 0.8rem;
             }
-        }
-        
-        @media screen and (max-width: 580px) {
-            .header-title {
-                font-size: 1.1rem;
+
+            .search-input {
+                width: 200px;
             }
+
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+
+            .search-container {
+                margin-left: 0;
+            }
+        }
+
+        /* Project-specific badge colors */
+        .almanak-badge { background: rgba(139, 69, 19, 0.2); color: #deb887; border-color: rgba(139, 69, 19, 0.4); }
+        .giza-badge { background: rgba(255, 248, 220, 0.1); color: #fff8dc; border-color: rgba(255, 248, 220, 0.3); }
+        .skate-badge { background: rgba(197, 255, 51, 0.1); color: #c5ff33; border-color: rgba(197, 255, 51, 0.3); }
+        .pulse-badge { background: rgba(255, 20, 147, 0.1); color: #ff1493; border-color: rgba(255, 20, 147, 0.3); }
+        .fuel-badge { background: rgba(0, 255, 127, 0.1); color: #00ff7f; border-color: rgba(0, 255, 127, 0.3); }
+        .electron-badge { background: rgba(72, 61, 139, 0.2); color: #9370db; border-color: rgba(72, 61, 139, 0.4); }
+        .corn-badge { background: rgba(255, 215, 0, 0.1); color: #ffd700; border-color: rgba(255, 215, 0, 0.3); }
+        .enclave-badge { background: rgba(105, 105, 105, 0.2); color: #c0c0c0; border-color: rgba(105, 105, 105, 0.4); }
+        .nil-badge { background: rgba(255, 255, 255, 0.1); color: #ffffff; border-color: rgba(255, 255, 255, 0.3); }
+        .silencio-badge { background: rgba(64, 64, 64, 0.2); color: #a9a9a9; border-color: rgba(64, 64, 64, 0.4); }
+        .session-badge { background: rgba(0, 191, 255, 0.1); color: #00bfff; border-color: rgba(0, 191, 255, 0.3); }
+        .fragmetric-badge { background: rgba(255, 165, 0, 0.1); color: #ffa500; border-color: rgba(255, 165, 0, 0.3); }
+        .resolv-badge { background: rgba(102, 150, 174, 0.2); color: #6696ae; border-color: rgba(102, 150, 174, 0.4); }
+        .lit-badge { background: rgba(255, 69, 0, 0.1); color: #ff4500; border-color: rgba(255, 69, 0, 0.3); }
+        .eoracle-badge { background: rgba(138, 43, 226, 0.1); color: #8a2be2; border-color: rgba(138, 43, 226, 0.3); }
+        .overlay-badge { background: rgba(0, 128, 128, 0.1); color: #40e0d0; border-color: rgba(0, 128, 128, 0.3); }
+
+        /* Custom Scrollbar Styling to Match Theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(21, 21, 31, 0.6);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, rgba(255, 87, 34, 0.6), rgba(255, 87, 34, 0.4));
+            border-radius: 10px;
+            border: 1px solid rgba(255, 87, 34, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, rgba(255, 87, 34, 0.8), rgba(255, 87, 34, 0.6));
+        }
+
+        ::-webkit-scrollbar-corner {
+            background: rgba(21, 21, 31, 0.6);
+        }
+
+        /* Firefox scrollbar styling */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 87, 34, 0.6) rgba(21, 21, 31, 0.6);
+        }
+
+        /* Copied message animation */
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(5px); }
+            20% { opacity: 1; transform: translateX(-50%) translateY(0px); }
+            80% { opacity: 1; transform: translateX(-50%) translateY(0px); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-5px); }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="main-header">
-        <div class="container mx-auto px-4">
-            <div class="header-content">
-                <img src="legion.png" alt="Legion" class="header-logo-image">
-                <h1 class="header-title">LEGION TOP INVESTORS</h1>
-                <div class="header-nav">
-                    <a href="/index.html" class="nav-button">
-                        <i class="fas fa-chart-line mr-2"></i> Dashboard
-                    </a>
-                </div>
-            </div>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="header-title" data-text="LEGION TOP INVESTORS">LEGION TOP INVESTORS</h1>
+            <a href="/index.html" class="nav-button">
+                <i class="fas fa-chart-line"></i>Dashboard
+            </a>
         </div>
     </header>
     
     <!-- Main Content -->
-    <main class="container mx-auto px-4">
-        <div class="dashboard-container">
-            <!-- Stats Overview -->
-            <div class="stats-card mb-4">
-                <div class="stats-title">
-                    <span>Investor Statistics</span>
-                    <i class="fas fa-chart-pie"></i>
+    <main class="main-container">
+        <!-- Stats Overview -->
+        <div class="stats-section">
+            <h2 class="stats-title">Investor Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Unique Investors</div>
+                    <div class="stat-value" id="total-investors">
+                        <div class="skeleton skeleton-text-lg mx-auto"></div>
+                    </div>
                 </div>
-                <div class="stat-grid">
-                    <div class="stat-item">
-                        <div class="stat-label">Total Unique Investors</div>
-                        <div class="stat-value" id="total-investors">
-                            <div class="skeleton skeleton-text-lg mx-auto"></div>
-                        </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Investment</div>
+                    <div class="stat-value" id="total-investment">
+                        <div class="skeleton skeleton-text-lg mx-auto"></div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Total Investment</div>
-                        <div class="stat-value" id="total-investment">
-                            <div class="skeleton skeleton-text-lg mx-auto"></div>
-                        </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Largest Investor</div>
+                    <div class="stat-value" id="largest-investor">
+                        <div class="skeleton skeleton-text-lg mx-auto"></div>
                     </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Largest Investor</div>
-                        <div class="stat-value" id="largest-investor">
-                            <div class="skeleton skeleton-text-lg mx-auto"></div>
-                        </div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-label">Most Active Investor</div>
-                        <div class="stat-value" id="most-active-investor">
-                            <div class="skeleton skeleton-text-lg mx-auto"></div>
-                        </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Most Active Investor</div>
+                    <div class="stat-value" id="most-active-investor">
+                        <div class="skeleton skeleton-text-lg mx-auto"></div>
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- Investors Table -->
+        <div class="table-section">
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <button class="filter-button active" data-sort="total">
+                    <i class="fas fa-sort-amount-down"></i>
+                    Sort by Total Invested
+                </button>
+                <button class="filter-button" data-sort="sales">
+                    <i class="fas fa-project-diagram"></i>
+                    Sort by Sales Participation
+                </button>
+                
+                <div class="search-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search address..." id="search-input">
+                </div>
+            </div>
             
-            <!-- Investors Table -->
-            <div class="table-container">
-                <!-- Filter Bar -->
-                <div class="filter-bar">
-                    <button class="filter-button active" data-sort="total">
-                        <i class="fas fa-sort-amount-down"></i> Sort by Total Invested
-                    </button>
-                    <button class="filter-button" data-sort="sales">
-                        <i class="fas fa-project-diagram"></i> Sort by Sales Participation
-                    </button>
-                    
-                    <div class="search-container">
-                        <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="search-input" placeholder="Search address..." id="search-input">
-                    </div>
+            <!-- Table Header -->
+            <div class="table-header">
+                <div>Rank</div>
+                <div>Investor Address</div>
+                <div>Total Invested</div>
+                <div># of Sales</div>
+                <div>Sales</div>
+                <div></div>
+            </div>
+            
+            <!-- Table Body -->
+            <div class="table-body" id="investors-table">
+                <!-- Loading skeletons -->
+                <div class="table-row">
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-text-lg"></div></div>
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-button"></div></div>
                 </div>
-                
-                <!-- Fixed Header -->
-                <div class="table-header-container">
-                    <div class="table-header">
-                        <div>Rank</div>
-                        <div>Investor Address</div>
-                        <div>Total Invested</div>
-                        <div># of Sales</div>
-                        <div>Sales</div>
-                        <div></div>
-                    </div>
+                <div class="table-row">
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-text-lg"></div></div>
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-button"></div></div>
                 </div>
-                
-                <!-- Table Content -->
-                <div class="table-scroll-container">
-                    <!-- Table Body -->
-                    <div class="table-body" id="investors-table">
-                        <!-- Loading skeletons -->
-                        <div class="skeleton-row">
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-text-lg"></div></div>
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-button"></div></div>
-                        </div>
-                        <div class="skeleton-row">
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-text-lg"></div></div>
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-button"></div></div>
-                        </div>
-                        <div class="skeleton-row">
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-text-lg"></div></div>
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-text"></div></div>
-                            <div><div class="skeleton skeleton-button"></div></div>
-                        </div>
-                    </div>
+                <div class="table-row">
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-text-lg"></div></div>
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-text"></div></div>
+                    <div><div class="skeleton skeleton-button"></div></div>
                 </div>
             </div>
             
@@ -814,6 +961,27 @@
             'eoracle': 'eOracle',
             'overlay': 'Overlay'
         };
+
+        // Project logos mapping
+        const projectLogos = {
+            'almanak': 'almanak.jpg',
+            'giza': 'giza.jpg',
+            'skate': 'skate.jpg',
+            'pulse': 'pulse.jpg',
+            'fuel': 'fuel.png',
+            'electron': 'electron.jpg',
+            'corn': 'corn.png',
+            'enclave': 'enclave.jpg',
+            'nil': 'nil.jpg',
+            'silencio': 'silencio.png',
+            'session': 'session.png',
+            'fragmetric': 'fragmetric.png',
+            'resolv': 'resolv.png',
+            'lit': 'lit.jpg',
+            'eoracle': 'eoracle.jpg',
+            'overlay': 'overlay.png',
+            'intuition': 'intuition.jpg'
+        };
         
         // State variables
         let currentPage = 1;
@@ -823,6 +991,92 @@
         let searchTerm = '';
         let investors = [];
         let totalInvestors = 0;
+        
+        // Copy to clipboard functionality
+        function copyToClipboard(text, button) {
+            // Fallback for older browsers
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showCopySuccess(button);
+                }).catch(() => {
+                    fallbackCopyTextToClipboard(text, button);
+                });
+            } else {
+                fallbackCopyTextToClipboard(text, button);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text, button) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showCopySuccess(button);
+                } else {
+                    console.error('Copy command failed');
+                }
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        function showCopySuccess(button) {
+            // Change icon to checkmark and show "Copied!" text
+            const icon = button.querySelector('i');
+            const originalIcon = icon.className;
+            const originalBackground = button.style.background;
+            const originalBorderColor = button.style.borderColor;
+            const originalColor = button.style.color;
+            
+            icon.className = 'fas fa-check';
+            button.style.background = 'rgba(76, 175, 80, 0.1)';
+            button.style.borderColor = 'rgba(76, 175, 80, 0.3)';
+            button.style.color = '#4caf50';
+            button.title = 'Copied!';
+            
+            // Show a small "Copied!" message
+            const copiedMsg = document.createElement('span');
+            copiedMsg.textContent = 'Copied!';
+            copiedMsg.style.cssText = `
+                position: absolute;
+                top: -25px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(76, 175, 80, 0.9);
+                color: white;
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 0.7rem;
+                white-space: nowrap;
+                z-index: 1000;
+                animation: fadeInOut 2s ease;
+            `;
+            
+            button.style.position = 'relative';
+            button.appendChild(copiedMsg);
+            
+            // Reset after 2 seconds
+            setTimeout(() => {
+                icon.className = originalIcon;
+                button.style.background = originalBackground || 'rgba(255, 87, 34, 0.1)';
+                button.style.borderColor = originalBorderColor || 'rgba(255, 87, 34, 0.3)';
+                button.style.color = originalColor || '#ff5722';
+                button.title = 'Copy full address';
+                if (copiedMsg.parentNode) {
+                    copiedMsg.remove();
+                }
+            }, 2000);
+        }
         
         // Format currency helper
         function formatCurrency(amount) {
@@ -1048,7 +1302,7 @@
                     document.getElementById('largest-investor').textContent = formatCurrency(data.largest_investment || 0);
                     
                     // Hardcode the Most Active Investor to 11 sales
-                    document.getElementById('most-active-investor').textContent = '11 sales';
+                    document.getElementById('most-active-investor').textContent = '13 sales';
                 })
                 .catch(error => {
                     console.error('Error fetching global stats:', error);
@@ -1066,7 +1320,7 @@
                     }
                     
                     // Hardcode the Most Active Investor to 11 sales
-                    document.getElementById('most-active-investor').textContent = '11 sales';
+                    document.getElementById('most-active-investor').textContent = '13 sales';
                 });
         }
         
@@ -1138,10 +1392,24 @@
                 
                 // Update modal title
                 const isSolana = isSolanaAddress(investor.address);
+                const displayAddress = isSolana 
+                    ? (properCasedAddress || investor.original_address || investor.address)
+                    : investor.address;
+                
                 modalTitle.innerHTML = `
-                    <span class="text-gray-400 mr-2">Investor:</span>
-                    <span class="font-mono">${formatAddress(investor.address)}</span>
-                    ${isSolana ? '<span class="text-xs ml-2 text-blue-400">(Solana)</span>' : ''}
+                    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="text-gray-400">Investor:</span>
+                            <span class="font-mono" style="color: #ffffff; font-weight: 600;">${formatAddress(investor.address)}</span>
+                            <button onclick="copyToClipboard('${displayAddress}', this)" style="background: rgba(255, 87, 34, 0.1); border: 1px solid rgba(255, 87, 34, 0.3); color: #ff5722; padding: 0.15rem 0.2rem; border-radius: 4px; cursor: pointer; transition: all 0.3s ease; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;" title="Copy full address">
+                                <i class="fas fa-copy" style="font-size: 0.65rem;"></i>
+                            </button>
+                            ${isSolana ? '<span class="text-xs text-blue-400">(Solana)</span>' : ''}
+                        </div>
+                        <a href="${isSolana ? `https://solscan.io/account/${displayAddress}` : `https://debank.com/profile/${displayAddress}`}" target="_blank" style="color: #00bfff; text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.5rem; background: rgba(0, 191, 255, 0.1); border-radius: 6px; border: 1px solid rgba(0, 191, 255, 0.3);">
+                            <i class="fas fa-external-link-alt"></i> View on ${isSolana ? 'Solscan' : 'Debank'}
+                        </a>
+                    </div>
                 `;
                 
                 // Create modal content
@@ -1167,10 +1435,12 @@
                     investor.sales.forEach(sale => {
                         const saleClass = projectColors[sale.sale] || '';
                         const saleName = projectNames[sale.sale] || sale.sale;
+                        const saleLogo = projectLogos[sale.sale] || 'legion.png'; // Fallback to legion logo
                         
                         modalContent += `
                             <div class="sale-item">
-                                <div class="sale-name">
+                                <div class="sale-name" style="display: flex; align-items: center;">
+                                    <img src="${saleLogo}" alt="${saleName}" style="width: 24px; height: 24px; border-radius: 6px; margin-right: 0.75rem; object-fit: cover; border: 1px solid rgba(255, 87, 34, 0.2);">
                                     <span class="sale-badge ${saleClass} mr-2">${saleName}</span>
                                 </div>
                                 <div class="sale-amount">${formatCurrency(sale.amount)}</div>
@@ -1187,22 +1457,7 @@
                     `;
                 }
                 
-                // For Solana addresses, use either:
-                // 1. The properly cased address we fetched from source
-                // 2. investor.original_address if provided by the API
-                // 3. Fall back to the normal address
-                const displayAddress = isSolana 
-                    ? (properCasedAddress || investor.original_address || investor.address)
-                    : investor.address;
-                
-                // Add external link to appropriate explorer based on address type
-                modalContent += `
-                    <div class="mt-4 pt-4 border-t border-gray-700 text-center">
-                        <a href="${isSolana ? `https://solscan.io/account/${displayAddress}` : `https://debank.com/profile/${displayAddress}`}" target="_blank" class="text-blue-400 hover:text-blue-300">
-                            <i class="fas fa-external-link-alt mr-2"></i> View on ${isSolana ? 'Solscan' : 'Debank'}
-                        </a>
-                    </div>
-                `;
+
                 
                 // Update modal body
                 modalBody.innerHTML = modalContent;
@@ -1327,5 +1582,12 @@
             fetchInvestors();
         });
     </script>
+    
+    <!-- Branding Footer -->
+    <div style="text-align: center; padding: 2rem 0; margin-top: 3rem; border-top: 1px solid rgba(255, 87, 34, 0.2); background: rgba(20, 20, 30, 0.4); backdrop-filter: blur(10px);">
+        <p style="color: rgba(255, 255, 255, 0.6); font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; margin: 0;">
+            Created by <a href="https://twitter.com/Magicianafk" target="_blank" rel="noopener noreferrer" style="color: #ff5722; text-decoration: none; font-weight: 600; transition: color 0.3s ease;">@Magicianafk</a> <span style="color: #ff6b6b;">❤️</span>
+        </p>
+    </div>
 </body>
 </html>

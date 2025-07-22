@@ -1,0 +1,81 @@
+Almanak
+FDV: $45,000,000
+
+Vesting Terms: 30% at TGE, the remaining 70% linearly unlocked over 24 months (includes a 6-month cliff).
+
+Fuel Ignition
+FDV: $200,000,000
+
+Vesting Terms: 100% at TGE.
+
+Enclave
+FDV: $60,000,000
+
+Vesting Terms: 100% linearly unlocked over 24 months.
+
+Corn
+FDV: $150,000,000
+
+Vesting Terms: 0% at TGE, 1-year lockup followed by a 12-month linear vest.
+
+=nil;
+FDV: $220,000,000
+
+Vesting Terms: 0% at TGE, 1-year lockup followed by 24-month linear vesting.
+
+Giza
+FDV: $45,000,000
+
+Vesting Terms: 20% at TGE, the remaining 80% linearly unlocked over 24 months.
+
+Electron
+FDV: $35,000,000
+
+Vesting Terms: 50% at TGE, the remaining 50% linearly unlocked over 12 months.
+
+Skate
+FDV: $80,000,000
+
+Vesting Terms: 40% at TGE, the remaining 60% linearly unlocked over 3 months.
+
+Lit Protocol
+FDV: $100,000,000
+Vesting Terms: 100% after a 12-month lockup.
+
+FDV: $150,000,000
+Vesting Terms: 100% linearly unlocked over 12 months.
+
+FDV: $250,000,000
+Vesting Terms: 100% at TGE.
+
+Resolv
+FDV: $100,000,000
+
+Vesting Terms: A 12-month lockup followed by a 24-month monthly linear unlock.
+
+Fragmetric
+FDV: $125,000,000
+
+Vesting Terms: 10% at TGE, the remaining 90% subject to a 12-month lockup, followed by a 24-month monthly linear unlock.
+
+Session
+FDV: $48,000,000
+
+Vesting Terms: Not specified.
+
+Intuition
+FDV: $50,000,000
+Vesting Terms: 5% unlock at a 1-year cliff, the remaining 95% monthly linear for 12 months.
+
+FDV: $75,000,000
+Vesting Terms: 50% at TGE, the remaining 50% linearly unlocked over 12 months.
+
+Pulse
+FDV: $30,000,000
+
+Vesting Terms: 100% linearly unlocked over 24 months (includes a 12-month cliff).
+
+Silencio
+FDV: $60,000,000
+
+Vesting Terms: 100% at TGE
