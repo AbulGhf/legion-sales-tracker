@@ -350,12 +350,7 @@
             border-color: rgba(255, 87, 34, 0.3);
         }
 
-        /* Enhanced live feed card */
-        .live-feed-card {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
+
 
         .stats-title {
             font-size: 1.25rem;
@@ -830,101 +825,7 @@
             border-color: rgba(255, 255, 255, 0.3);
         }
 
-        /* Enhanced live feed with glass effect */
-        .live-feed {
-            max-height: 380px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 87, 34, 0.6) rgba(36, 36, 51, 0.8);
-            flex: 1;
-            padding: 0.5rem;
-        }
-
-        .live-feed::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .live-feed::-webkit-scrollbar-track {
-            background: rgba(36, 36, 51, 0.8);
-            border-radius: 4px;
-        }
-
-        .live-feed::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 87, 34, 0.6);
-            border-radius: 4px;
-        }
-
-        .feed-item {
-            background: rgba(29, 29, 40, 0.6);
-            backdrop-filter: blur(10px);
-            margin: 0.5rem 0;
-            border-radius: 12px;
-            padding: 0.75rem 1rem;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feed-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.3), transparent);
-        }
-
-        .feed-item:hover {
-            background: rgba(29, 29, 40, 0.8);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-            border-color: rgba(255, 87, 34, 0.3);
-        }
-
-        .feed-logo {
-            width: 24px;
-            height: 24px;
-            border-radius: 6px;
-            margin-right: 0.75rem;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-        }
-
-        .feed-address {
-            color: #c0c0c0;
-            font-family: 'Courier New', monospace;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            flex: 1;
-            font-weight: 500;
-        }
-
-        .feed-address:hover {
-            color: #ffffff;
-            text-decoration: underline;
-            text-shadow: 0 0 8px rgba(255, 87, 34, 0.3);
-        }
-
-        .feed-amount {
-            font-weight: 700;
-            margin-left: auto;
-            margin-right: 0.75rem;
-            font-family: 'Courier New', monospace;
-            color: #FF5722;
-            text-shadow: 0 0 8px rgba(255, 87, 34, 0.2);
-        }
-
-        .feed-time {
-            color: #999;
-            font-size: 0.75rem;
-            width: 60px;
-            text-align: right;
-            font-weight: 500;
-        }
+        /* Old live feed styles - now replaced by new design */
 
         /* Project-specific styles */
         .almanak-row {
@@ -1267,6 +1168,24 @@
             background-color: #000000;
         }
 
+        /* Ten (Nozomi) */
+        .ten-row {
+            border-left: 3px solid #00d4ff;
+        }
+        
+        .ten-color {
+            color: #00d4ff;
+        }
+        
+        .ten-button {
+            background-color: #00d4ff;
+            color: #000000;
+        }
+        
+        .ten-button:hover {
+            background-color: #33dcff;
+        }
+
         /* Upcoming badge */
         .upcoming-badge {
             display: inline-block;
@@ -1296,6 +1215,197 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
+        /* Sale badges for live feed */
+        .sale-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            min-width: 24px;
+            height: 24px;
+            white-space: nowrap;
+        }
+
+        .sale-badge.ten {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            color: #00d4ff;
+        }
+
+        .sale-badge.lit {
+            background: rgba(253, 114, 68, 0.2);
+            border: 1px solid rgba(253, 114, 68, 0.4);
+            color: #fd7244;
+        }
+
+        .sale-badge.resolv {
+            background: rgba(102, 150, 174, 0.2);
+            border: 1px solid rgba(102, 150, 174, 0.4);
+            color: #6696ae;
+        }
+
+        .sale-badge.session {
+            background: rgba(36, 242, 210, 0.2);
+            border: 1px solid rgba(36, 242, 210, 0.4);
+            color: #24f2d2;
+        }
+
+        .sale-badge.intuition {
+            background: rgba(139, 90, 60, 0.2);
+            border: 1px solid rgba(139, 90, 60, 0.4);
+            color: #8b5a3c;
+        }
+
+        .sale-badge.other {
+            background: rgba(128, 128, 128, 0.2);
+            border: 1px solid rgba(128, 128, 128, 0.4);
+            color: #888;
+        }
+
+        /* Live Feed Card Styles - Matching other panels on page */
+        .live-feed-card {
+            background: rgba(21, 21, 31, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 87, 34, 0.15);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+
+        .live-feed-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.5), transparent);
+        }
+
+        .live-feed-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 87, 34, 0.3);
+        }
+
+        .live-feed-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .live-feed-title h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .live-feed-title i {
+            color: #ff6b35;
+        }
+
+        .live-feed-content {
+            flex: 1;
+            overflow-y: auto;
+            margin: -8px;
+            padding: 8px;
+            max-height: 320px;
+        }
+
+        .live-feed-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .live-feed-content::-webkit-scrollbar-track {
+            background: rgba(255, 87, 34, 0.05);
+            border-radius: 3px;
+        }
+
+        .live-feed-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 87, 34, 0.3);
+            border-radius: 3px;
+        }
+
+        .live-feed-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 87, 34, 0.5);
+        }
+
+        /* Add smooth scrolling */
+        .live-feed-content {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 87, 34, 0.3) rgba(255, 87, 34, 0.05);
+        }
+
+        .feed-item {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 87, 34, 0.06);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .feed-item:last-child {
+            border-bottom: none;
+        }
+
+        .feed-item:hover {
+            background: rgba(255, 87, 34, 0.1);
+            border-radius: 8px;
+        }
+
+        .feed-item-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .feed-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .feed-item-address {
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+            word-break: break-all;
+        }
+
+        .feed-item-time {
+            font-size: 0.75rem;
+            color: rgba(235, 235, 245, 0.6);
+        }
+
+        .feed-item-amount {
+            font-weight: bold;
+            color: #ff6b35;
+            font-size: 0.875rem;
+        }
+
+        .ten-logo {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+
 
         /* Mobile breakpoints */
         @media screen and (max-width: 992px) {
@@ -1578,19 +1688,20 @@
                         </a>
                     </div>
                     
-                    <!-- Live Feed - Taller -->
+                    <!-- Live Feed - Exact TEN page structure -->
                     <div class="stats-card live-feed-card">
-                        <div class="stats-title">
-                            <span>Live Feed</span>
+                        <div class="live-feed-title">
+                            <h3>Live Feed</h3>
                             <i class="fas fa-bolt"></i>
                         </div>
-                        <div class="live-feed" id="live-feed">
+                        <div class="live-feed-content" id="live-feed">
                             <div class="text-center p-4">
-                                <i class="fas fa-exclamation-circle text-yellow-500 text-lg mb-2"></i>
-                                <p class="text-gray-400 mb-1">No active sales at this time</p>
+                                <div class="text-gray-400">Loading live transactions...</div>
                             </div>
                         </div>
                     </div>
+                    
+
                     
                     <!-- Combined Legion Stats Card -->
                     <div class="stats-card">
@@ -1796,6 +1907,7 @@ const sales = [
     { id: 'eoracle', name: 'eOracle', className: 'eoracle', upcoming: true },
     { id: 'inference', name: 'Inference', className: 'inference', upcoming: true },
     { id: 'arcium', name: 'Arcium', className: 'arcium', upcoming: true },
+    { id: 'ten', name: 'Ten', className: 'ten', live: true },
     // Active sales
     { id: 'intuition', name: 'Intuition', className: 'intuition' }
 ];
@@ -1820,6 +1932,7 @@ const chartColors = {
     eoracle: '#1b6a58',
     inference: '#ff6b9d',  // Pink/magenta color
     arcium: '#9b59b6',  // Purple color
+    ten: '#00d4ff',  // Ten (Nozomi) cyan color
     intuition: '#8b5a3c'  // Intuition brown/bronze color
 };
 
@@ -1832,7 +1945,8 @@ const tokenSalePrices = {
     giza: "0.045",
     session: "0.2",
     resolv: "0.1",  // Added Resolv sale price
-    fragmetric: "0.2"  // Added Fragmetric sale price
+    fragmetric: "0.2",  // Added Fragmetric sale price
+    ten: "0.08"  // Added Ten (Nozomi) sale price
 };
 
 // Token CoinGecko IDs
@@ -1975,6 +2089,8 @@ async function fetchSaleData(sale) {
         };
     }
     
+
+    
     try {
         // Fetch sale stats (includes total, investors, and allocations)
         const statsRes = await fetch(`/api/${sale.id}/stats`);
@@ -1982,6 +2098,11 @@ async function fetchSaleData(sale) {
             throw new Error(`Failed to fetch ${sale.id} stats data`);
         }
         const statsData = await statsRes.json();
+        
+        // Debug logging for TEN
+        if (sale.id === 'ten') {
+            console.log('TEN stats data:', statsData);
+        }
         
         // Create sale data object with stats
         return {
@@ -2081,8 +2202,8 @@ function createSaleRow(sale) {
         nameDisplay = `${sale.name} <span class="upcoming-badge">UPCOMING</span>`;
     }
     
-    const amount = sale.upcoming ? 'TBA' : (sale.error ? 'Error' : `$${parseFloat(sale.invested).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`);
-    const investors = sale.upcoming ? 'TBA' : (sale.error ? 'Error' : `${sale.investors.toLocaleString()}`);
+            const amount = sale.upcoming ? 'TBA' : (sale.error ? 'Error' : `$${parseFloat(sale.invested).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`);
+        const investors = sale.upcoming ? 'TBA' : (sale.error ? 'Error' : `${sale.investors.toLocaleString()}`);
     
     row.innerHTML = `
         <div class="logo-container">
@@ -2097,7 +2218,7 @@ function createSaleRow(sale) {
         <div class="sale-amount ${sale.className}-color">${amount}</div>
         <div class="sale-investors">${investors}</div>
         <div class="token-sale-price ${sale.className}-color">${sale.tokenSalePrice}</div>
-        <div class="token-price ${sale.className}-color">${sale.upcoming ? 'Not Live' : getMarketPrice(sale.id)}</div>
+                        <div class="token-price ${sale.className}-color">${sale.upcoming ? 'Not Live' : getMarketPrice(sale.id)}</div>
         <div>
                             <a href="${sale.upcoming ? 'https://legion.cc/app/invest' : `/${sale.id}`}" target="_blank" class="action-button ${sale.className}-button">${sale.upcoming ? 'Upcoming' : 'View Details'}</a>
         </div>
@@ -2238,8 +2359,8 @@ function updateOverallStats() {
             document.getElementById('median-investment').textContent = formatCurrency(data.median_investment);
             
             // Continue with the existing code for setting other stats
-            // Filter out upcoming sales for stats calculations
-            const activeAndCompletedSales = salesData.filter(sale => !sale.upcoming);
+            // Include all sales that have investment data or are live for stats calculations
+            const activeAndCompletedSales = salesData.filter(sale => sale.invested > 0 || sale.isActive);
             const activeSales = activeAndCompletedSales.filter(sale => sale.isActive).length;
             const totalSales = salesData.length;
             
@@ -2313,8 +2434,8 @@ function updateOverallStats() {
             console.error('Error fetching global stats:', error);
             
             // Fallback to locally calculated stats if the API fails
-            // Filter out upcoming sales for stats calculations
-            const activeAndCompletedSales = salesData.filter(sale => !sale.upcoming);
+            // Include all sales that have investment data or are live for stats calculations
+            const activeAndCompletedSales = salesData.filter(sale => sale.invested > 0 || sale.isActive);
             
             // Calculate overall stats
             const totalInvestment = activeAndCompletedSales.reduce((sum, sale) => sum + sale.invested, 0);
@@ -2338,12 +2459,14 @@ function updateOverallStats() {
         });
 }
 
+
+
 // Function to update charts
 function updateCharts() {
     if (salesData.length === 0) return;
     
-    // Filter out upcoming sales for chart display
-    const activeAndCompletedSales = salesData.filter(sale => !sale.upcoming);
+    // Include all sales that have investment data or are live (include live sales even with zero investment)
+    const activeAndCompletedSales = salesData.filter(sale => sale.invested > 0 || sale.isActive);
     
     const ctx1 = document.getElementById('investment-chart').getContext('2d');
     const ctx2 = document.getElementById('investor-chart').getContext('2d');
@@ -2638,6 +2761,29 @@ function timeAgo(date) {
     return `${days}d ago`;
 }
 
+// Function to get display name for sales
+function getSaleDisplayName(saleId) {
+    const saleNames = {
+        'almanak': 'Almanak',
+        'giza': 'Giza',
+        'skate': 'Skate Chain',
+        'pulse': 'Pulse',
+        'fuel': 'FUEL',
+        'electron': 'Electron',
+        'nil': '=nil;',
+        'corn': 'corn',
+        'enclave': 'Enclave',
+        'silencio': 'Silencio',
+        'lit': 'Lit Protocol',
+        'resolv': 'Resolv',
+        'session': 'Session',
+        'fragmetric': 'Fragmetric',
+        'intuition': 'Intuition',
+        'ten': 'Ten'
+    };
+    return saleNames[saleId] || saleId || 'Unknown';
+}
+
 // Function to fetch live transactions
 async function fetchLiveTransactions() {
     // Skip if app isn't initialized
@@ -2662,7 +2808,7 @@ async function fetchLiveTransactions() {
     }
 }
 
-// Function to update the live feed
+// Function to update the live feed (exact copy from TEN page structure)
 function updateLiveFeed(transactions) {
     const liveFeed = document.getElementById('live-feed');
     if (!liveFeed) return;
@@ -2670,13 +2816,57 @@ function updateLiveFeed(transactions) {
     // Clear existing content
     liveFeed.innerHTML = '';
     
-    // Show only a message that there are no active sales
-    liveFeed.innerHTML = `
-        <div class="text-center p-4">
-            <i class="fas fa-exclamation-circle text-yellow-500 text-lg mb-2"></i>
-            <p class="text-gray-400 mb-1">No active sales at this time</p>
-        </div>
-    `;
+    if (!transactions || transactions.length === 0) {
+        liveFeed.innerHTML = `
+            <div class="text-center p-4">
+                <i class="fas fa-exclamation-circle text-yellow-500 text-lg mb-2"></i>
+                <p class="text-gray-400 mb-1">No recent transactions</p>
+                <p class="text-xs text-gray-500">TEN Protocol sale is live - be the first to participate!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Create transactions list exactly like TEN page
+    transactions.forEach((tx, index) => {
+        const feedItem = document.createElement('div');
+        feedItem.className = 'feed-item';
+        feedItem.dataset.timestamp = tx.timestamp;
+        
+        // Make transaction clickable to open etherscan
+        if (tx.hash) {
+            feedItem.onclick = () => {
+                window.open(`https://etherscan.io/tx/${tx.hash}`, '_blank');
+            };
+        }
+        
+        const saleClass = tx.sale || 'other';
+        const saleDisplayName = getSaleDisplayName(tx.sale);
+        
+        feedItem.innerHTML = `
+            <div class="feed-item-content">
+                <div class="feed-item-left">
+                    ${tx.sale === 'ten' ? 
+                        `<img src="ten.png" alt="TEN" class="ten-logo" onerror="this.style.display='none'">` :
+                        `<span class="sale-badge ${saleClass}">${saleDisplayName}</span>`
+                    }
+                    <div>
+                        <div class="feed-item-address">
+                            ${tx.from ? `${tx.from.slice(0, 6)}...${tx.from.slice(-4)}` : 'Anonymous'}
+                        </div>
+                        <div class="feed-item-time">
+                            ${timeAgo(tx.timestamp)}
+                        </div>
+                    </div>
+                </div>
+                <div class="feed-item-amount">
+                    ${formatCurrency(tx.amount)}
+                </div>
+            </div>
+        `;
+        
+        liveFeed.appendChild(feedItem);
+    });
 }
 
 // Function to update times in the live feed
@@ -2736,7 +2926,7 @@ async function fetchAllSalesData() {
     // Fetch token prices immediately
     await fetchTokenPrices();
     
-    // Set up auto-refresh for active sales (Lit and Resolv)
+    // Set up auto-refresh for active sales (Lit, Resolv, Session, and TEN)
     let refreshInterval = null;
     let tokenPriceInterval = null;
     
@@ -2793,6 +2983,7 @@ async function refreshActiveData() {
         const litIndex = salesData.findIndex(sale => sale.id === 'lit');
         const resolvIndex = salesData.findIndex(sale => sale.id === 'resolv');
         const sessionIndex = salesData.findIndex(sale => sale.id === 'session');
+        const tenIndex = salesData.findIndex(sale => sale.id === 'ten');
         
         // Fetch updated data for Lit Protocol
         if (litIndex !== -1) {
@@ -2815,6 +3006,14 @@ async function refreshActiveData() {
             const updatedSession = await fetchSaleData(sales.find(sale => sale.id === 'session'));
             if (updatedSession) {
                 salesData[sessionIndex] = updatedSession;
+            }
+        }
+        
+        // Fetch updated data for TEN Protocol (live sale)
+        if (tenIndex !== -1) {
+            const updatedTen = await fetchSaleData(sales.find(sale => sale.id === 'ten'));
+            if (updatedTen) {
+                salesData[tenIndex] = updatedTen;
             }
         }
         
