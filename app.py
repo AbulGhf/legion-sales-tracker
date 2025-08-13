@@ -1161,6 +1161,16 @@ def get_all_individual_investments():
     except Exception as e:
         print(f"Error loading Session data for investments: {str(e)}")
     
+    # Add TEN data (live)
+    try:
+        transfers = get_ten_usdc_deposits()
+        deposits_list = aggregate_ten_deposits(transfers)
+        
+        for deposit in deposits_list:
+            all_investments.append(deposit["amount"])
+    except Exception as e:
+        print(f"Error loading TEN data for investments: {str(e)}")
+    
     return all_investments
 
 # Global stats endpoint with caching and improved integration
@@ -1240,6 +1250,23 @@ def global_stats():
             investor_sales_count[address].add('session')
     except Exception as e:
         print(f"Error processing Session data for global stats: {e}")
+    
+    # Add TEN data (live)
+    try:
+        transfers = get_ten_usdc_deposits()
+        deposits_list = aggregate_ten_deposits(transfers)
+        
+        for deposit in deposits_list:
+            address = deposit.get('address', '').lower()
+            if not address:
+                continue
+                
+            if address not in investor_sales_count:
+                investor_sales_count[address] = set()
+            
+            investor_sales_count[address].add('ten')
+    except Exception as e:
+        print(f"Error processing TEN data for global stats: {e}")
     
     # Calculate total sales participation (sum of all investors across all sales)
     total_sales_participation = sum(len(sales) for sales in investor_sales_count.values())
