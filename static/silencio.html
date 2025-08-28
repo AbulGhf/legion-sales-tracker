@@ -433,11 +433,58 @@
                 window.location.href = '/dashboard';
             };
             
-            // Fetch data on component mount
+            // User activity tracking
+            const [userActivity, setUserActivity] = React.useState({
+                lastActivity: Date.now(),
+                hasInteracted: false,
+                isActive: true
+            });
+            
+            const USER_ACTIVITY_TIMEOUT = 300000; // 5 minutes
+            
+            // Track user interactions
             React.useEffect(() => {
-                fetchData();
-                fetchTokenPriceData();
-            }, []);
+                const trackActivity = () => {
+                    setUserActivity(prev => ({
+                        ...prev,
+                        lastActivity: Date.now(),
+                        hasInteracted: true,
+                        isActive: true
+                    }));
+                };
+                
+                // Add event listeners for user activity
+                const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+                events.forEach(event => {
+                    document.addEventListener(event, trackActivity, { passive: true });
+                });
+                
+                // Check if user is still active
+                const activityCheck = setInterval(() => {
+                    const now = Date.now();
+                    const isActive = (now - userActivity.lastActivity) < USER_ACTIVITY_TIMEOUT;
+                    if (userActivity.isActive !== isActive) {
+                        setUserActivity(prev => ({ ...prev, isActive }));
+                    }
+                }, 30000); // Check every 30 seconds
+                
+                return () => {
+                    events.forEach(event => {
+                        document.removeEventListener(event, trackActivity);
+                    });
+                    clearInterval(activityCheck);
+                };
+            }, [userActivity.lastActivity]);
+            
+            // Fetch data on component mount - only fetch price data if user interacts
+            React.useEffect(() => {
+                fetchData(); // This doesn't call external APIs, safe to call immediately
+                
+                // Only fetch price data after user interaction
+                if (userActivity.hasInteracted && userActivity.isActive && document.visibilityState === 'visible') {
+                    fetchTokenPriceData();
+                }
+            }, [userActivity.hasInteracted, userActivity.isActive]);
             
             // Function to fetch data from API
             const fetchData = async () => {
@@ -494,6 +541,12 @@
             
             // Fetch token price data from CoinGecko
             const fetchTokenPriceData = async () => {
+                // Check if user is active and page is visible
+                if (!userActivity.hasInteracted || !userActivity.isActive || document.visibilityState !== 'visible') {
+                    console.log('Skipping Silencio price fetch - user inactive or page not visible');
+                    return;
+                }
+                
                 try {
                     setPriceData(prev => ({ ...prev, loading: true, error: null }));
                     

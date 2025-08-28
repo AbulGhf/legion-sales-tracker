@@ -1627,11 +1627,19 @@ function getTokenSalePrice(saleId) {
 async function fetchTokenPrices() {
     if (!appInitialized) return;
     
+    // Check if page is visible and user is active
+    if (!isPageVisible || (typeof isUserActive === 'function' && !isUserActive())) {
+        console.log('Skipping token price fetch - page not visible or user inactive');
+        return;
+    }
+    
     try {
         // Get all available CoinGecko IDs
         const ids = Object.values(coinGeckoIds).filter(id => id);
         
         if (ids.length === 0) return;
+        
+        console.log('Fetching token prices for', ids.length, 'tokens');
         
         // Use our server proxy for each token instead of calling CoinGecko API directly
         const pricePromises = ids.map(id => 
@@ -1655,6 +1663,7 @@ async function fetchTokenPrices() {
         
         // Update the table with new prices
         updateTable();
+        console.log('Token prices updated successfully');
     } catch (error) {
         console.error('Error fetching token prices:', error);
     }
@@ -2316,8 +2325,31 @@ async function fetchAllSalesData() {
     // Initialize live feed
     initLiveFeed();
     
-    // Fetch token prices immediately
-    await fetchTokenPrices();
+    // User activity tracking
+    let lastUserActivity = Date.now();
+    let userInteractionDetected = false;
+    const USER_ACTIVITY_TIMEOUT = 300000; // 5 minutes of inactivity
+    
+    // Track user interactions
+    const trackUserActivity = () => {
+        lastUserActivity = Date.now();
+        userInteractionDetected = true;
+    };
+    
+    // Add event listeners for user activity
+    ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(event => {
+        document.addEventListener(event, trackUserActivity, { passive: true });
+    });
+    
+    // Function to check if user is active
+    const isUserActive = () => {
+        return Date.now() - lastUserActivity < USER_ACTIVITY_TIMEOUT;
+    };
+    
+    // Only fetch token prices if user has interacted and page is visible
+    if (userInteractionDetected && isPageVisible) {
+        await fetchTokenPrices();
+    }
     
     // Set up auto-refresh for active sales (Lit and Resolv)
     let refreshInterval = null;
@@ -2327,18 +2359,27 @@ async function fetchAllSalesData() {
     const handleVisibilityChange = () => {
         isPageVisible = document.visibilityState === 'visible';
         
-        if (isPageVisible) {
-            // Page is visible, start refresh intervals
-            refreshInterval = setInterval(refreshActiveData, 60000); // Every minute
-            tokenPriceInterval = setInterval(fetchTokenPrices, 300000); // Every 5 minutes
+        if (isPageVisible && isUserActive() && userInteractionDetected) {
+            // Page is visible and user is active, start refresh intervals
+            refreshInterval = setInterval(() => {
+                if (isUserActive()) {
+                    refreshActiveData();
+                }
+            }, 60000); // Every minute
             
-            // Fetch data immediately when becoming visible
-            if (shouldUpdate()) {
+            tokenPriceInterval = setInterval(() => {
+                if (isUserActive()) {
+                    fetchTokenPrices();
+                }
+            }, 600000); // Every 10 minutes (reduced from 5 minutes)
+            
+            // Fetch data immediately when becoming visible and user is active
+            if (shouldUpdate() && isUserActive()) {
                 fetchTokenPrices();
                 refreshActiveData();
             }
         } else {
-            // Page is hidden, stop all intervals
+            // Page is hidden or user inactive, stop all intervals
             if (refreshInterval) {
                 clearInterval(refreshInterval);
                 refreshInterval = null;
@@ -2368,8 +2409,11 @@ async function fetchAllSalesData() {
 async function refreshActiveData() {
     if (!appInitialized) return;
     
-    // Skip if page is not visible or if we shouldn't update
-    if (!isPageVisible || !shouldUpdate()) return;
+    // Check if page is visible, user is active, and we should update
+    if (!isPageVisible || !shouldUpdate() || (typeof isUserActive === 'function' && !isUserActive())) {
+        console.log('Skipping active data refresh - page not visible, user inactive, or should not update');
+        return;
+    }
     
     try {
         // Refresh the active sales
@@ -2498,25 +2542,34 @@ function initLiveFeed() {
     let lastFetchTime = 0;
     const FETCH_COOLDOWN = 5000; // 5 seconds cooldown between fetches
     
+    // Function to check if user is active (use global function if available)
+    const checkUserActive = () => {
+        if (typeof isUserActive === 'function') {
+            return isUserActive();
+        }
+        // Fallback if function not available
+        return document.visibilityState === 'visible';
+    };
+    
     // Consolidated visibility change handler
     const handleVisibilityChange = () => {
         isPageVisible = document.visibilityState === 'visible';
         
-        if (isPageVisible) {
-            // Page is visible, start polling with optimized intervals
+        if (isPageVisible && checkUserActive()) {
+            // Page is visible and user is active, start polling with optimized intervals
             if (Date.now() - lastFetchTime >= FETCH_COOLDOWN) {
                 fetchLiveTransactions();
                 lastFetchTime = Date.now();
             }
             updateInterval = setInterval(() => {
-                if (Date.now() - lastFetchTime >= FETCH_COOLDOWN) {
+                if (Date.now() - lastFetchTime >= FETCH_COOLDOWN && checkUserActive()) {
                     fetchLiveTransactions();
                     lastFetchTime = Date.now();
                 }
-            }, 10000); // Reduced from 30s to 10s for more responsive updates
-            timeUpdateInterval = setInterval(updateLiveFeedTimes, 30000); // Reduced from 60s to 30s
+            }, 30000); // Increased from 10s to 30s to reduce API calls
+            timeUpdateInterval = setInterval(updateLiveFeedTimes, 60000); // Increased back to 60s
         } else {
-            // Page is hidden, stop polling
+            // Page is hidden or user inactive, stop polling
             if (updateInterval) {
                 clearInterval(updateInterval);
                 updateInterval = null;

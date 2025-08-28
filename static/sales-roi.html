@@ -661,11 +661,67 @@
             }
         }
 
+        // User activity tracking
+        let lastUserActivity = Date.now();
+        let userInteractionDetected = false;
+        const USER_ACTIVITY_TIMEOUT = 300000; // 5 minutes of inactivity
+        
+        // Track user interactions
+        const trackUserActivity = () => {
+            lastUserActivity = Date.now();
+            userInteractionDetected = true;
+        };
+        
+        // Add event listeners for user activity
+        ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'].forEach(event => {
+            document.addEventListener(event, trackUserActivity, { passive: true });
+        });
+        
+        // Function to check if user is active
+        const isUserActive = () => {
+            return Date.now() - lastUserActivity < USER_ACTIVITY_TIMEOUT;
+        };
+        
+        // Enhanced fetch prices with user activity check
+        async function fetchPricesIfActive() {
+            if (!userInteractionDetected || !isUserActive() || document.visibilityState !== 'visible') {
+                console.log('Skipping price fetch - user inactive or page not visible');
+                return;
+            }
+            await fetchPrices();
+        }
+        
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            fetchPrices();
-            // Refresh prices every 5 minutes
-            setInterval(fetchPrices, 300000);
+            // Only fetch prices after user interaction
+            document.addEventListener('click', () => {
+                if (userInteractionDetected && isUserActive()) {
+                    fetchPrices();
+                }
+            }, { once: true });
+            
+            // Set up interval with user activity check
+            let priceInterval = setInterval(() => {
+                if (userInteractionDetected && isUserActive() && document.visibilityState === 'visible') {
+                    fetchPrices();
+                }
+            }, 600000); // Increased to 10 minutes
+            
+            // Stop interval when page becomes hidden
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'hidden') {
+                    if (priceInterval) {
+                        clearInterval(priceInterval);
+                        priceInterval = null;
+                    }
+                } else if (document.visibilityState === 'visible' && !priceInterval) {
+                    priceInterval = setInterval(() => {
+                        if (userInteractionDetected && isUserActive()) {
+                            fetchPrices();
+                        }
+                    }, 600000);
+                }
+            });
         });
     </script>
 </body>

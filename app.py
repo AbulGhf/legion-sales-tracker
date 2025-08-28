@@ -122,9 +122,14 @@ def cached(cache_key, timestamp_key):
         return decorated_function
     return decorator
 
-# Lit Protocol Functions
+# Lit Protocol Functions - DISABLED TO PREVENT ALCHEMY API CALLS
 def get_lit_usdc_deposits():
-    """Get all USDC transfers to the Lit Protocol sale contracts"""
+    """DISABLED: This function makes Alchemy API calls and has been disabled to save credits"""
+    print("WARNING: get_lit_usdc_deposits() called but disabled to prevent Alchemy API usage")
+    return []
+    
+def _get_lit_usdc_deposits_DISABLED():
+    """Get all USDC transfers to the Lit Protocol sale contracts - DISABLED"""
     
     all_transfers = []
     
@@ -211,7 +216,12 @@ def aggregate_lit_deposits(transfers):
     return deposits_list
 
 def get_recent_lit_transactions(limit=10):
-    """Get recent USDC transfers to the Lit Protocol sale contracts"""
+    """DISABLED: This function makes Alchemy API calls and has been disabled to save credits"""
+    print("WARNING: get_recent_lit_transactions() called but disabled to prevent Alchemy API usage")
+    return []
+    
+def _get_recent_lit_transactions_DISABLED(limit=10):
+    """Get recent USDC transfers to the Lit Protocol sale contracts - DISABLED"""
     
     # Get the transfers
     transfers = get_lit_usdc_deposits()
@@ -238,9 +248,14 @@ def get_recent_lit_transactions(limit=10):
     # Return the limited number
     return transactions[:limit]
 
-# Resolv Protocol Functions
+# Resolv Protocol Functions - DISABLED TO PREVENT ALCHEMY API CALLS
 def get_resolv_usdc_deposits():
-    """Get all USDC transfers to the Resolv Protocol sale contracts"""
+    """DISABLED: This function makes Alchemy API calls and has been disabled to save credits"""
+    print("WARNING: get_resolv_usdc_deposits() called but disabled to prevent Alchemy API usage")
+    return []
+    
+def _get_resolv_usdc_deposits_DISABLED():
+    """Get all USDC transfers to the Resolv Protocol sale contracts - DISABLED"""
     
     all_transfers = []
     
@@ -323,7 +338,12 @@ def aggregate_resolv_deposits(transfers):
     return deposits_list
 
 def get_recent_resolv_transactions(limit=10):
-    """Get recent USDC transfers to the Resolv Protocol sale contract"""
+    """DISABLED: This function makes Alchemy API calls and has been disabled to save credits"""
+    print("WARNING: get_recent_resolv_transactions() called but disabled to prevent Alchemy API usage")
+    return []
+    
+def _get_recent_resolv_transactions_DISABLED(limit=10):
+    """Get recent USDC transfers to the Resolv Protocol sale contract - DISABLED"""
     
     # Get the transfers
     transfers = get_resolv_usdc_deposits()
@@ -797,13 +817,11 @@ def get_all_individual_investments():
     except Exception as e:
         print(f"Error loading Fragmetric data for investments: {str(e)}")
     
-    # Add Session data (live)
+    # Add Session data (static)
     try:
-        transfers = get_session_usdc_deposits()
-        deposits_list = aggregate_session_deposits(transfers)
-        
-        for deposit in deposits_list:
-            all_investments.append(deposit["amount"])
+        if 'session' in STATIC_DATA and 'deposits' in STATIC_DATA['session']:
+            for deposit in STATIC_DATA['session']['deposits']:
+                all_investments.append(deposit["amount"])
     except Exception as e:
         print(f"Error loading Session data for investments: {str(e)}")
     
@@ -870,20 +888,18 @@ def global_stats():
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f"Error processing Fragmetric data: {e}")
     
-    # Add Session data (live)
+    # Add Session data (static)
     try:
-        transfers = get_session_usdc_deposits()
-        deposits_list = aggregate_session_deposits(transfers)
-        
-        for deposit in deposits_list:
-            address = deposit.get('address', '').lower()
-            if not address:
-                continue
+        if 'session' in STATIC_DATA and 'deposits' in STATIC_DATA['session']:
+            for deposit in STATIC_DATA['session']['deposits']:
+                address = deposit.get('address', '').lower()
+                if not address:
+                    continue
+                    
+                if address not in investor_sales_count:
+                    investor_sales_count[address] = set()
                 
-            if address not in investor_sales_count:
-                investor_sales_count[address] = set()
-            
-            investor_sales_count[address].add('session')
+                investor_sales_count[address].add('session')
     except Exception as e:
         print(f"Error processing Session data for global stats: {e}")
     
@@ -984,25 +1000,23 @@ def top_investors():
                 
     # Add Session data
     try:
-        transfers = get_session_usdc_deposits()
-        deposits_list = aggregate_session_deposits(transfers)
-        
-        for deposit in deposits_list:
-            address = deposit['address'].lower()
-            amount = deposit['amount']
-            
-            if address not in investors:
-                investors[address] = {
-                    'address': address,
-                    'total_invested': 0,
-                    'sales_participated': 0,
-                    'sales': {}
-                }
-            
-            # If this is the first time we're seeing this address for session
-            if 'session' not in investors[address]['sales']:
-                investors[address]['sales_participated'] += 1
-                investors[address]['sales']['session'] = amount
+        if 'session' in STATIC_DATA and 'deposits' in STATIC_DATA['session']:
+            for deposit in STATIC_DATA['session']['deposits']:
+                address = deposit['address'].lower()
+                amount = deposit['amount']
+                
+                if address not in investors:
+                    investors[address] = {
+                        'address': address,
+                        'total_invested': 0,
+                        'sales_participated': 0,
+                        'sales': {}
+                    }
+                
+                # If this is the first time we're seeing this address for session
+                if 'session' not in investors[address]['sales']:
+                    investors[address]['sales_participated'] += 1
+                    investors[address]['sales']['session'] = amount
             else:
                 # Add to existing amount for session
                 investors[address]['sales']['session'] += amount
@@ -1090,20 +1104,18 @@ def investor_detail(address):
     except Exception as e:
         print(f"Error loading Fragmetric data for investor detail: {str(e)}")
     
-    # Add Session data
+    # Add Session data (static)
     try:
-        transfers = get_session_usdc_deposits()
-        deposits_list = aggregate_session_deposits(transfers)
-        
-        for deposit in deposits_list:
-            if deposit['address'].lower() == address:
-                # Add to sales list
-                investor_data['sales'].append({
-                    'sale': 'session',
-                    'amount': deposit['amount']
-                })
-                investor_data['total_invested'] += deposit['amount']
-                break  # Found the investor in Session data, no need to continue
+        if 'session' in STATIC_DATA and 'deposits' in STATIC_DATA['session']:
+            for deposit in STATIC_DATA['session']['deposits']:
+                if deposit['address'].lower() == address:
+                    # Add to sales list
+                    investor_data['sales'].append({
+                        'sale': 'session',
+                        'amount': deposit['amount']
+                    })
+                    investor_data['total_invested'] += deposit['amount']
+                    break  # Found the investor in Session data, no need to continue
     except Exception as e:
         print(f"Error loading Session data for investor detail: {str(e)}")
     
@@ -1145,21 +1157,35 @@ def get_investor_details(address):
                 if deposit['address'].lower() == address.lower():
                     investor_data['total_investment'] += deposit['amount']
         
-        # Get current token price directly without making an HTTP request
-        try:
-            # Call CoinGecko API directly
-            api_url = f"https://api.coingecko.com/api/v3/coins/silencio?x_cg_demo_api_key=CG-4Fnx2x1Ga65oHP6HufVGevXh"
-            response = requests.get(api_url)
-            
-            if response.status_code == 200:
-                data = response.json()
-                current_price = data.get('market_data', {}).get('current_price', {}).get('usd', 0)
-            else:
-                print(f"Error fetching token price: {response.status_code}")
+        # Try to get cached price first, only fetch if cache is expired
+        current_price = 0
+        cache_key = 'silencio_price'
+        cache_timeout = 600  # 10 minutes cache
+        
+        if cache_key in cache and (time.time() - cache[f"{cache_key}_timestamp"]) < cache_timeout:
+            current_price = cache[cache_key]
+            print(f"Using cached Silencio price: ${current_price}")
+        else:
+            try:
+                # Call CoinGecko API directly only if cache is expired
+                api_url = f"https://api.coingecko.com/api/v3/coins/silencio?x_cg_demo_api_key=CG-4Fnx2x1Ga65oHP6HufVGevXh"
+                print(f"Fetching fresh Silencio price from API...")
+                response = requests.get(api_url)
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    current_price = data.get('market_data', {}).get('current_price', {}).get('usd', 0)
+                    
+                    # Cache the price
+                    cache[cache_key] = current_price
+                    cache[f"{cache_key}_timestamp"] = time.time()
+                    print(f"Cached new Silencio price: ${current_price}")
+                else:
+                    print(f"Error fetching token price: {response.status_code}")
+                    current_price = 0
+            except Exception as e:
+                print(f"Error fetching token price: {str(e)}")
                 current_price = 0
-        except Exception as e:
-            print(f"Error fetching token price: {str(e)}")
-            current_price = 0
             
         if not current_price:
             return jsonify({'error': 'Failed to fetch current token price'}), 500
@@ -1286,8 +1312,18 @@ def proxy_coingecko(coin_id):
 @app.route('/api/proxy/coingecko/price/<coin_id>', methods=['GET'])
 def proxy_coingecko_price(coin_id):
     try:
+        # Check cache first
+        cache_key = f'coingecko_price_{coin_id}'
+        cache_timeout = 300  # 5 minutes cache for price data
+        
+        if cache_key in cache and (time.time() - cache[f"{cache_key}_timestamp"]) < cache_timeout:
+            print(f"Returning cached price data for {coin_id}")
+            return jsonify(cache[cache_key])
+        
         # Get CoinGecko API key from request or use the default one
         api_key = request.args.get('api_key', 'CG-4Fnx2x1Ga65oHP6HufVGevXh')
+        
+        print(f"Fetching fresh price data for {coin_id} from CoinGecko API")
         
         # Make the request to CoinGecko
         api_url = f"https://api.coingecko.com/api/v3/coins/{coin_id}?x_cg_demo_api_key={api_key}"
@@ -1304,6 +1340,10 @@ def proxy_coingecko_price(coin_id):
             'ath': data.get('market_data', {}).get('ath', {}).get('usd', 0),
             'atl': data.get('market_data', {}).get('atl', {}).get('usd', 0)
         }
+        
+        # Cache the result
+        cache[cache_key] = price_data
+        cache[f"{cache_key}_timestamp"] = time.time()
         
         return jsonify(price_data)
     except Exception as e:
