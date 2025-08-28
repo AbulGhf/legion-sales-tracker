@@ -4,55 +4,87 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Legion Sale Trackers</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="legion.png">
+    <link rel="shortcut icon" type="image/png" href="legion.png">
+    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
         
-        /* Modern background gradient for the entire page */
-        body {
-            background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
-            color: white;
-            font-family: 'Rajdhani', sans-serif;
-            overflow-x: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        .welcome-card {
-            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            padding: 2.5rem;
-            max-width: 90%;
-            width: 600px;
+        body {
+            background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
+            background-attachment: fixed;
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Add subtle geometric background pattern - same as dashboard */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(255, 87, 34, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(255, 87, 34, 0.05) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.01) 50%, transparent 60%);
+            background-size: 400px 400px, 600px 600px, 100px 100px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Professional welcome container - consistent with dashboard */
+        .welcome-container {
+            max-width: 600px;
+            width: 90%;
+            background: rgba(20, 20, 30, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
             border: 1px solid rgba(255, 87, 34, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            padding: 3rem;
             text-align: center;
             position: relative;
             overflow: hidden;
-            animation: fadeIn 1s ease-out;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .welcome-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.6), transparent);
         }
 
+        /* Logo styling - consistent with dashboard */
         .welcome-logo {
-            height: 120px;
-            margin: 0 auto 1.5rem auto;
-            animation: pulse 2s infinite;
+            height: 80px;
+            width: 80px;
+            margin: 0 auto 2rem auto;
+            object-fit: contain;
+            filter: drop-shadow(0 0 10px rgba(255, 87, 34, 0.3));
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
+        /* Title styling with animated traveling light effect */
         .welcome-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 2.5rem;
@@ -60,48 +92,131 @@
             letter-spacing: 2px;
             text-transform: uppercase;
             color: #e0e0e0;
-            text-shadow: 0 0 15px rgba(255, 87, 34, 0.4);
+            text-shadow: 0 0 20px rgba(255, 87, 34, 0.4);
             margin-bottom: 1rem;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(
+                90deg,
+                #e0e0e0 0%,
+                #e0e0e0 30%,
+                #ff5722 40%,
+                #ffab40 50%,
+                #ff5722 60%,
+                #e0e0e0 70%,
+                #e0e0e0 100%
+            );
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: traveling-light 3s ease-in-out infinite;
+        }
+
+        @keyframes traveling-light {
+            0% {
+                background-position: -200% 0;
+            }
+            50% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Add glow effect overlay */
+        .welcome-title::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                transparent 30%,
+                rgba(255, 87, 34, 0.6) 40%,
+                rgba(255, 171, 64, 0.8) 50%,
+                rgba(255, 87, 34, 0.6) 60%,
+                transparent 70%,
+                transparent 100%
+            );
+            background-size: 200% 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: traveling-glow 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes traveling-glow {
+            0% {
+                background-position: -200% 0;
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                background-position: 200% 0;
+                opacity: 0;
+            }
         }
 
         .welcome-subtitle {
-            font-size: 1.2rem;
-            color: #b0b0b0;
-            margin-bottom: 2.5rem;
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 3rem;
+            line-height: 1.6;
+            font-weight: 400;
         }
 
+        /* Professional button - consistent with dashboard nav buttons */
         .start-button {
-            background: linear-gradient(145deg, #FF5722 0%, #FF7043 100%);
-            color: white;
-            font-family: 'Orbitron', sans-serif;
+            background: rgba(255, 87, 34, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 87, 34, 0.3);
+            color: #ffffff;
+            padding: 1rem 2.5rem;
+            border-radius: 16px;
+            font-size: 1rem;
             font-weight: 600;
-            padding: 1rem 3rem;
-            font-size: 1.2rem;
-            border-radius: 8px;
-            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4);
+            text-decoration: none;
+            transition: none; /* Remove all hover animations */
         }
 
-        .start-button:hover {
-            background: linear-gradient(145deg, #FF7043 0%, #FF8A65 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 87, 34, 0.5);
+        /* Simple static styling - no hover effects */
+        .start-button:active {
+            background: rgba(255, 87, 34, 0.15);
+            border-color: rgba(255, 87, 34, 0.4);
         }
 
+        /* Loading indicator */
         .loading-indicator {
             display: none;
-            text-align: center;
             margin-top: 2rem;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-indicator.show {
+            display: block;
+            opacity: 1;
         }
 
         .spinner {
-            border: 4px solid rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.1);
             border-radius: 50%;
-            border-top: 4px solid #FF5722;
+            border-top: 3px solid #ff5722;
             width: 40px;
             height: 40px;
             animation: spin 1s linear infinite;
@@ -114,68 +229,169 @@
         }
 
         .loading-text {
-            font-size: 1.1rem;
-            color: #FF5722;
+            font-size: 1rem;
+            color: #ff5722;
+            font-weight: 500;
         }
 
-        .background-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(255, 87, 34, 0.2) 0%, rgba(255, 87, 34, 0) 70%);
-            transform: translate(-50%, -50%);
-            z-index: -1;
-            opacity: 0.7;
-            animation: glow 8s ease-in-out infinite;
+        /* Feature highlights - improved layout */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin: 2rem 0;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
-        @keyframes glow {
-            0% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.5); }
-            100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+        .feature-item {
+            background: rgba(255, 87, 34, 0.05);
+            border: 1px solid rgba(255, 87, 34, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: #ff5722;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .welcome-container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            .welcome-title {
+                font-size: 2rem;
+                letter-spacing: 1px;
+            }
+
+            .welcome-subtitle {
+                font-size: 1rem;
+            }
+
+            .start-button {
+                padding: 0.875rem 2rem;
+                font-size: 0.9rem;
+            }
+
+            .welcome-logo {
+                height: 60px;
+                width: 60px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .welcome-title {
+                font-size: 1.75rem;
+            }
+
+            .welcome-container {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="welcome-card">
-        <div class="background-glow"></div>
+    <div class="welcome-container">
         <img src="legion.png" alt="Legion" class="welcome-logo">
-        <h1 class="welcome-title">Legion Sale Trackers</h1>
-        <p class="welcome-subtitle">Track on-chain investments from the best crypto sales</p>
+        <h1 class="welcome-title" data-text="Legion Sale Trackers">Legion Sale Trackers</h1>
+        <p class="welcome-subtitle">Professional on-chain investment tracking with real-time analytics and comprehensive portfolio insights</p>
+        
+                <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="feature-title">Sales ROI</div>
+                <div class="feature-desc">Calculate and track return on investment</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="feature-title">Real-time Analytics</div>
+                <div class="feature-desc">Live tracking of investment performance</div>
+            </div>
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="feature-title">Top Investors</div>
+                <div class="feature-desc">Track performance of elite crypto investors</div>
+            </div>
+        </div>
         
         <button id="startButton" class="start-button">
-            <i class="fas fa-rocket mr-2"></i> Launch Dashboard
+            <i class="fas fa-chart-bar"></i>
+            Access Dashboard
         </button>
         
         <div id="loadingIndicator" class="loading-indicator">
             <div class="spinner"></div>
-            <p class="loading-text">Initializing data...</p>
+            <p class="loading-text">Loading dashboard...</p>
+        </div>
+        
+        <!-- Branding -->
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255, 87, 34, 0.2);">
+            <p style="color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; margin: 0;">
+                Created by <a href="https://twitter.com/Magicianafk" target="_blank" rel="noopener noreferrer" style="color: #ff5722; text-decoration: none; font-weight: 600;">@Magicianafk</a> <span style="color: #ff6b6b;">❤️</span>
+            </p>
         </div>
     </div>
 
     <script>
-document.getElementById('startButton').addEventListener('click', function() {
-    // Show loading indicator
-    document.getElementById('startButton').style.display = 'none';
-    document.getElementById('loadingIndicator').style.display = 'block';
-    
-    // Set flags in localStorage to indicate dashboard is launched
-    localStorage.setItem('dashboardLaunched', 'true');
-    localStorage.setItem('dashboardLaunchTime', Date.now().toString());
-    
-    // Set a flag in sessionStorage to indicate we're coming from welcome page
-    sessionStorage.setItem('fromWelcome', 'true');
-    
-    // Also set a cookie for server-side check
-    document.cookie = 'app_initialized=true; max-age=3600; path=/';
-    
-    // Redirect to main dashboard after small delay
-    setTimeout(function() {
-        window.location.href = '/dashboard';
-    }, 1500);
-});
+        document.getElementById('startButton').addEventListener('click', function() {
+            // Hide button and show loading
+            const button = document.getElementById('startButton');
+            const loading = document.getElementById('loadingIndicator');
+            
+            button.style.opacity = '0.5';
+            button.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+                button.style.display = 'none';
+                loading.classList.add('show');
+            }, 300);
+            
+            // Set flags in localStorage to indicate dashboard is launched
+            localStorage.setItem('dashboardLaunched', 'true');
+            localStorage.setItem('dashboardLaunchTime', Date.now().toString());
+            
+            // Set a flag in sessionStorage to indicate we're coming from welcome page
+            sessionStorage.setItem('fromWelcome', 'true');
+            
+            // Also set a cookie for server-side check
+            document.cookie = 'app_initialized=true; max-age=3600; path=/';
+            
+            // Redirect to main dashboard after delay
+            setTimeout(function() {
+                window.location.href = '/dashboard';
+            }, 2000);
+        });
     </script>
 </body>
 </html>

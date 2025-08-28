@@ -11,224 +11,297 @@
     <!-- Load Tailwind -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
-        /* Basic styles */
-        body {
-            background-color: #181818;
-            background-image: linear-gradient(to bottom, #222222, #181818);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --primary-color: #fffdf0;
+            --secondary-color: #fff8dc;
+            --background-color: #101010;
+            --card-background: rgba(28, 28, 30, 0.7);
+            --header-gradient-start: rgba(255, 253, 240, 0.8);
+            --header-gradient-end: rgba(255, 248, 220, 0.8);
+            --profit-positive: #30d158;
+            --profit-negative: #ff453a;
         }
-        
-        /* Main container */
+
+        body {
+            background-color: var(--background-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23222222' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23333333'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .ios-glass {
+            background: rgba(45, 45, 45, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .neon-color {
+            color: var(--primary-color);
+        }
+
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
-        /* Back button */
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            transition: background-color 0.2s;
-        }
-        
-        .back-button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Header */
+
         .header-card {
-            background-color: #181818;
-            border-radius: 8px;
+            background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 253, 240, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
-        
+
         .header-title {
             font-size: 2rem;
-            font-weight: bold;
-            color: #fffdf0;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000;
         }
-        
-        /* Cards */
+
         .card {
-            background-color: #121827;
-            border-radius: 8px;
-            overflow: hidden;
+            background: var(--card-background);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 253, 240, 0.15);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
         }
-        
+
         .card-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 4px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
-        
+
         .card-subtitle {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
+            margin-bottom: 16px;
         }
-        
-        /* Amount display */
+
         .amount-display {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #fffdf0;
-            margin: 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 16px 0;
+            color: var(--primary-color);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
-        /* Stats box */
+
         .stats-section {
+            background: var(--card-background);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 16px;
             margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        
+
         .stats-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
         }
-        
+
         .stats-card {
-            background-color: #121827;
-            border-left: 4px solid #fffdf0;
-            padding: 15px;
-            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
-        
+
+        .stats-card:last-child {
+            border-bottom: none;
+        }
+
         .stats-label {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
         }
-        
+
         .stats-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fffdf0;
+            font-weight: 500;
         }
-        
-        /* Table */
+
         .table-container {
-            width: 100%;
             overflow-x: auto;
-            border-radius: 8px;
         }
-        
+
         .data-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
-        
-        .table-header {
-            background-color: #222222;
-            padding: 15px;
-            text-align: left;
-            font-weight: bold;
-        }
-        
+
         .table-header th {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(255, 253, 240, 0.1);
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: normal;
+            color: rgba(235, 235, 245, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
-        .table-header th:first-child {
-            border-top-left-radius: 8px;
-        }
-        
-        .table-header th:last-child {
-            border-top-right-radius: 8px;
-        }
-        
+
         .table-row td {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(255, 253, 240, 0.05);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
-        .table-row:nth-child(odd) {
-            background-color: rgba(32, 32, 32, 0.6);
-        }
-        
-        .table-row:nth-child(even) {
-            background-color: rgba(40, 40, 40, 0.6);
-        }
-        
+
         .table-row:hover {
-            background-color: rgba(50, 50, 50, 0.8);
+            background-color: rgba(255, 255, 255, 0.05);
         }
-        
-        /* Rank badge */
+
+        .address-cell a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .address-cell a:hover {
+            opacity: 0.8;
+        }
+
         .rank-badge {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 28px;
             height: 28px;
-            background-color: #fffdf0;
-            color: #181818;
-            font-weight: bold;
-            border-radius: 50%;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #000;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        
-        /* Address */
-        .address-cell {
-            font-family: monospace;
-            color: #fffdf0;
-        }
-        
-        .address-cell a:hover {
-            text-decoration: underline;
-        }
-        
-        /* Pagination */
+
         .pagination {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            gap: 10px;
+            padding: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
+
+        .pagination-info {
+            color: rgba(235, 235, 245, 0.6);
+        }
+
         .pagination-button {
-            background-color: #fffdf0;
-            color: #181818;
+            background: rgba(255, 253, 240, 0.2);
+            color: white;
             border: none;
             padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: bold;
+            border-radius: 10px;
             cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
-        
+
+        .pagination-button:hover:not(:disabled) {
+            background: rgba(255, 253, 240, 0.4);
+            transform: translateY(-1px);
+        }
+
         .pagination-button:disabled {
-            background-color: #444444;
-            color: #aaaaaa;
+            opacity: 0.5;
             cursor: not-allowed;
         }
-        
-        .pagination-info {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 8px 12px;
-            border-radius: 4px;
+
+        .calculator-input {
+            background: rgba(28, 28, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            width: 100%;
+            transition: all 0.2s ease;
         }
-        
-        /* Investor Modal Styles */
+
+        .calculator-input:focus {
+            outline: none;
+            border-color: rgba(255, 253, 240, 0.6);
+            box-shadow: 0 0 0 2px rgba(255, 253, 240, 0.3);
+        }
+
+        .tab-button {
+            background: rgba(28, 28, 30, 0.5);
+            color: rgba(235, 235, 245, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 16px;
+            flex: 1;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .tab-button.active {
+            background: rgba(255, 253, 240, 0.2);
+            color: white;
+            border-color: rgba(255, 253, 240, 0.4);
+        }
+
+        .result-card {
+            background: rgba(28, 28, 30, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .profit-positive {
+            color: var(--profit-positive);
+        }
+
+        .profit-negative {
+            color: var(--profit-negative);
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            margin-bottom: 16px;
+            background: rgba(44, 44, 46, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .back-button:hover {
+            background: rgba(60, 60, 67, 0.6);
+            transform: translateY(-1px);
+        }
+
         .investor-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -236,92 +309,84 @@
         }
 
         .investor-modal-content {
-            background-color: #1a1a1a;
-            border-radius: 8px;
+            background: rgba(28, 28, 30, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
             padding: 2rem;
             position: relative;
             width: 90%;
             max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .investor-modal-close {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
+            top: 16px;
+            right: 20px;
+            font-size: 24px;
             cursor: pointer;
-            color: #666;
+            color: rgba(235, 235, 245, 0.6);
             transition: color 0.2s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: rgba(60, 60, 67, 0.3);
         }
 
         .investor-modal-close:hover {
-            color: #fff;
-        }
-
-        .investor-details {
-            color: #fff;
+            color: white;
+            background: rgba(60, 60, 67, 0.5);
         }
 
         .investor-details h2 {
             font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: #fff;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .investor-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
+            gap: 16px;
+            margin: 20px 0;
         }
 
         .investor-stat {
-            background-color: #2a2a2a;
-            padding: 1rem;
-            border-radius: 6px;
+            background: rgba(44, 44, 46, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 16px;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .investor-stat-value {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
         .investor-stat-label {
-            color: #888;
-            font-size: 0.875rem;
-        }
-
-        /* Update address cell to use handleInvestorClick */
-        .address-cell a {
-            color: #3b82f6;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .address-cell a:hover {
-            text-decoration: underline;
-        }
-
-        /* Sales table in investor modal */
-        .sales-table-container {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 1rem;
-            border: 1px solid rgba(255, 253, 240, 0.1);
-            border-radius: 6px;
+            color: rgba(235, 235, 245, 0.6);
+            font-size: 0.9rem;
         }
 
         .giza-sale {
-            background-color: rgba(255, 253, 240, 0.1) !important;
+            background: rgba(255, 253, 240, 0.15);
+            border-left: 3px solid var(--primary-color);
+            border-radius: 8px;
         }
 
-        /* Sale type badge */
         .sale-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -331,211 +396,688 @@
         }
 
         .sale-badge.giza {
-            background-color: #fffdf0;
-            color: #121827;
+            background-color: var(--primary-color);
+            color: #000000;
         }
 
         .sale-badge.other {
             background-color: #2a2a2a;
-            color: #fffdf0;
+            color: var(--primary-color);
         }
 
-        /* Giza Token Calculator Styles */
-        .calculator-card {
-            background: linear-gradient(135deg, rgba(60, 45, 0, 0.7) 0%, rgba(85, 65, 0, 0.7) 100%);
-            border-color: rgba(255, 209, 102, 0.2);
-            padding: 1rem;
-            border-radius: 8px;
+        .sales-table-container {
+            max-height: 300px;
+            overflow-y: auto;
             margin-top: 1rem;
+            border: 1px solid rgba(255, 253, 240, 0.1);
+            border-radius: 12px;
         }
 
-        .calculator-input {
-            background: linear-gradient(135deg, rgba(25, 20, 0, 0.8) 0%, rgba(35, 30, 0, 0.8) 100%);
-            border-color: rgba(255, 209, 102, 0.3);
-            padding: 0.5rem;
-            border-radius: 4px;
+        .progress-container {
+            background: rgba(255, 253, 240, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 253, 240, 0.2);
+        }
+
+        .progress-bar {
             width: 100%;
+            height: 12px;
+            background: rgba(255, 253, 240, 0.15);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 12px 0;
+            position: relative;
         }
 
-        .result-card {
-            background: linear-gradient(135deg, rgba(40, 30, 0, 0.8) 0%, rgba(60, 45, 0, 0.8) 100%);
-            border-color: rgba(255, 209, 102, 0.1);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
+        .progress-base {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: rgba(255, 253, 240, 0.4);
+            border-radius: 6px;
+            transition: width 0.3s ease;
         }
 
-        .price-card {
-            border-left: 4px solid #ffd166;
-            padding: 0.5rem;
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 6px;
+            transition: width 0.3s ease;
+            position: relative;
         }
 
-        /* Tab button styles with Giza colors */
-        .tab-button {
-            padding: 0.5rem 1rem;
-            background: rgba(255, 209, 102, 0.1);
-            border: 1px solid rgba(255, 209, 102, 0.3);
-            color: #ffd166;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex: 1;
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .countdown-item {
             text-align: center;
+            background: rgba(44, 44, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 12px 8px;
+            border: 1px solid rgba(255, 253, 240, 0.1);
         }
 
-        .tab-button:first-child {
-            border-radius: 4px 0 0 4px;
+        .countdown-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
         }
 
-        .tab-button:last-child {
-            border-radius: 0 4px 4px 0;
+        .countdown-label {
+            font-size: 0.75rem;
+            color: rgba(235, 235, 245, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .tab-button.active {
-            background: rgba(255, 209, 102, 0.2);
-            border-color: #ffd166;
-        }
-
-        .tab-button:hover:not(.active) {
-            background: rgba(255, 209, 102, 0.15);
-        }
-
-        /* Color classes for P&L */
-        .profit-positive {
-            color: #10b981;
-        }
-
-        .profit-negative {
-            color: #ef4444;
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 16px;
+            }
+            
+            .header-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+            
+            .amount-display {
+                font-size: 2rem;
+            }
+            
+            .investor-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .countdown-number {
+                font-size: 1.25rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Root div where React will render -->
     <div id="app">Loading...</div>
-    
-    <!-- React app script -->
     <script type="text/babel">
-        // Main app component
-        function GizaTracker() {
-            // State hooks
+        const CONFIG = {
+            pageTitle: "Giza Legion Sale Tracker",
+            projectName: "Giza",
+            logoSrc: "giza.jpg",
+            logoAlt: "Giza Logo",
+            favicon: "giza.jpg",
+            apiEndpoints: {
+                totalInvestment: "/api/giza/total-investment",
+                deposits: "/api/giza/deposits",
+                investor: "/api/investor/:address",
+                price: "/api/proxy/coingecko/price/:tokenId",
+            },
+            coingecko: {
+                apiKey: "CG-4Fnx2x1Ga65oHP6HufVGevXh",
+                tokenId: "giza",
+            },
+            salePrice: 0.045,
+            colors: {
+                primary: "#fffdf0",
+                secondary: "#fff8dc",
+                background: "#101010",
+                cardBackground: "rgba(28, 28, 30, 0.7)",
+                headerGradientStart: "rgba(255, 253, 240, 0.8)",
+                headerGradientEnd: "rgba(255, 248, 220, 0.8)",
+                positiveProfit: "#30d158",
+                negativeProfit: "#ff453a",
+            },
+            depositsPerPage: 10,
+            backLink: "/dashboard",
+            backLinkText: "Back to Dashboard",
+            calculatorModes: ["amount", "tokens", "address"],
+            calculatorPlaceholders: {
+                amount: "e.g. 1000",
+                tokens: "e.g. 10000",
+                address: "0x...",
+            },
+            calculatorLabels: {
+                amount: "Enter USDC Investment Amount",
+                tokens: "Enter Token Amount",
+                address: "Enter Wallet Address",
+            },
+            // TGE occurred on May 20, 2025 at 13:50 (UTC+3) = 10:50 UTC
+            tgeDate: new Date('2025-05-20T10:50:00Z'),
+            // Full unlock after 24 months of linear vesting
+            fullUnlockDate: new Date('2027-05-20T10:50:00Z'),
+            tgeUnlockPercent: 20, // 20% unlocked at TGE
+            vestingDurationMonths: 24,
+        };
+
+        // Set page title and favicon dynamically
+        document.title = CONFIG.pageTitle;
+        if (CONFIG.favicon) {
+            const favicon = document.createElement("link");
+            favicon.rel = "icon";
+            favicon.href = CONFIG.favicon;
+            document.head.appendChild(favicon);
+        }
+
+        function VestingProgress() {
+            const [timeLeft, setTimeLeft] = React.useState({});
+            const [progress, setProgress] = React.useState(0);
+            const [unlockedPercent, setUnlockedPercent] = React.useState(0);
+
+            React.useEffect(() => {
+                const updateProgress = () => {
+                    const now = new Date();
+                    const tgeDate = CONFIG.tgeDate;
+                    const fullUnlockDate = CONFIG.fullUnlockDate;
+                    
+                    if (now < tgeDate) {
+                        // Before TGE
+                        setProgress(0);
+                        setUnlockedPercent(0);
+                        
+                        // Calculate time until TGE
+                        const difference = tgeDate.getTime() - now.getTime();
+                        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                        setTimeLeft({ days, hours, minutes, seconds });
+                    } else if (now >= fullUnlockDate) {
+                        // After full unlock
+                        setProgress(100);
+                        setUnlockedPercent(100);
+                        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                    } else {
+                        // During vesting period
+                        const totalDuration = fullUnlockDate.getTime() - tgeDate.getTime();
+                        const elapsed = now.getTime() - tgeDate.getTime();
+                        const vestingProgress = (elapsed / totalDuration) * 100;
+                        setProgress(Math.min(100, vestingProgress));
+                        
+                        // Calculate unlocked percentage: 20% at TGE + linear vesting
+                        const linearUnlock = (80 * vestingProgress) / 100; // 80% linear over time
+                        setUnlockedPercent(20 + linearUnlock); // 20% initial + linear
+                        
+                        // Calculate time until full unlock
+                        const difference = fullUnlockDate.getTime() - now.getTime();
+                        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                        setTimeLeft({ days, hours, minutes, seconds });
+                    }
+                };
+
+                updateProgress();
+                const interval = setInterval(updateProgress, 1000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const isAfterTGE = new Date() >= CONFIG.tgeDate;
+            const isFullyUnlocked = new Date() >= CONFIG.fullUnlockDate;
+
+            return (
+                <div className="progress-container">
+                    <div className="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 className="text-lg font-semibold" style={{color: '#fffdf0'}}>
+                                {!isAfterTGE ? '⏳ Time Until TGE' : 
+                                 isFullyUnlocked ? '🎉 Fully Unlocked!' : 
+                                 '📈 Vesting in Progress'}
+                            </h3>
+                            <p className="text-sm text-gray-400">
+                                {!isAfterTGE ? 'TGE on May 20, 2025 at 13:50 UTC+3' :
+                                 isFullyUnlocked ? 'All tokens have been unlocked' :
+                                 'Linear vesting over 24 months after 20% at TGE'}
+                            </p>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-2xl font-bold" style={{color: '#fffdf0'}}>
+                                {unlockedPercent.toFixed(1)}%
+                            </div>
+                            <div className="text-xs text-gray-400">Unlocked</div>
+                        </div>
+                    </div>
+                    
+                    <div className="progress-bar">
+                        <div 
+                            className="progress-base" 
+                            style={{ width: `${isAfterTGE ? CONFIG.tgeUnlockPercent : 0}%` }}
+                        ></div>
+                        <div 
+                            className="progress-fill" 
+                            style={{ width: `${unlockedPercent}%` }}
+                        ></div>
+                    </div>
+
+                    {!isFullyUnlocked && (
+                        <div className="countdown-grid">
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.days || 0}</div>
+                                <div className="countdown-label">Days</div>
+                            </div>
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.hours || 0}</div>
+                                <div className="countdown-label">Hours</div>
+                            </div>
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.minutes || 0}</div>
+                                <div className="countdown-label">Minutes</div>
+                            </div>
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.seconds || 0}</div>
+                                <div className="countdown-label">Seconds</div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="mt-4 text-center">
+                        <div className="text-sm text-gray-400">
+                            TGE: May 20, 2025 • 20% Immediate • 80% Linear over 24 months
+                        </div>
+                    </div>
+                    
+                    <div className="mt-4 p-4 rounded-lg border" style={{backgroundColor: 'rgba(255, 253, 240, 0.1)', borderColor: 'rgba(255, 253, 240, 0.2)'}}>
+                        <div className="text-sm font-semibold mb-2" style={{color: '#fffdf0'}}>Vesting Schedule</div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <div className="text-gray-400">TGE Unlock</div>
+                                <div className="font-medium">20% immediately</div>
+                            </div>
+                            <div>
+                                <div className="text-gray-400">Linear Vesting</div>
+                                <div className="font-medium">80% over 24 months</div>
+                            </div>
+                            <div>
+                                <div className="text-gray-400">Full Unlock</div>
+                                <div className="font-medium">May 20, 2027</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function PriceStats({ priceData, formatAmount }) {
+            return (
+                <div className="card p-4 mb-4">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                        <div className="flex items-center mb-4 md:mb-0">
+                            <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="w-8 h-8 mr-3" onError={(e) => e.target.src = CONFIG.logoSrc.replace('.jpg', '.png')} />
+                            <span className="text-lg font-semibold">{CONFIG.projectName} Price Stats</span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Sale Price</div>
+                                <div className="font-bold">{formatAmount(CONFIG.salePrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Current Price</div>
+                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.currentPrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">All-Time High</div>
+                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.athPrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">All-Time Low</div>
+                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.lowestPrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Current ROI</div>
+                                <div className={`font-bold ${priceData.currentRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                    {priceData.loading ? "Loading..." : priceData.error ? "N/A" : `${priceData.currentRoi.toFixed(2)}%`}
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">ATH ROI</div>
+                                <div className={`font-bold ${priceData.athRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                    {priceData.loading ? "Loading..." : priceData.error ? "N/A" : `${priceData.athRoi.toFixed(2)}%`}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function ROICalculator({ calculatorMode, setCalculatorMode, inputValue, setInputValue, handleCalculate, calculatorLoading, calculationResult, priceData, formatAmount }) {
+            return (
+                <div className="card p-4 mt-4">
+                    <div className="stats-title mb-4">ROI Calculator</div>
+                    <div className="card-subtitle mb-4">Calculate your investment performance</div>
+                    <div className="flex mb-4">
+                        {CONFIG.calculatorModes.map(mode => (
+                            <button
+                                key={mode}
+                                className={`tab-button ${calculatorMode === mode ? 'active' : ''}`}
+                                onClick={() => setCalculatorMode(mode)}
+                            >
+                                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="bg-opacity-30 bg-black p-4 rounded">
+                        <div>
+                            <label className="block text-sm mb-1">{CONFIG.calculatorLabels[calculatorMode]}</label>
+                            <input
+                                type={calculatorMode === 'address' ? 'text' : 'number'}
+                                className="calculator-input"
+                                placeholder={CONFIG.calculatorPlaceholders[calculatorMode]}
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                            />
+                        </div>
+                        <button
+                            className="pagination-button w-full mt-4"
+                            onClick={handleCalculate}
+                            disabled={calculatorLoading || !inputValue || priceData.loading}
+                        >
+                            {calculatorLoading ? 'Calculating...' : 'Calculate'}
+                        </button>
+                        {calculationResult && !calculationResult.error && (
+                            <div className="result-card mt-4">
+                                <div className="text-sm text-gray-400 mb-2">Investment Results</div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Investment:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.investmentAmount)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Tokens Received:</span>
+                                    <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()}</span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Current Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.currentValue)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Current P&L:</span>
+                                    <span className={`font-medium ${calculationResult.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.currentPnL)} ({calculationResult.currentPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>ATH Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.athValue)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>ATH P&L:</span>
+                                    <span className={`font-medium ${calculationResult.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.athPnL)} ({calculationResult.athPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Lowest Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.lowestValue)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Lowest P&L:</span>
+                                    <span className={`font-medium ${calculationResult.lowestPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.lowestPnL)} ({calculationResult.lowestPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                        {calculationResult && calculationResult.error && (
+                            <div className="result-card mt-4 text-red-400">
+                                {calculationResult.error}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function InvestorModal({ showModal, setShowModal, selectedInvestor, investorLoading, formatAmount }) {
+            return showModal ? (
+                <div className="investor-modal">
+                    <div className="investor-modal-content">
+                        <span className="investor-modal-close" onClick={() => setShowModal(false)}>×</span>
+                        <div className="investor-details">
+                            <h2>Investor Details</h2>
+                            {investorLoading && (
+                                <div className="flex items-center justify-center py-8">
+                                    <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                                </div>
+                            )}
+                            {!investorLoading && selectedInvestor && (
+                                <div>
+                                    <div className="mb-4">
+                                        <div className="text-gray-400 text-sm mb-1">Full Address</div>
+                                        <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
+                                    </div>
+                                    <div className="investor-stats">
+                                        <div className="investor-stat">
+                                            <div className="investor-stat-value">{formatAmount(selectedInvestor.giza_total)}</div>
+                                            <div className="investor-stat-label">{CONFIG.projectName} Investment</div>
+                                        </div>
+                                        <div className="investor-stat">
+                                            <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                            <div className="investor-stat-label">Total Invested (All Sales)</div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6">
+                                        <h3 className="font-bold text-lg mb-3">All Sales</h3>
+                                        <div className="sales-table-container">
+                                            <table className="data-table">
+                                                <thead>
+                                                    <tr className="table-header">
+                                                        <th>Sale</th>
+                                                        <th>Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {selectedInvestor.sales.map((sale, index) => (
+                                                        <tr key={index} className={`table-row ${sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? 'giza-sale' : ''}`}>
+                                                            <td>
+                                                                <span className={`sale-badge ${sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? 'giza' : 'other'}`}>
+                                                                    {sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? '★ ' : ''}{sale.sale.toUpperCase()}
+                                                                </span>
+                                                            </td>
+                                                            <td>{formatAmount(sale.amount)}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {!investorLoading && !selectedInvestor && (
+                                <div className="text-red-500 text-center py-4">
+                                    Failed to load investor details
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : null;
+        }
+
+        function TrackerApp() {
             const [deposits, setDeposits] = React.useState([]);
             const [totalInvestment, setTotalInvestment] = React.useState(0);
             const [loading, setLoading] = React.useState(true);
             const [error, setError] = React.useState(null);
             const [sortOrder, setSortOrder] = React.useState('desc');
             const [currentPage, setCurrentPage] = React.useState(1);
-            const [stats, setStats] = React.useState({
-                average: 0,
-                median: 0,
-                highest: 0,
-                lowest: 0
-            });
-            
-            // New state for token price data
+            const [stats, setStats] = React.useState({ average: 0, median: 0, highest: 0, lowest: 0 });
             const [priceData, setPriceData] = React.useState({
-                salePrice: 0.045, // Fixed sale price for Giza
+                salePrice: CONFIG.salePrice,
                 currentPrice: 0,
                 athPrice: 0,
                 lowestPrice: 0,
                 currentRoi: 0,
                 athRoi: 0,
                 loading: true,
-                error: null
+                error: null,
             });
-            
-            // Add new state for investor modal
             const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [showModal, setShowModal] = React.useState(false);
             const [investorLoading, setInvestorLoading] = React.useState(false);
-            
-            // Add state for calculator input
             const [inputValue, setInputValue] = React.useState('');
-            const [calculatorMode, setCalculatorMode] = React.useState('amount'); // 'amount' or 'address'
+            const [calculatorMode, setCalculatorMode] = React.useState(CONFIG.calculatorModes[0]);
             const [calculationResult, setCalculationResult] = React.useState(null);
             const [calculatorLoading, setCalculatorLoading] = React.useState(false);
-            
-            // Constants
-            const depositsPerPage = 15;
-            const COINGECKO_API_KEY = 'CG-4Fnx2x1Ga65oHP6HufVGevXh';
-            const GIZA_TOKEN_ID = 'giza';  // Correct token ID
-            
-            // Function to handle back navigation
-            const handleBack = () => {
-                window.location.href = '/dashboard';
-            };
-            
-            // Fetch data on component mount
+
             React.useEffect(() => {
                 fetchData();
                 fetchTokenPriceData();
             }, []);
-            
-            // Function to fetch token price data from CoinGecko
+
             const fetchTokenPriceData = async () => {
                 try {
                     setPriceData(prev => ({ ...prev, loading: true, error: null }));
-                    
-                    // Use our proxy endpoint instead of calling CoinGecko directly
-                    const apiUrl = `/api/proxy/coingecko/price/${GIZA_TOKEN_ID}`;
-                    console.log("Fetching Giza price data from proxy:", apiUrl);
+                    const apiUrl = CONFIG.apiEndpoints.price.replace(':tokenId', CONFIG.coingecko.tokenId);
                     const response = await fetch(apiUrl);
-                    
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch token price data: ${response.status}`);
-                    }
-                    
+                    if (!response.ok) throw new Error(`Failed to fetch token price data: ${response.status}`);
                     const data = await response.json();
-                    console.log("Received Giza price data:", data);
-                    
-                    // Extract price data directly from our simplified endpoint response
-                    let currentPrice = data.current_price || 0;
-                    let athPrice = data.ath || 0;
-                    let lowestPrice = data.atl || 0;
-                    
-                    const salePrice = 0.045; // Fixed sale price for Giza
-                    
-                    // Calculate ROIs with safety checks
-                    const currentRoi = currentPrice > 0 ? ((currentPrice - salePrice) / salePrice) * 100 : 0;
-                    const athRoi = athPrice > 0 ? ((athPrice - salePrice) / salePrice) * 100 : 0;
-                    
-                    // Update price data state
+                    const currentPrice = data.current_price || 0;
+                    const athPrice = data.ath || 0;
+                    const lowestPrice = data.atl || 0;
+                    const currentRoi = currentPrice > 0 ? ((currentPrice - CONFIG.salePrice) / CONFIG.salePrice) * 100 : 0;
+                    const athRoi = athPrice > 0 ? ((athPrice - CONFIG.salePrice) / CONFIG.salePrice) * 100 : 0;
                     setPriceData({
-                        salePrice,
+                        salePrice: CONFIG.salePrice,
                         currentPrice,
                         athPrice,
                         lowestPrice,
                         currentRoi,
                         athRoi,
                         loading: false,
-                        error: null
+                        error: null,
                     });
                 } catch (err) {
-                    console.error("Error fetching token price data:", err);
-                    setPriceData(prev => ({
-                        ...prev,
-                        loading: false,
-                        error: err.message
-                    }));
+                    setPriceData(prev => ({ ...prev, loading: false, error: err.message }));
                 }
             };
-            
-            // Calculate PnL at different price points
+
+            const fetchData = async () => {
+                try {
+                    setLoading(true);
+                    const totalRes = await fetch(CONFIG.apiEndpoints.totalInvestment);
+                    if (!totalRes.ok) throw new Error('Failed to fetch total investment');
+                    const totalData = await totalRes.json();
+                    setTotalInvestment(totalData.total);
+
+                    const depositsRes = await fetch(CONFIG.apiEndpoints.deposits);
+                    if (!depositsRes.ok) throw new Error('Failed to fetch deposits');
+                    const depositsData = await depositsRes.json();
+                    setDeposits(depositsData.deposits || []);
+
+                    if (depositsData.deposits && depositsData.deposits.length > 0) {
+                        const amounts = depositsData.deposits.map(d => d.amount);
+                        const sortedAmounts = [...amounts].sort((a, b) => a - b);
+                        setStats({
+                            average: amounts.reduce((a, b) => a + b, 0) / amounts.length,
+                            median: sortedAmounts.length % 2 === 0
+                                ? (sortedAmounts[sortedAmounts.length / 2 - 1] + sortedAmounts[sortedAmounts.length / 2]) / 2
+                                : sortedAmounts[Math.floor(sortedAmounts.length / 2)],
+                            highest: Math.max(...amounts),
+                            lowest: Math.min(...amounts),
+                        });
+                    }
+                    setLoading(false);
+                } catch (err) {
+                    setError(err.message);
+                    setLoading(false);
+                }
+            };
+
+            const formatAmount = (amount, isCurrency = true) => {
+                if (isCurrency) {
+                    return amount.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                return amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            };
+
+            const formatAddress = (address) => {
+                if (!address) return '';
+                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+            };
+
+            const sortedDeposits = React.useMemo(() => {
+                return [...deposits].sort((a, b) => sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount);
+            }, [deposits, sortOrder]);
+
+            const toggleSortOrder = () => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
+
+            const indexOfLastDeposit = currentPage * CONFIG.depositsPerPage;
+            const indexOfFirstDeposit = indexOfLastDeposit - CONFIG.depositsPerPage;
+            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
+            const totalPages = Math.max(1, Math.ceil(deposits.length / CONFIG.depositsPerPage));
+
+            const handleInvestorClick = async (address) => {
+                try {
+                    setInvestorLoading(true);
+                    setShowModal(true);
+                    setSelectedInvestor(null);
+                    const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', address));
+                    if (!response.ok) throw new Error(`Failed to fetch investor details: ${response.status}`);
+                    const data = await response.json();
+                    if (data.error) throw new Error(data.error);
+                    const allSales = data.sales;
+                    const gizaSales = allSales.filter(sale => sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase());
+                    const gizaTotal = gizaSales.reduce((sum, sale) => sum + sale.amount, 0);
+                    setSelectedInvestor({
+                        address,
+                        total_invested: allSales.reduce((sum, sale) => sum + sale.amount, 0),
+                        giza_total: gizaTotal,
+                        sales_participated: allSales.length,
+                        giza_sales: gizaSales.length,
+                        sales: allSales,
+                    });
+                } catch (error) {
+                    setSelectedInvestor(null);
+                } finally {
+                    setInvestorLoading(false);
+                }
+            };
+
             const calculatePnL = (investmentAmount) => {
                 const tokensReceived = investmentAmount / priceData.salePrice;
-                
                 const currentValue = tokensReceived * priceData.currentPrice;
                 const athValue = tokensReceived * priceData.athPrice;
                 const lowestValue = tokensReceived * priceData.lowestPrice;
-                
                 const currentPnL = currentValue - investmentAmount;
                 const currentPnLPercent = (currentPnL / investmentAmount) * 100;
-                
                 const athPnL = athValue - investmentAmount;
                 const athPnLPercent = (athPnL / investmentAmount) * 100;
-                
                 const lowestPnL = lowestValue - investmentAmount;
                 const lowestPnLPercent = (lowestPnL / investmentAmount) * 100;
-                
                 return {
                     tokensReceived,
                     currentValue,
@@ -546,198 +1088,43 @@
                     athPnLPercent,
                     lowestValue,
                     lowestPnL,
-                    lowestPnLPercent
+                    lowestPnLPercent,
                 };
             };
-            
-            // Fetch data on component mount
-            const fetchData = async () => {
-                try {
-                    setLoading(true);
-                    
-                    // Fetch total investment
-                    const totalRes = await fetch('/api/giza/total-investment');
-                    if (!totalRes.ok) {
-                        throw new Error('Failed to fetch total investment');
-                    }
-                    const totalData = await totalRes.json();
-                    setTotalInvestment(totalData.total);
-                    
-                    // Fetch deposits
-                    const depositsRes = await fetch('/api/giza/deposits');
-                    if (!depositsRes.ok) {
-                        throw new Error('Failed to fetch deposits');
-                    }
-                    const depositsData = await depositsRes.json();
-                    setDeposits(depositsData.deposits || []);
-                    
-                    // Calculate statistics
-                    if (depositsData.deposits && depositsData.deposits.length > 0) {
-                        const amounts = depositsData.deposits.map(d => d.amount);
-                        const sortedAmounts = [...amounts].sort((a, b) => a - b);
-                        
-                        setStats({
-                            average: amounts.reduce((a, b) => a + b, 0) / amounts.length,
-                            median: sortedAmounts.length % 2 === 0 
-                                ? (sortedAmounts[sortedAmounts.length/2 - 1] + sortedAmounts[sortedAmounts.length/2]) / 2 
-                                : sortedAmounts[Math.floor(sortedAmounts.length/2)],
-                            highest: Math.max(...amounts),
-                            lowest: Math.min(...amounts)
-                        });
-                    }
-                    
-                    setLoading(false);
-                } catch (err) {
-                    console.error("Error fetching data:", err);
-                    setError(err.message);
-                    setLoading(false);
-                }
-            };
-            
-            // Format date to a readable format
-            const formatDate = (dateString) => {
-                const options = { year: 'numeric', month: 'short', day: 'numeric' };
-                return new Date(dateString).toLocaleDateString(undefined, options);
-            };
-            
-            // Update the formatAmount function to optionally format as currency
-            const formatAmount = (amount, isCurrency = true) => {
-                if (isCurrency) {
-                    return amount.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                } else {
-                    return amount.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
-                }
-            };
-            
-            // Format wallet address to shorter format
-            const formatAddress = (address) => {
-                if (!address) return '';
-                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
-            };
-            
-            // Sort deposits based on current sort order
-            const sortedDeposits = React.useMemo(() => {
-                return [...deposits].sort((a, b) => {
-                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
-                });
-            }, [deposits, sortOrder]);
-            
-            // Toggle sort order
-            const toggleSortOrder = () => {
-                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            };
-            
-            // Pagination calculations
-            const indexOfLastDeposit = currentPage * depositsPerPage;
-            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
-            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
-            const totalPages = Math.max(1, Math.ceil(deposits.length / depositsPerPage));
-            
-            // Add handleInvestorClick function
-            const handleInvestorClick = async (address) => {
-                try {
-                    setInvestorLoading(true);
-                    setShowModal(true);
-                    setSelectedInvestor(null);
-                    
-                    console.log(`Fetching investor details for address: ${address}`);
-                    const response = await fetch(`/api/investor/${address}`);
-                    console.log('Response status:', response.status);
-                    
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Error response:', errorText);
-                        throw new Error(`Failed to fetch investor details: ${response.status} ${errorText}`);
-                    }
-                    
-                    const data = await response.json();
-                    console.log('Received data:', data);
-                    
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
 
-                    // Keep all sales data instead of filtering
-                    const allSales = data.sales;
-                    
-                    if (allSales.length === 0) {
-                        throw new Error('No sales found for this address');
-                    }
-
-                    // Calculate Giza sales for stats
-                    const gizaSales = allSales.filter(sale => sale.sale.toLowerCase() === 'giza');
-                    const gizaTotal = gizaSales.reduce((sum, sale) => sum + sale.amount, 0);
-
-                    setSelectedInvestor({
-                        address,
-                        total_invested: allSales.reduce((sum, sale) => sum + sale.amount, 0),
-                        giza_total: gizaTotal,
-                        sales_participated: allSales.length,
-                        giza_sales: gizaSales.length,
-                        sales: allSales
-                    });
-                } catch (error) {
-                    console.error('Error in handleInvestorClick:', error);
-                    setSelectedInvestor(null);
-                } finally {
-                    setInvestorLoading(false);
-                }
-            };
-
-            // Add closeModal function
-            const closeModal = () => {
-                setShowModal(false);
-                setSelectedInvestor(null);
-            };
-
-            // Handle calculator function
             const handleCalculate = async () => {
                 try {
                     setCalculatorLoading(true);
                     setCalculationResult(null);
-                    
                     if (calculatorMode === 'address') {
-                        // Address mode - fetch investor data
-                        const response = await fetch(`/api/investor/${inputValue.trim()}`);
-                        if (!response.ok) {
-                            throw new Error('Address not found or invalid');
-                        }
+                        const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', inputValue.trim()));
+                        if (!response.ok) throw new Error('Address not found or invalid');
                         const data = await response.json();
-                        
-                        const gizaSales = data.sales.filter(sale => sale.sale.toLowerCase() === 'giza');
+                        const gizaSales = data.sales.filter(sale => sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase());
                         const gizaTotal = gizaSales.reduce((sum, sale) => sum + sale.amount, 0);
-                        
                         if (gizaTotal === 0) {
-                            setCalculationResult({ error: 'This address did not participate in the Giza sale.' });
+                            setCalculationResult({ error: `This address did not participate in the ${CONFIG.projectName} sale.` });
                             return;
                         }
-                        
                         const pnlData = calculatePnL(gizaTotal);
-                        setCalculationResult({
-                            investmentAmount: gizaTotal,
-                            ...pnlData
-                        });
-                    } else {
-                        // Amount mode - calculate based on input
+                        setCalculationResult({ type: 'address', investmentAmount: gizaTotal, ...pnlData });
+                    } else if (calculatorMode === 'amount') {
                         const amount = parseFloat(inputValue);
                         if (isNaN(amount) || amount <= 0) {
                             setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
                             return;
                         }
-                        
                         const pnlData = calculatePnL(amount);
-                        setCalculationResult({
-                            investmentAmount: amount,
-                            ...pnlData
-                        });
+                        setCalculationResult({ type: 'amount', investmentAmount: amount, ...pnlData });
+                    } else {
+                        const tokens = parseFloat(inputValue);
+                        if (isNaN(tokens) || tokens <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid token amount greater than 0.' });
+                            return;
+                        }
+                        const usdcAmount = tokens * priceData.salePrice;
+                        const pnlData = calculatePnL(usdcAmount);
+                        setCalculationResult({ type: 'tokens', investmentAmount: usdcAmount, tokensReceived: tokens, ...pnlData });
                     }
                 } catch (error) {
                     setCalculationResult({ error: error.message });
@@ -745,282 +1132,87 @@
                     setCalculatorLoading(false);
                 }
             };
-            
-            // Show loading state
+
             if (loading) {
                 return (
                     <div className="flex items-center justify-center h-screen">
                         <div className="text-center p-8 card max-w-md">
                             <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                            <p className="mb-6">Loading Giza Sale Data...</p>
+                            <p className="mb-6">Loading {CONFIG.projectName} Sale Data...</p>
                         </div>
                     </div>
                 );
             }
-            
-            // Show error state
+
             if (error) {
                 return (
                     <div className="main-container">
                         <div className="card p-8 text-center">
                             <h2 className="text-xl text-red-500 mb-4">Error</h2>
                             <p>{error}</p>
-                            <button 
-                                onClick={fetchData} 
-                                className="pagination-button mt-4"
-                            >
-                                Retry
-                            </button>
+                            <button onClick={fetchData} className="pagination-button mt-4">Retry</button>
                         </div>
                     </div>
                 );
             }
-            
-            // Main component render
+
             return (
                 <div className="main-container">
-                    {/* Back to Home Button */}
-                    <a href="/dashboard" className="back-button">
+                    <a href={CONFIG.backLink} className="back-button">
                         <i className="fas fa-arrow-left mr-2"></i>
-                        Back to Dashboard
+                        {CONFIG.backLinkText}
                     </a>
-                    
-                    {/* Header */}
                     <div className="header-card">
-                        <div className="header-title">Giza</div>
-                        <img src="giza.jpg" alt="Giza Logo" className="h-16" />
+                        <div className="header-title">{CONFIG.projectName}</div>
+                        <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="h-16" />
                     </div>
                     
-                    {/* Token Price Stats Card */}
-                    <div className="card p-4 mb-4">
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-                            <div className="flex items-center mb-4 md:mb-0">
-                                <img src="/static/giza.jpg" alt="Giza Logo" className="w-8 h-8 mr-3" onerror="this.src='giza.png'" />
-                                <span className="text-lg font-semibold">Giza Price Stats</span>
-                            </div>
-                            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
-                                <div className="text-center">
-                                    <div className="text-gray-400 text-sm">Sale Price</div>
-                                    <div className="font-bold">$0.045</div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-gray-400 text-sm">Current Price</div>
-                                    <div className="font-bold">
-                                        {priceData.loading 
-                                            ? "Loading..." 
-                                            : priceData.error 
-                                                ? "N/A" 
-                                                : formatAmount(priceData.currentPrice, true)}
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-gray-400 text-sm">All-Time High</div>
-                                    <div className="font-bold">
-                                        {priceData.loading 
-                                            ? "Loading..." 
-                                            : priceData.error 
-                                                ? "N/A" 
-                                                : formatAmount(priceData.athPrice, true)}
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-gray-400 text-sm">All-Time Low</div>
-                                    <div className="font-bold">
-                                        {priceData.loading 
-                                            ? "Loading..." 
-                                            : priceData.error 
-                                                ? "N/A" 
-                                                : formatAmount(priceData.lowestPrice, true)}
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-gray-400 text-sm">Current ROI</div>
-                                    <div className={`font-bold ${priceData.currentRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                        {priceData.loading 
-                                            ? "Loading..." 
-                                            : priceData.error 
-                                                ? "N/A" 
-                                                : `${priceData.currentRoi.toFixed(2)}%`}
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-gray-400 text-sm">ATH ROI</div>
-                                    <div className={`font-bold ${priceData.athRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                        {priceData.loading 
-                                            ? "Loading..." 
-                                            : priceData.error 
-                                                ? "N/A" 
-                                                : `${priceData.athRoi.toFixed(2)}%`}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {/* Main Content Grid */}
+                    <VestingProgress />
+                    <PriceStats priceData={priceData} formatAmount={formatAmount} />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Left Column - Stats */}
                         <div className="md:col-span-1">
-                            {/* Total USDC Card */}
                             <div className="card p-6 text-center">
                                 <div className="card-title">Total USDC Invested</div>
                                 <div className="amount-display">{formatAmount(totalInvestment)}</div>
                                 <div className="text-gray-400 text-sm">{deposits.length} unique addresses</div>
                             </div>
-                            
-                            {/* Stats section */}
                             <div className="stats-section">
                                 <div className="stats-title">Investment Stats</div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Average</div>
                                     <div className="stats-value">{formatAmount(stats.average)}</div>
                                 </div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Median</div>
                                     <div className="stats-value">{formatAmount(stats.median)}</div>
                                 </div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Highest</div>
                                     <div className="stats-value">{formatAmount(stats.highest)}</div>
                                 </div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Lowest</div>
                                     <div className="stats-value">{formatAmount(stats.lowest)}</div>
                                 </div>
                             </div>
-                            
-                            {/* ROI Calculator */}
-                            <div className="card p-4 mt-4">
-                                <div className="stats-title mb-4">ROI Calculator</div>
-                                <div className="card-subtitle mb-4">Calculate your investment performance</div>
-                                
-                                <div className="flex mb-4">
-                                    <button 
-                                        className={`tab-button ${calculatorMode === 'amount' ? 'active' : ''}`}
-                                        onClick={() => setCalculatorMode('amount')}
-                                    >
-                                        USDC Amount
-                                    </button>
-                                    <button 
-                                        className={`tab-button ${calculatorMode === 'address' ? 'active' : ''}`}
-                                        onClick={() => setCalculatorMode('address')}
-                                    >
-                                        Wallet Address
-                                    </button>
-                                </div>
-                                
-                                <div className="bg-opacity-30 bg-black p-4 rounded">
-                                    {calculatorMode === 'amount' ? (
-                                        <div>
-                                            <label className="block text-sm mb-1">Enter USDC Investment Amount</label>
-                                            <input 
-                                                type="number" 
-                                                className="calculator-input" 
-                                                placeholder="e.g. 1000" 
-                                                value={inputValue}
-                                                onChange={(e) => setInputValue(e.target.value)}
-                                            />
-                                        </div>
-                                    ) : (
-                                        <div>
-                                            <label className="block text-sm mb-1">Enter Wallet Address</label>
-                                            <input 
-                                                type="text" 
-                                                className="calculator-input" 
-                                                placeholder="0x..." 
-                                                value={inputValue}
-                                                onChange={(e) => setInputValue(e.target.value)}
-                                            />
-                                        </div>
-                                    )}
-                                    
-                                    <button 
-                                        className="pagination-button w-full mt-4"
-                                        onClick={handleCalculate}
-                                        disabled={calculatorLoading || !inputValue || priceData.loading}
-                                    >
-                                        {calculatorLoading ? 'Calculating...' : 'Calculate'}
-                                    </button>
-                                    
-                                    {calculationResult && !calculationResult.error && (
-                                        <div className="result-card mt-4">
-                                            <div className="text-sm text-gray-400 mb-2">Investment Results</div>
-                                            
-                                            <div className="flex justify-between mb-2">
-                                                <span>Investment:</span>
-                                                <span className="font-medium">{formatAmount(calculationResult.investmentAmount)}</span>
-                                            </div>
-                                            
-                                            <div className="flex justify-between mb-2">
-                                                <span>Tokens Received:</span>
-                                                <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()}</span>
-                                            </div>
-                                            
-                                            <div className="border-t border-gray-700 my-2"></div>
-                                            
-                                            <div className="flex justify-between mb-2">
-                                                <span>Current Value:</span>
-                                                <span className="font-medium">{formatAmount(calculationResult.currentValue)}</span>
-                                            </div>
-                                            
-                                            <div className="flex justify-between mb-2">
-                                                <span>Current P&L:</span>
-                                                <span className={`font-medium ${calculationResult.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
-                                                    {formatAmount(calculationResult.currentPnL)} ({calculationResult.currentPnLPercent.toFixed(2)}%)
-                                                </span>
-                                            </div>
-                                            
-                                            <div className="border-t border-gray-700 my-2"></div>
-                                            
-                                            <div className="flex justify-between mb-2">
-                                                <span>ATH Value:</span>
-                                                <span className="font-medium">{formatAmount(calculationResult.athValue)}</span>
-                                            </div>
-                                            
-                                            <div className="flex justify-between mb-2">
-                                                <span>ATH P&L:</span>
-                                                <span className={`font-medium ${calculationResult.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
-                                                    {formatAmount(calculationResult.athPnL)} ({calculationResult.athPnLPercent.toFixed(2)}%)
-                                                </span>
-                                            </div>
-                                            
-                                            <div className="border-t border-gray-700 my-2"></div>
-                                            
-                                            <div className="flex justify-between mb-2">
-                                                <span>Lowest Value:</span>
-                                                <span className="font-medium">{formatAmount(calculationResult.lowestValue)}</span>
-                                            </div>
-                                            
-                                            <div className="flex justify-between">
-                                                <span>Lowest P&L:</span>
-                                                <span className={`font-medium ${calculationResult.lowestPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
-                                                    {formatAmount(calculationResult.lowestPnL)} ({calculationResult.lowestPnLPercent.toFixed(2)}%)
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-                                    
-                                    {calculationResult && calculationResult.error && (
-                                        <div className="result-card mt-4 text-red-400">
-                                            {calculationResult.error}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                            <ROICalculator
+                                calculatorMode={calculatorMode}
+                                setCalculatorMode={setCalculatorMode}
+                                inputValue={inputValue}
+                                setInputValue={setInputValue}
+                                handleCalculate={handleCalculate}
+                                calculatorLoading={calculatorLoading}
+                                calculationResult={calculationResult}
+                                priceData={priceData}
+                                formatAmount={formatAmount}
+                            />
                         </div>
-                        
-                        {/* Right Column - Investors Table */}
                         <div className="md:col-span-2">
                             <div className="card">
                                 <div className="p-4 border-b border-gray-800">
                                     <div className="card-title">Top Investors</div>
                                     <div className="card-subtitle">Ranked by investment amount</div>
                                 </div>
-                                
                                 <div className="table-container">
                                     <table className="data-table">
                                         <thead>
@@ -1055,19 +1247,13 @@
                                                             {formatAddress(deposit.address)}
                                                         </a>
                                                     </td>
-                                                    <td className="text-right font-mono">
-                                                        {formatAmount(deposit.amount)}
-                                                    </td>
-                                                    <td className="text-right">
-                                                        {((deposit.amount / totalInvestment) * 100).toFixed(2)}%
-                                                    </td>
+                                                    <td className="text-right font-mono">{formatAmount(deposit.amount)}</td>
+                                                    <td className="text-right">{((deposit.amount / totalInvestment) * 100).toFixed(2)}%</td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                     </table>
                                 </div>
-                                
-                                {/* Pagination */}
                                 {totalPages > 1 && (
                                     <div className="pagination">
                                         <button
@@ -1077,11 +1263,7 @@
                                         >
                                             Previous
                                         </button>
-                                        
-                                        <div className="pagination-info">
-                                            {currentPage} of {totalPages}
-                                        </div>
-                                        
+                                        <div className="pagination-info">{currentPage} of {totalPages}</div>
                                         <button
                                             onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
                                             disabled={currentPage === totalPages}
@@ -1094,79 +1276,18 @@
                             </div>
                         </div>
                     </div>
-                    
-                    {/* Investor Modal */}
-                    {showModal && (
-                        <div className="investor-modal">
-                            <div className="investor-modal-content">
-                                <span className="investor-modal-close" onClick={closeModal}>&times;</span>
-                                <div className="investor-details">
-                                    <h2>Investor Details</h2>
-                                    {investorLoading && (
-                                        <div className="flex items-center justify-center py-8">
-                                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
-                                        </div>
-                                    )}
-                                    {!investorLoading && selectedInvestor && (
-                                        <div>
-                                            <div className="mb-4">
-                                                <div className="text-gray-400 text-sm mb-1">Full Address</div>
-                                                <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
-                                            </div>
-                                            <div className="investor-stats">
-                                                <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.giza_total)}</div>
-                                                    <div className="investor-stat-label">Giza Investment</div>
-                                                </div>
-                                                <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
-                                                    <div className="investor-stat-label">Total Invested (All Sales)</div>
-                                                </div>
-                                            </div>
-                                            
-                                            {/* Sales Table */}
-                                            <div className="mt-6">
-                                                <h3 className="font-bold text-lg mb-3">All Sales</h3>
-                                                <div className="sales-table-container">
-                                                    <table className="data-table">
-                                                        <thead>
-                                                            <tr className="table-header">
-                                                                <th>Sale</th>
-                                                                <th>Amount</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {selectedInvestor.sales.map((sale, index) => (
-                                                                <tr key={index} className={`table-row ${sale.sale.toLowerCase() === 'giza' ? 'giza-sale' : ''}`}>
-                                                                    <td>
-                                                                        <span className={`sale-badge ${sale.sale.toLowerCase() === 'giza' ? 'giza' : 'other'}`}>
-                                                                            {sale.sale.toLowerCase() === 'giza' ? '★ ' : ''}{sale.sale.toUpperCase()}
-                                                                        </span>
-                                                                    </td>
-                                                                    <td>{formatAmount(sale.amount)}</td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                    {!investorLoading && !selectedInvestor && (
-                                        <div className="text-red-500 text-center py-4">
-                                            Failed to load investor details
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <InvestorModal
+                        showModal={showModal}
+                        setShowModal={setShowModal}
+                        selectedInvestor={selectedInvestor}
+                        investorLoading={investorLoading}
+                        formatAmount={formatAmount}
+                    />
                 </div>
             );
         }
-        
-        // Render the app to the DOM
-        ReactDOM.render(<GizaTracker />, document.getElementById('app'));
+
+        ReactDOM.render(<TrackerApp />, document.getElementById('app'));
     </script>
 </body>
 </html>

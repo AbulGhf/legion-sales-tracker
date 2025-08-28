@@ -10,347 +10,361 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
     <!-- Load Tailwind -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
-    <!-- Load Font Awesome for icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
-        /* Basic styles */
+        :root {
+            --primary-color: #6696ae;
+            --secondary-color: #88b8d0;
+            --background-color: #101010;
+            --card-background: rgba(28, 28, 30, 0.7);
+            --header-gradient-start: rgba(102, 150, 174, 0.8);
+            --header-gradient-end: rgba(126, 182, 211, 0.8);
+            --profit-positive: #30d158;
+            --profit-negative: #ff453a;
+        }
+
         body {
-            background-color: #1a2436;
-            background-image: linear-gradient(to bottom, #1a2436, #121827);
+            background-color: var(--background-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23222' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23333'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
-        
-        /* Resolv color */
+
+        .ios-glass {
+            background: rgba(45, 45, 45, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(102, 150, 174, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
         .neon-color {
-            color: #6696ae;
+            color: var(--primary-color);
         }
-        
-        /* Main container */
+
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
-        /* Header card */
+
         .header-card {
-            background: linear-gradient(90deg, #4c7889 0%, #6696ae 100%);
-            border-radius: 8px;
+            background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
             border: 1px solid rgba(102, 150, 174, 0.15);
-            box-shadow: 0 4px 12px rgba(102, 150, 174, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
-        
+
         .header-title {
             font-size: 2rem;
-            font-weight: bold;
-            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000;
         }
-        
-        /* Cards */
+
         .card {
-            background: linear-gradient(145deg, #15151f 0%, #1a1a25 100%);
-            border-radius: 8px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 87, 34, 0.1);
+            background: var(--card-background);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(102, 150, 174, 0.08);
             overflow: hidden;
         }
-        
+
         .card-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 4px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
-        
+
         .card-subtitle {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
+            margin-bottom: 16px;
         }
-        
-        /* Amount display */
+
         .amount-display {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #6696ae;
-            margin: 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 16px 0;
+            color: var(--primary-color);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
-        /* Stats section */
+
         .stats-section {
+            background: var(--card-background);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 16px;
             margin-top: 20px;
+            border: 1px solid rgba(102, 150, 174, 0.08);
         }
-        
+
         .stats-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .stats-card {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(102, 150, 174, 0.06);
         }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-top: 1rem;
+
+        .stats-card:last-child {
+            border-bottom: none;
         }
-        
-        .stats-card {
-            background: linear-gradient(145deg, #1d1d28 0%, #242433 100%);
-            border-radius: 8px;
-            padding: 1rem;
-            text-align: center;
-        }
-        
+
         .stats-label {
-            color: #888;
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
+            color: rgba(235, 235, 245, 0.6);
         }
-        
+
         .stats-value {
-            color: #fff;
-            font-size: 1.25rem;
-            font-weight: bold;
+            font-weight: 500;
+            color: var(--primary-color);
         }
-        
-        /* Table */
+
         .table-container {
-            width: 100%;
             overflow-x: auto;
-            border-radius: 8px;
         }
-        
+
         .data-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
-        
-        .table-header {
-            background-color: rgba(102, 150, 174, 0.8);
-            padding: 15px;
-            text-align: left;
-            font-weight: bold;
-        }
-        
+
         .table-header th {
-            padding: 12px 15px;
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: normal;
+            color: rgba(235, 235, 245, 0.6);
             border-bottom: 1px solid rgba(102, 150, 174, 0.1);
         }
-        
-        .table-header th:first-child {
-            border-top-left-radius: 8px;
-        }
-        
-        .table-header th:last-child {
-            border-top-right-radius: 8px;
-        }
-        
+
         .table-row td {
-            padding: 12px 15px;
+            padding: 12px 16px;
             border-bottom: 1px solid rgba(102, 150, 174, 0.05);
         }
-        
-        .table-row:nth-child(odd) {
-            background-color: rgba(30, 30, 30, 0.6);
-        }
-        
-        .table-row:nth-child(even) {
-            background-color: rgba(40, 40, 40, 0.6);
-        }
-        
+
         .table-row:hover {
-            background-color: rgba(102, 150, 174, 0.2);
+            background-color: rgba(102, 150, 174, 0.05);
         }
-        
-        /* Rank badge */
+
+        .address-cell a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .address-cell a:hover {
+            opacity: 0.8;
+        }
+
         .rank-badge {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 28px;
             height: 28px;
-            background-color: #6696ae;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: #fff;
-            font-weight: bold;
-            border-radius: 50%;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        
-        /* Address */
-        .address-cell {
-            font-family: monospace;
-            color: #fff;
-        }
-        
-        .address-cell a:hover {
-            text-decoration: underline;
-            color: #6696ae;
-        }
-        
-        /* Pagination */
+
         .pagination {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            gap: 10px;
+            padding: 16px;
+            border-top: 1px solid rgba(102, 150, 174, 0.05);
         }
-        
+
+        .pagination-info {
+            color: rgba(235, 235, 245, 0.6);
+        }
+
         .pagination-button {
-            background-color: #6696ae;
-            color: #fff;
-            border: none;
+            background: rgba(102, 150, 174, 0.1);
+            color: white;
+            border: 1px solid rgba(102, 150, 174, 0.2);
             padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: bold;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
-        
-        .pagination-button:hover {
-            background-color: #7aa7bd;
+
+        .pagination-button:hover:not(:disabled) {
+            background: rgba(102, 150, 174, 0.2);
+            border-color: var(--primary-color);
         }
-        
+
         .pagination-button:disabled {
-            background-color: #4c7889;
-            color: #d9e6ec;
+            opacity: 0.5;
             cursor: not-allowed;
         }
-        
-        .pagination-info {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 8px 12px;
-            border-radius: 4px;
-        }
-        
-        /* Note box */
-        .note-box {
-            background-color: rgba(102, 150, 174, 0.1);
-            border-left: 3px solid #6696ae;
-            padding: 12px 16px;
-            margin: 12px 0;
-            font-size: 0.9rem;
-        }
-        
-        /* Back button */
+
         .back-button {
             display: inline-flex;
             align-items: center;
-            background-color: rgba(255, 255, 255, 0.1);
+            background: rgba(102, 150, 174, 0.1);
             color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            transition: background-color 0.2s;
-        }
-        
-        .back-button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Live Feed Styling */
-        .live-feed-card {
-            background-color: #1a1a1a;
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            border: 1px solid rgba(102, 150, 174, 0.15);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .live-feed-header {
-            padding: 15px;
-            border-bottom: 1px solid rgba(102, 150, 174, 0.15);
-        }
-        
-        .live-feed {
-            max-height: 320px;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #6696ae #1a1a1a;
-        }
-        
-        .live-feed::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .live-feed::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 3px;
-        }
-        
-        .live-feed::-webkit-scrollbar-thumb {
-            background-color: #6696ae;
-            border-radius: 3px;
-        }
-        
-        .feed-item {
-            background: rgba(40, 40, 40, 0.6);
-            margin: 4px;
-            border-radius: 4px;
-            padding: 10px 15px;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-        }
-        
-        .feed-item:hover {
-            background: rgba(50, 50, 50, 0.8);
-        }
-        
-        .feed-logo {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            margin-right: 12px;
-        }
-        
-        .feed-address {
-            color: #b0b0b0;
-            font-family: monospace;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
             text-decoration: none;
-            transition: color 0.2s ease;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 1px solid rgba(102, 150, 174, 0.2);
+        }
+
+        .back-button:hover {
+            background: rgba(102, 150, 174, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .profit-positive {
+            color: var(--profit-positive);
+        }
+
+        .profit-negative {
+            color: var(--profit-negative);
+        }
+
+        .calculate-button {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 16px;
+        }
+
+        .calculate-button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 150, 174, 0.3);
+        }
+
+        .calculate-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .tab-button {
+            background: transparent;
+            border: 1px solid rgba(102, 150, 174, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            text-align: center;
+            min-width: 90px;
             flex: 1;
+        }
+
+        .tab-button.active {
+            background: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(102, 150, 174, 0.3);
+        }
+
+        .tab-button:hover:not(.active) {
+            background: rgba(102, 150, 174, 0.1);
+            border-color: rgba(102, 150, 174, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .tab-buttons-container {
             display: flex;
-            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            width: 100%;
         }
-        
-        .feed-address:hover {
-            color: #ffffff;
-            text-decoration: underline;
+
+        .calculator-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 147, 30, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            font-family: inherit;
         }
-        
-        .feed-amount {
-            font-weight: 700;
-            margin-left: auto;
-            margin-right: 10px;
-            font-family: monospace;
-            color: #6696ae;
+
+        .calculator-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 150, 174, 0.15);
+            background: rgba(255, 255, 255, 0.12);
         }
-        
-        .feed-time {
-            color: #777;
+
+        .calculator-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+        }
+
+        .result-card {
+            background: rgba(102, 150, 174, 0.1);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(102, 150, 174, 0.2);
+        }
+
+        .sale-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
             font-size: 0.75rem;
-            width: 60px;
-            text-align: right;
+            font-weight: 600;
+            text-transform: uppercase;
         }
-        
-        /* Investor Modal Styles */
+
+        .sale-badge.resolv {
+            background-color: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .sale-badge.other {
+            background-color: #2a2a2a;
+            color: var(--primary-color);
+        }
+
         .investor-modal {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -358,155 +372,637 @@
         }
 
         .investor-modal-content {
-            background-color: #1a1a1a;
-            border-radius: 8px;
-            padding: 2rem;
-            position: relative;
-            width: 90%;
+            background: var(--card-background);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 16px;
+            padding: 24px;
             max-width: 600px;
+            width: 90%;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            border: 1px solid rgba(102, 150, 174, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .investor-modal-close {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
+            top: 16px;
+            right: 16px;
+            font-size: 24px;
             cursor: pointer;
-            color: #666;
+            color: rgba(235, 235, 245, 0.6);
             transition: color 0.2s;
         }
 
         .investor-modal-close:hover {
-            color: #fff;
-        }
-
-        .investor-details {
-            color: #fff;
+            color: var(--primary-color);
         }
 
         .investor-details h2 {
             font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: #fff;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(102, 150, 174, 0.1);
         }
 
         .investor-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
+            gap: 16px;
+            margin: 20px 0;
         }
 
         .investor-stat {
-            background-color: #2a2a2a;
-            padding: 1rem;
-            border-radius: 6px;
+            background: rgba(44, 44, 46, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 16px;
             text-align: center;
+            border: 1px solid rgba(102, 150, 174, 0.08);
         }
 
         .investor-stat-value {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
         .investor-stat-label {
-            color: #888;
-            font-size: 0.875rem;
+            color: rgba(235, 235, 245, 0.6);
+            font-size: 0.9rem;
         }
 
-        /* Update address cell to use handleInvestorClick */
-        .address-cell a {
-            color: #3b82f6;
-            text-decoration: none;
-            cursor: pointer;
+        .resolv-sale {
+            background: rgba(102, 150, 174, 0.15);
+            border-left: 3px solid var(--primary-color);
+            border-radius: 8px;
         }
 
-        .address-cell a:hover {
-            text-decoration: underline;
+        .progress-container {
+            background: rgba(102, 150, 174, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(102, 150, 174, 0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(102, 150, 174, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .countdown-item {
+            text-align: center;
+            background: rgba(44, 44, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 12px 8px;
+            border: 1px solid rgba(102, 150, 174, 0.1);
+        }
+
+        .countdown-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .countdown-label {
+            font-size: 0.75rem;
+            color: rgba(235, 235, 245, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 16px;
+            }
+            
+            .header-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+            
+            .amount-display {
+                font-size: 2rem;
+            }
+            
+            .investor-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .countdown-number {
+                font-size: 1.25rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Root div where React will render -->
     <div id="app">Loading...</div>
-    
-    <!-- React app script -->
     <script type="text/babel">
-        // Main app component
-        function ResolvTracker() {
-            // State hooks
-            const [deposits, setDeposits] = React.useState([]);
-            const [totalInvestment, setTotalInvestment] = React.useState(0);
+        const CONFIG = {
+            pageTitle: "Resolv Legion Sale Tracker",
+            projectName: "Resolv",
+            logoSrc: "resolv.png",
+            logoAlt: "Resolv Logo",
+            favicon: "resolv.png",
+            apiEndpoints: {
+                totalInvestment: "/api/resolv/total-investment",
+                deposits: "/api/resolv/deposits",
+                investor: "/api/investor/:address",
+                price: "/api/proxy/coingecko/price/:tokenId",
+            },
+            salePrice: 0.1, // Current sale price for Resolv
+            coingecko: {
+                tokenId: "resolv",
+            },
+            colors: {
+                primary: "#6696ae",
+                secondary: "#88b8d0",
+                background: "#101010",
+                cardBackground: "rgba(28, 28, 30, 0.7)",
+                headerGradientStart: "rgba(102, 150, 174, 0.8)",
+                headerGradientEnd: "rgba(126, 182, 211, 0.8)",
+                positiveProfit: "#30d158",
+                negativeProfit: "#ff453a",
+            },
+            depositsPerPage: 10,
+            backLink: "/dashboard",
+            backLinkText: "Back to Dashboard",
+            calculatorModes: ["amount", "tokens", "address"],
+            calculatorPlaceholders: {
+                amount: "e.g. 1000",
+                tokens: "e.g. 10000",
+                address: "0x...",
+            },
+            calculatorLabels: {
+                amount: "Enter USDC Investment Amount",
+                tokens: "Enter Token Amount",
+                address: "Enter Wallet Address",
+            },
+            isUpcoming: false,
+            tgeDate: new Date('2025-06-10T13:00:00Z'), // Jun 10, 2025 at 13:00 UTC
+            firstUnlockDate: new Date('2026-06-10T13:00:00Z'), // 12 months after TGE
+        };
+
+        // Set page title and favicon dynamically
+        document.title = CONFIG.pageTitle;
+        if (CONFIG.favicon) {
+            const favicon = document.createElement("link");
+            favicon.rel = "icon";
+            favicon.href = CONFIG.favicon;
+            document.head.appendChild(favicon);
+        }
+
+        function VestingProgress() {
+            const [timeLeft, setTimeLeft] = React.useState({});
+            const [progress, setProgress] = React.useState(0);
+
+            React.useEffect(() => {
+                const updateCountdown = () => {
+                    const now = new Date();
+                    const tgeDate = CONFIG.tgeDate;
+                    const firstUnlockDate = CONFIG.firstUnlockDate;
+                    
+                    // Calculate progress from TGE to first unlock
+                    const totalDuration = firstUnlockDate.getTime() - tgeDate.getTime();
+                    const elapsed = now.getTime() - tgeDate.getTime();
+                    const progressPercent = Math.max(0, Math.min(100, (elapsed / totalDuration) * 100));
+                    setProgress(progressPercent);
+
+                    // Calculate time remaining until first unlock
+                    const difference = firstUnlockDate.getTime() - now.getTime();
+                    
+                    if (difference > 0) {
+                        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                        
+                        setTimeLeft({ days, hours, minutes, seconds });
+                    } else {
+                        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                    }
+                };
+
+                updateCountdown();
+                const interval = setInterval(updateCountdown, 1000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const isUnlocked = new Date() >= CONFIG.firstUnlockDate;
+
+            return (
+                <div className="progress-container">
+                    <div className="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 className="text-lg font-semibold" style={{color: '#6696ae'}}>
+                                {isUnlocked ? '🎉 First Unlock Available!' : '⏳ Time Until First Unlock'}
+                            </h3>
+                            <p className="text-sm text-gray-400">
+                                {isUnlocked 
+                                    ? 'Linear vesting has begun - tokens unlocking monthly for 24 months' 
+                                    : 'Cliff period: 12 months after TGE (Jun 10, 2025)'}
+                            </p>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-2xl font-bold" style={{color: '#6696ae'}}>{progress.toFixed(1)}%</div>
+                            <div className="text-xs text-gray-400">Complete</div>
+                        </div>
+                    </div>
+                    
+                    <div className="progress-bar">
+                        <div 
+                            className="progress-fill" 
+                            style={{ width: `${progress}%` }}
+                        ></div>
+                    </div>
+
+                    {!isUnlocked && (
+                        <div className="countdown-grid">
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.days || 0}</div>
+                                <div className="countdown-label">Days</div>
+                            </div>
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.hours || 0}</div>
+                                <div className="countdown-label">Hours</div>
+                            </div>
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.minutes || 0}</div>
+                                <div className="countdown-label">Minutes</div>
+                            </div>
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.seconds || 0}</div>
+                                <div className="countdown-label">Seconds</div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="mt-4 text-center">
+                        <div className="text-sm text-gray-400">
+                            TGE: Jun 10, 2025 • First Unlock: Jun 10, 2026 • Linear Vesting: 24 months
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function PriceStats({ priceData, formatAmount }) {
+            return (
+                <div className="card p-4 mb-4">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                        <div className="flex items-center mb-4 md:mb-0">
+                            <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="w-8 h-8 mr-3" onError={(e) => e.target.src = CONFIG.logoSrc.replace('.png', '.jpg')} />
+                            <span className="text-lg font-semibold">{CONFIG.projectName} Price Stats</span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Sale Price</div>
+                                <div className="font-bold">{formatAmount(CONFIG.salePrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Current Price</div>
+                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.currentPrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">All-Time High</div>
+                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.athPrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">All-Time Low</div>
+                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.lowestPrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Current ROI</div>
+                                <div className={`font-bold ${priceData.currentRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                    {priceData.loading ? "Loading..." : priceData.error ? "N/A" : `${priceData.currentRoi.toFixed(2)}%`}
+                                </div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">ATH ROI</div>
+                                <div className={`font-bold ${priceData.athRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                    {priceData.loading ? "Loading..." : priceData.error ? "N/A" : `${priceData.athRoi.toFixed(2)}%`}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-4 p-4 rounded-lg border" style={{backgroundColor: 'rgba(102, 150, 174, 0.2)', borderColor: 'rgba(102, 150, 174, 0.3)'}}>
+                        <div className="text-sm font-semibold mb-2" style={{color: '#6696ae'}}>Vesting Schedule</div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <div className="text-gray-400">TGE Unlock</div>
+                                <div className="font-medium">0% immediately</div>
+                            </div>
+                            <div>
+                                <div className="text-gray-400">Cliff Period</div>
+                                <div className="font-medium">12 months</div>
+                            </div>
+                            <div>
+                                <div className="text-gray-400">Linear Vesting</div>
+                                <div className="font-medium">100% over 24 months</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function ROICalculator({ calculatorMode, setCalculatorMode, inputValue, setInputValue, handleCalculate, calculatorLoading, calculationResult, priceData, formatAmount }) {
+            return (
+                <div className="card p-4 mt-4">
+                    <div className="stats-title mb-4">ROI Calculator</div>
+                    <div className="card-subtitle mb-4">Calculate your investment performance</div>
+                    <div className="tab-buttons-container">
+                        {CONFIG.calculatorModes.map(mode => (
+                            <button
+                                key={mode}
+                                className={`tab-button ${calculatorMode === mode ? 'active' : ''}`}
+                                onClick={() => setCalculatorMode(mode)}
+                            >
+                                {mode === 'amount' ? 'By USDC' : mode === 'tokens' ? 'By Tokens' : 'By Address'}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="bg-opacity-30 bg-black p-4 rounded">
+                        <div>
+                            <label className="block text-sm mb-1">{CONFIG.calculatorLabels[calculatorMode]}</label>
+                            <input
+                                type={calculatorMode === 'address' ? 'text' : 'number'}
+                                className="calculator-input"
+                                placeholder={CONFIG.calculatorPlaceholders[calculatorMode]}
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                            />
+                        </div>
+                        <button
+                            className="calculate-button"
+                            onClick={handleCalculate}
+                            disabled={calculatorLoading || !inputValue || priceData.loading}
+                        >
+                            {calculatorLoading ? 'Calculating...' : 'Calculate'}
+                        </button>
+                        {calculationResult && !calculationResult.error && (
+                            <div className="result-card mt-4">
+                                <div className="text-sm text-gray-400 mb-2">Investment Results</div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Investment:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.investmentAmount)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Tokens Received:</span>
+                                    <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()} RSV</span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Current Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.currentValue)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Current P&L:</span>
+                                    <span className={`font-medium ${calculationResult.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.currentPnL)} ({calculationResult.currentPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>ATH Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.athValue)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>ATH P&L:</span>
+                                    <span className={`font-medium ${calculationResult.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.athPnL)} ({calculationResult.athPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Lowest Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.lowestValue)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Lowest P&L:</span>
+                                    <span className={`font-medium ${calculationResult.lowestPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.lowestPnL)} ({calculationResult.lowestPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+                        {calculationResult && calculationResult.error && (
+                            <div className="result-card mt-4 text-red-400">
+                                {calculationResult.error}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function InvestorModal({ showModal, setShowModal, selectedInvestor, investorLoading, formatAmount }) {
+            return showModal ? (
+                <div className="investor-modal">
+                    <div className="investor-modal-content">
+                        <span className="investor-modal-close" onClick={() => setShowModal(false)}>×</span>
+                        <div className="investor-details">
+                            <h2>Investor Details</h2>
+                            {investorLoading && (
+                                <div className="flex items-center justify-center py-8">
+                                    <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                                </div>
+                            )}
+                            {!investorLoading && selectedInvestor && (
+                                <div>
+                                    <div className="mb-4">
+                                        <div className="text-gray-400 text-sm mb-1">Full Address</div>
+                                        <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
+                                    </div>
+                                    <div className="investor-stats">
+                                        <div className="investor-stat">
+                                                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.resolv_total)}</div>
+                                        <div className="investor-stat-label">{CONFIG.projectName} Investment</div>
+                                        </div>
+                                        <div className="investor-stat">
+                                            <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                            <div className="investor-stat-label">Total Invested (All Sales)</div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6">
+                                        <h3 className="font-bold text-lg mb-3">All Sales</h3>
+                                        <div className="sales-table-container">
+                                            <table className="data-table">
+                                                <thead>
+                                                    <tr className="table-header">
+                                                        <th>Sale</th>
+                                                        <th>Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {selectedInvestor.sales.map((sale, index) => (
+                                                        <tr key={index} className={`table-row ${sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? 'resolv-sale' : ''}`}>
+                                                            <td>
+                                                                <span className={`sale-badge ${sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? 'resolv' : 'other'}`}>
+                                                                    {sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? '★ ' : ''}{sale.sale.toUpperCase()}
+                                                                </span>
+                                                            </td>
+                                                            <td>{formatAmount(sale.amount)}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {!investorLoading && !selectedInvestor && (
+                                <div className="text-red-500 text-center py-4">
+                                    Failed to load investor details
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : null;
+        }
+
+        function TrackerApp() {
             const [loading, setLoading] = React.useState(true);
             const [error, setError] = React.useState(null);
+            const [deposits, setDeposits] = React.useState([]);
+            const [totalInvestment, setTotalInvestment] = React.useState(0);
+            const [stats, setStats] = React.useState({ average: 0, median: 0, highest: 0, lowest: 0 });
             const [sortOrder, setSortOrder] = React.useState('desc');
             const [currentPage, setCurrentPage] = React.useState(1);
-            const [stats, setStats] = React.useState({
-                average: 0,
-                median: 0,
-                highest: 0,
-                lowest: 0
-            });
-            const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [showModal, setShowModal] = React.useState(false);
+            const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [investorLoading, setInvestorLoading] = React.useState(false);
-            
-            // Constants
-            const depositsPerPage = 10;
-            
-            // Function to handle back navigation
-            const handleBack = () => {
-                window.location.href = '/dashboard';
+            const [calculatorMode, setCalculatorMode] = React.useState('amount');
+            const [inputValue, setInputValue] = React.useState('');
+            const [calculationResult, setCalculationResult] = React.useState(null);
+            const [calculatorLoading, setCalculatorLoading] = React.useState(false);
+            const [priceData, setPriceData] = React.useState({
+                salePrice: CONFIG.salePrice,
+                currentPrice: 0,
+                athPrice: 0,
+                lowestPrice: 0,
+                currentRoi: 0,
+                athRoi: 0,
+                loading: true,
+                error: null,
+            });
+
+            const formatAmount = (amount, includeDollar = false) => {
+                if (amount === null || amount === undefined || isNaN(amount)) return '$0.00';
+                const formatted = amount.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: includeDollar ? 6 : 2
+                });
+                return includeDollar ? `$${formatted}` : `$${formatted}`;
             };
-            
-            // Fetch data on component mount
+
+            const formatAddress = (address) => {
+                return `${address.slice(0, 6)}...${address.slice(-4)}`;
+            };
+
             React.useEffect(() => {
-                // Check if dashboard is launched
-                const dashboardLaunched = localStorage.getItem('dashboardLaunched') === 'true';
-                const launchTime = parseInt(localStorage.getItem('dashboardLaunchTime') || '0');
-                const currentTime = Date.now();
-                
-                // If dashboard was launched more than 24 hours ago, reset the flag
-                if (launchTime && (currentTime - launchTime > 24 * 60 * 60 * 1000)) {
-                    localStorage.removeItem('dashboardLaunched');
-                    localStorage.removeItem('dashboardLaunchTime');
-                    window.location.href = '/';
-                    return;
-                }
-                
-                if (dashboardLaunched) {
-                    fetchData();
-                } else {
-                    window.location.href = '/';
-                }
+                fetchData();
+                fetchTokenPriceData();
             }, []);
-            
-            // Function to fetch data from API
+
+            const fetchTokenPriceData = async () => {
+                try {
+                    setPriceData(prev => ({ ...prev, loading: true, error: null }));
+                    const apiUrl = CONFIG.apiEndpoints.price.replace(':tokenId', CONFIG.coingecko.tokenId);
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error(`Failed to fetch token price data: ${response.status}`);
+                    const data = await response.json();
+                    const currentPrice = data.current_price || 0;
+                    const athPrice = data.ath || 0;
+                    const lowestPrice = data.atl || 0;
+                    const currentRoi = currentPrice > 0 ? ((currentPrice - CONFIG.salePrice) / CONFIG.salePrice) * 100 : 0;
+                    const athRoi = athPrice > 0 ? ((athPrice - CONFIG.salePrice) / CONFIG.salePrice) * 100 : 0;
+                    setPriceData({
+                        salePrice: CONFIG.salePrice,
+                        currentPrice,
+                        athPrice,
+                        lowestPrice,
+                        currentRoi,
+                        athRoi,
+                        loading: false,
+                        error: null,
+                    });
+                } catch (err) {
+                    setPriceData(prev => ({ ...prev, loading: false, error: err.message }));
+                }
+            };
+
             const fetchData = async () => {
                 try {
-                    console.log("Fetching data...");
                     setLoading(true);
-                    
-                    // Fetch deposits
-                    const depositsRes = await fetch('/api/resolv/deposits');
-                    if (!depositsRes.ok) {
-                        throw new Error('Failed to fetch deposits');
+                    const [totalResponse, depositsResponse] = await Promise.all([
+                        fetch(CONFIG.apiEndpoints.totalInvestment),
+                        fetch(CONFIG.apiEndpoints.deposits)
+                    ]);
+
+                    if (!totalResponse.ok || !depositsResponse.ok) {
+                        throw new Error('Failed to fetch data');
                     }
-                    const depositsData = await depositsRes.json();
-                    console.log("Deposits:", depositsData);
-                    setDeposits(depositsData.deposits || []);
-                    setTotalInvestment(depositsData.deposits.reduce((sum, d) => sum + d.amount, 0) || 0);
-                    
-                    // Calculate statistics
-                    if (depositsData.deposits && depositsData.deposits.length > 0) {
+
+                    const totalData = await totalResponse.json();
+                    const depositsData = await depositsResponse.json();
+
+                    setTotalInvestment(totalData.total);
+                    setDeposits(depositsData.deposits);
+
+                    // Calculate stats
+                    if (depositsData.deposits.length > 0) {
                         const amounts = depositsData.deposits.map(d => d.amount);
-                        const sortedAmounts = [...amounts].sort((a, b) => a - b);
-                        
+                        const sortedAmounts = amounts.slice().sort((a, b) => a - b);
                         setStats({
                             average: amounts.reduce((a, b) => a + b, 0) / amounts.length,
                             median: sortedAmounts.length % 2 === 0 
@@ -516,174 +1012,206 @@
                             lowest: Math.min(...amounts)
                         });
                     }
-                    
+
                     setLoading(false);
                 } catch (err) {
-                    console.error("Error fetching data:", err);
                     setError(err.message);
                     setLoading(false);
                 }
             };
-            
-            // Function to format currency
-            const formatAmount = (amount) => {
-                return amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
+
+            const calculatePnL = (investmentAmount) => {
+                const tokensReceived = investmentAmount / priceData.salePrice;
+                const currentValue = tokensReceived * priceData.currentPrice;
+                const athValue = tokensReceived * priceData.athPrice;
+                const lowestValue = tokensReceived * priceData.lowestPrice;
+                const currentPnL = currentValue - investmentAmount;
+                const currentPnLPercent = (currentPnL / investmentAmount) * 100;
+                const athPnL = athValue - investmentAmount;
+                const athPnLPercent = (athPnL / investmentAmount) * 100;
+                const lowestPnL = lowestValue - investmentAmount;
+                const lowestPnLPercent = (lowestPnL / investmentAmount) * 100;
+                return {
+                    tokensReceived,
+                    currentValue,
+                    currentPnL,
+                    currentPnLPercent,
+                    athValue,
+                    athPnL,
+                    athPnLPercent,
+                    lowestValue,
+                    lowestPnL,
+                    lowestPnLPercent,
+                };
             };
-            
-            // Format wallet address to shorter format
-            const formatAddress = (address) => {
-                if (!address) return '';
-                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+
+            const handleCalculate = async () => {
+                try {
+                    setCalculatorLoading(true);
+                    setCalculationResult(null);
+                    if (calculatorMode === 'address') {
+                        const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', inputValue.trim()));
+                        if (!response.ok) throw new Error('Address not found or invalid');
+                        const data = await response.json();
+                        const resolvSales = data.sales.filter(sale => sale.sale.toLowerCase().includes('resolv'));
+                        const resolvTotal = resolvSales.reduce((sum, sale) => sum + sale.amount, 0);
+                        if (resolvTotal === 0) {
+                            setCalculationResult({ error: `This address did not participate in the ${CONFIG.projectName} sale.` });
+                            return;
+                        }
+                        const pnlData = calculatePnL(resolvTotal);
+                        setCalculationResult({ type: 'address', investmentAmount: resolvTotal, ...pnlData });
+                    } else if (calculatorMode === 'amount') {
+                        const amount = parseFloat(inputValue);
+                        if (isNaN(amount) || amount <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
+                            return;
+                        }
+                        const pnlData = calculatePnL(amount);
+                        setCalculationResult({ type: 'amount', investmentAmount: amount, ...pnlData });
+                    } else {
+                        const tokens = parseFloat(inputValue);
+                        if (isNaN(tokens) || tokens <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid token amount greater than 0.' });
+                            return;
+                        }
+                        const usdcAmount = tokens * priceData.salePrice;
+                        const pnlData = calculatePnL(usdcAmount);
+                        setCalculationResult({ type: 'tokens', investmentAmount: usdcAmount, tokensReceived: tokens, ...pnlData });
+                    }
+                } catch (error) {
+                    setCalculationResult({ error: error.message });
+                } finally {
+                    setCalculatorLoading(false);
+                }
             };
-            
-            // Sort deposits based on current sort order
-            const sortedDeposits = React.useMemo(() => {
-                if (!deposits || !deposits.length) return [];
-                return [...deposits].sort((a, b) => {
-                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
-                });
-            }, [deposits, sortOrder]);
-            
-            // Toggle sort order
-            const toggleSortOrder = () => {
-                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            };
-            
-            // Pagination calculations
-            const indexOfLastDeposit = currentPage * depositsPerPage;
-            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
-            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
-            const totalPages = Math.max(1, Math.ceil((deposits && deposits.length ? deposits.length : 0) / depositsPerPage));
-            
-            // Update the handleInvestorClick function
+
             const handleInvestorClick = async (address) => {
                 try {
                     setInvestorLoading(true);
                     setShowModal(true);
                     setSelectedInvestor(null);
-                    
-                    const response = await fetch(`/api/investor/${address}`);
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch investor details');
-                    }
-                    
+
+                    const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', address));
+                    if (!response.ok) throw new Error('Failed to fetch investor details');
+
                     const data = await response.json();
-                    
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
+                    const resolvSales = data.sales.filter(sale => sale.sale.toLowerCase().includes('resolv'));
+                    const resolvTotal = resolvSales.reduce((sum, sale) => sum + sale.amount, 0);
 
                     setSelectedInvestor({
                         address,
-                        ...data
+                        total_invested: data.total_invested,
+                        sales_participated: data.sales_participated,
+                        resolv_total: resolvTotal,
+                        sales: data.sales
                     });
                 } catch (error) {
-                    console.error('Error:', error);
                     setSelectedInvestor(null);
                 } finally {
                     setInvestorLoading(false);
                 }
             };
-            
-            // Show loading state
+
+            const sortedDeposits = React.useMemo(() => {
+                return [...deposits].sort((a, b) => {
+                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
+                });
+            }, [deposits, sortOrder]);
+
+            const toggleSortOrder = () => {
+                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
+            };
+
+            const indexOfLastDeposit = currentPage * CONFIG.depositsPerPage;
+            const indexOfFirstDeposit = indexOfLastDeposit - CONFIG.depositsPerPage;
+            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
+            const totalPages = Math.max(1, Math.ceil(deposits.length / CONFIG.depositsPerPage));
+
             if (loading) {
                 return (
                     <div className="flex items-center justify-center h-screen">
                         <div className="text-center p-8 card max-w-md">
                             <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                            <p className="mb-6">Loading Resolv Sale Data...</p>
-                            <div className="note-box">
-                                <p className="text-sm text-gray-300">
-                                    Note: This dashboard displays only the total amount successfully invested, 
-                                    not the amount being requested on the Legion website.
-                                </p>
-                            </div>
+                            <p className="mb-6">Loading {CONFIG.projectName} Sale Data...</p>
                         </div>
                     </div>
                 );
             }
-            
-            // Show error state
+
             if (error) {
                 return (
                     <div className="main-container">
                         <div className="card p-8 text-center">
                             <h2 className="text-xl text-red-500 mb-4">Error</h2>
                             <p>{error}</p>
-                            <button 
-                                onClick={fetchData} 
-                                className="pagination-button mt-4"
-                            >
-                                Retry
-                            </button>
+                            <button onClick={fetchData} className="pagination-button mt-4">Retry</button>
                         </div>
                     </div>
                 );
             }
-            
-            // Main component render
+
             return (
                 <div className="main-container">
-                    {/* Back button */}
-                    <button onClick={handleBack} className="back-button">
+                    <a href={CONFIG.backLink} className="back-button">
                         <i className="fas fa-arrow-left mr-2"></i>
-                        Back to Dashboard
-                    </button>
-                    
-                    {/* Header */}
+                        {CONFIG.backLinkText}
+                    </a>
                     <div className="header-card">
-                        <div className="header-title">Resolv Protocol</div>
-                        <img src="resolv.png" alt="Resolv Logo" className="h-16" />
+                        <div className="header-title">{CONFIG.projectName}</div>
+                        <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="h-16" />
                     </div>
                     
-                    {/* Main Content Grid */}
+                    <VestingProgress />
+                    <PriceStats priceData={priceData} formatAmount={formatAmount} />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Left Column - Stats and Live Feed */}
                         <div className="md:col-span-1">
-                            {/* Total USDC Card */}
                             <div className="card p-6 text-center">
                                 <div className="card-title">Total USDC Invested</div>
                                 <div className="amount-display">{formatAmount(totalInvestment)}</div>
-                                <div className="text-gray-400 text-sm">{deposits && deposits.length ? deposits.length : 0} unique addresses</div>
+                                <div className="text-gray-400 text-sm">{deposits.length} unique addresses</div>
                             </div>
-                            
-                            {/* Stats section */}
-                            <div className="stats-grid">
+                            <div className="stats-section">
+                                <div className="stats-title">Investment Stats</div>
                                 <div className="stats-card">
                                     <div className="stats-label">Average</div>
                                     <div className="stats-value">{formatAmount(stats.average)}</div>
                                 </div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Median</div>
                                     <div className="stats-value">{formatAmount(stats.median)}</div>
                                 </div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Highest</div>
                                     <div className="stats-value">{formatAmount(stats.highest)}</div>
                                 </div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Lowest</div>
                                     <div className="stats-value">{formatAmount(stats.lowest)}</div>
                                 </div>
                             </div>
+                            <ROICalculator
+                                calculatorMode={calculatorMode}
+                                setCalculatorMode={(mode) => {
+                                    setCalculatorMode(mode);
+                                    setInputValue('');
+                                    setCalculationResult(null);
+                                }}
+                                inputValue={inputValue}
+                                setInputValue={setInputValue}
+                                handleCalculate={handleCalculate}
+                                calculatorLoading={calculatorLoading}
+                                calculationResult={calculationResult}
+                                priceData={priceData}
+                                formatAmount={formatAmount}
+                            />
                         </div>
-                        
-                        {/* Right Column - Deposits Table */}
                         <div className="md:col-span-2">
                             <div className="card">
                                 <div className="p-4 border-b border-gray-800">
                                     <div className="card-title">Top Investors</div>
                                     <div className="card-subtitle">Ranked by investment amount</div>
                                 </div>
-                                
                                 <div className="table-container">
                                     <table className="data-table">
                                         <thead>
@@ -697,44 +1225,34 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {currentDeposits && currentDeposits.length > 0 ? (
-                                                currentDeposits.map((deposit, index) => (
-                                                    <tr key={deposit.address} className="table-row">
-                                                        <td>
-                                                            {indexOfFirstDeposit + index + 1 <= 3 ? (
-                                                                <span className="rank-badge">{indexOfFirstDeposit + index + 1}</span>
-                                                            ) : (
-                                                                <span>#{indexOfFirstDeposit + index + 1}</span>
-                                                            )}
-                                                        </td>
-                                                        <td className="address-cell">
-                                                            <a
-                                                                href="#"
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    handleInvestorClick(deposit.address);
-                                                                }}
-                                                                title={deposit.address}
-                                                            >
-                                                                {formatAddress(deposit.address)}
-                                                            </a>
-                                                        </td>
-                                                        <td className="text-right">{formatAmount(deposit.amount)}</td>
-                                                        <td className="text-right">{((deposit.amount / totalInvestment) * 100).toFixed(2)}%</td>
-                                                    </tr>
-                                                ))
-                                            ) : (
-                                                <tr>
-                                                    <td colSpan="4" className="text-center text-gray-500 py-4">
-                                                        No deposits found.
+                                            {currentDeposits.map((deposit, index) => (
+                                                <tr key={deposit.address} className="table-row">
+                                                    <td>
+                                                        {indexOfFirstDeposit + index + 1 <= 3 ? (
+                                                            <span className="rank-badge">{indexOfFirstDeposit + index + 1}</span>
+                                                        ) : (
+                                                            <span>#{indexOfFirstDeposit + index + 1}</span>
+                                                        )}
                                                     </td>
+                                                    <td className="address-cell">
+                                                        <a 
+                                                            href="#" 
+                                                            onClick={(e) => { 
+                                                                e.preventDefault(); 
+                                                                handleInvestorClick(deposit.address); 
+                                                            }}
+                                                            title={deposit.address}
+                                                        >
+                                                            {formatAddress(deposit.address)}
+                                                        </a>
+                                                    </td>
+                                                    <td className="text-right font-mono">{formatAmount(deposit.amount)}</td>
+                                                    <td className="text-right">{((deposit.amount / totalInvestment) * 100).toFixed(2)}%</td>
                                                 </tr>
-                                            )}
+                                            ))}
                                         </tbody>
                                     </table>
                                 </div>
-                                
-                                {/* Pagination */}
                                 {totalPages > 1 && (
                                     <div className="pagination">
                                         <button
@@ -744,11 +1262,7 @@
                                         >
                                             Previous
                                         </button>
-                                        
-                                        <div className="pagination-info">
-                                            {currentPage} of {totalPages}
-                                        </div>
-                                        
+                                        <div className="pagination-info">{currentPage} of {totalPages}</div>
                                         <button
                                             onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
                                             disabled={currentPage === totalPages}
@@ -761,79 +1275,18 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <div className="text-center text-gray-500 text-sm mt-6">
-                        Last updated: {new Date().toLocaleString()}
-                    </div>
-                    
-                    {/* Investor Modal */}
-                    {showModal && (
-                        <div className="investor-modal" style={{ display: 'flex' }}>
-                            <div className="investor-modal-content">
-                                <span className="investor-modal-close" onClick={() => setShowModal(false)}>&times;</span>
-                                <div className="investor-details">
-                                    <h2>Investor Details</h2>
-                                    {investorLoading ? (
-                                        <div className="flex items-center justify-center py-8">
-                                            <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
-                                        </div>
-                                    ) : selectedInvestor ? (
-                                        <div>
-                                            <div className="mb-4">
-                                                <div className="text-gray-400 text-sm mb-1">Full Address</div>
-                                                <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
-                                            </div>
-                                            <div className="mb-4">
-                                                <a 
-                                                    href={`https://debank.com/profile/${selectedInvestor.address}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                                >
-                                                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
-                                                    </svg>
-                                                    View on DeBank
-                                                </a>
-                                            </div>
-                                            <div className="investor-stats">
-                                                <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
-                                                    <div className="investor-stat-label">Total Invested</div>
-                                                </div>
-                                                <div className="investor-stat">
-                                                    <div className="investor-stat-value">{selectedInvestor.sales_participated}</div>
-                                                    <div className="investor-stat-label">Sales Participated</div>
-                                                </div>
-                                            </div>
-                                            <div className="mt-6">
-                                                <h3 className="text-lg font-semibold mb-3">Investment History</h3>
-                                                <div className="space-y-2">
-                                                    {selectedInvestor.sales.map((sale, index) => (
-                                                        <div key={index} className="flex justify-between items-center p-2 bg-gray-800 rounded">
-                                                            <span className="capitalize">{sale.sale}</span>
-                                                            <span className="font-mono">{formatAmount(sale.amount)}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="text-red-500 text-center py-4">
-                                            Failed to load investor details
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    <InvestorModal
+                        showModal={showModal}
+                        setShowModal={setShowModal}
+                        selectedInvestor={selectedInvestor}
+                        investorLoading={investorLoading}
+                        formatAmount={formatAmount}
+                    />
                 </div>
             );
         }
-        
-        // Render the app to the DOM
-        ReactDOM.render(<ResolvTracker />, document.getElementById('app'));
+
+        ReactDOM.render(<TrackerApp />, document.getElementById('app'));
     </script>
 </body>
 </html>

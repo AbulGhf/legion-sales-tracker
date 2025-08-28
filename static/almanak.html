@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALMANAK</title>
+    <title>ALMANAK Legion Sale Tracker</title>
     <!-- Load React -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
@@ -11,234 +11,317 @@
     <!-- Load Tailwind -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <style>
-        /* Basic styles */
-        body {
-            background-color: #000000;
-            background-image: linear-gradient(to bottom, #0a0a0a, #000000);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --primary-color: #4ade80;
+            --secondary-color: #22c55e;
+            --background-color: #0f0f0f;
+            --card-background: rgba(28, 28, 30, 0.7);
+            --header-gradient-start: rgba(74, 222, 128, 0.8);
+            --header-gradient-end: rgba(34, 197, 94, 0.8);
+            --profit-positive: #30d158;
+            --profit-negative: #ff453a;
         }
-        
-        /* Main container */
+
+        body {
+            background-color: var(--background-color);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23222' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23333'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        .ios-glass {
+            background: rgba(45, 45, 45, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(74, 222, 128, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .neon-color {
+            color: var(--primary-color);
+        }
+
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
-        
-        /* Back button */
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            transition: background-color 0.2s;
-        }
-        
-        .back-button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Header */
+
         .header-card {
-            background-color: #000000;
-            border-radius: 8px;
+            background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(74, 222, 128, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
-        
+
         .header-title {
             font-size: 2rem;
-            font-weight: bold;
-            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #000;
         }
-        
-        /* Cards */
+
         .card {
-            background-color: #121827;
-            border-radius: 8px;
-            overflow: hidden;
+            background: var(--card-background);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(74, 222, 128, 0.08);
+            overflow: hidden;
         }
-        
+
         .card-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 4px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
-        
+
         .card-subtitle {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
+            margin-bottom: 16px;
         }
-        
-        /* Amount display */
+
         .amount-display {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ffffff;
-            margin: 10px 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 16px 0;
+            color: var(--primary-color);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
-        /* Stats section */
+
         .stats-section {
+            background: var(--card-background);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 16px;
             margin-top: 20px;
+            border: 1px solid rgba(74, 222, 128, 0.08);
         }
-        
+
         .stats-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 15px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
         }
-        
+
         .stats-card {
-            background-color: #121827;
-            border-left: 4px solid #ffffff;
-            padding: 15px;
-            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.06);
         }
-        
+
+        .stats-card:last-child {
+            border-bottom: none;
+        }
+
         .stats-label {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
         }
-        
+
         .stats-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #ffffff;
+            font-weight: 500;
+            color: var(--primary-color);
         }
-        
-        /* Table */
+
         .table-container {
-            width: 100%;
             overflow-x: auto;
-            border-radius: 8px;
         }
-        
+
         .data-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
-        
-        .table-header {
-            background-color: #0a0a0a;
-            padding: 15px;
-            text-align: left;
-            font-weight: bold;
-        }
-        
+
         .table-header th {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+            padding: 12px 16px;
+            font-weight: normal;
+            color: rgba(235, 235, 245, 0.6);
+            border-bottom: 1px solid rgba(74, 222, 128, 0.1);
         }
-        
-        .table-header th:first-child {
-            border-top-left-radius: 8px;
-        }
-        
-        .table-header th:last-child {
-            border-top-right-radius: 8px;
-        }
-        
+
         .table-row td {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.05);
         }
-        
-        .table-row:nth-child(odd) {
-            background-color: rgba(15, 15, 15, 0.6);
-        }
-        
-        .table-row:nth-child(even) {
-            background-color: rgba(20, 20, 20, 0.6);
-        }
-        
+
         .table-row:hover {
-            background-color: rgba(25, 25, 25, 0.8);
+            background-color: rgba(74, 222, 128, 0.05);
         }
-        
-        /* Rank badge */
+
+        .address-cell a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .address-cell a:hover {
+            opacity: 0.8;
+        }
+
         .rank-badge {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 28px;
             height: 28px;
-            background-color: #ffffff;
-            color: #000000;
-            font-weight: bold;
-            border-radius: 50%;
+            border-radius: 14px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: #000;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        
-        /* Address */
-        .address-cell {
-            font-family: monospace;
-            color: #fff;
-        }
-        
-        .address-cell a:hover {
-            text-decoration: underline;
-            color: #ffffff;
-        }
-        
-        /* Pagination */
+
         .pagination {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            gap: 10px;
+            padding: 16px;
+            border-top: 1px solid rgba(74, 222, 128, 0.05);
         }
-        
-        .pagination-button {
-            background-color: #f5f5f5;
-            color: #080808;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .pagination-button:hover {
-            background-color: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
-        }
-        
-        .pagination-button:disabled {
-            background-color: #333333;
-            color: #999999;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        
+
         .pagination-info {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 8px 12px;
-            border-radius: 4px;
+            color: rgba(235, 235, 245, 0.6);
         }
-        
-        /* Investor Modal Styles */
+
+        .pagination-button {
+            background: rgba(74, 222, 128, 0.1);
+            color: white;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination-button:hover:not(:disabled) {
+            background: rgba(74, 222, 128, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .pagination-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(74, 222, 128, 0.1);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        .back-button:hover {
+            background: rgba(74, 222, 128, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .profit-positive {
+            color: var(--profit-positive);
+        }
+
+        .profit-negative {
+            color: var(--profit-negative);
+        }
+
+        .tab-button {
+            background: transparent;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 8px 16px;
+            margin-right: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-button.active {
+            background: var(--primary-color);
+            color: #000;
+            border-color: var(--primary-color);
+        }
+
+        .calculator-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .calculator-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .result-card {
+            background: rgba(74, 222, 128, 0.1);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        .sale-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .sale-badge.almanak {
+            background-color: var(--primary-color);
+            color: #000000;
+        }
+
+        .sale-badge.other {
+            background-color: #2a2a2a;
+            color: var(--primary-color);
+        }
+
+        .sales-table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 1rem;
+            border: 1px solid rgba(74, 222, 128, 0.1);
+            border-radius: 12px;
+        }
+
         .investor-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -246,140 +329,423 @@
         }
 
         .investor-modal-content {
-            background-color: #1a1a1a;
-            border-radius: 8px;
+            background: rgba(28, 28, 30, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
             padding: 2rem;
             position: relative;
             width: 90%;
             max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(74, 222, 128, 0.1);
         }
 
         .investor-modal-close {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1.5rem;
+            top: 16px;
+            right: 20px;
+            font-size: 24px;
             cursor: pointer;
-            color: #666;
+            color: rgba(235, 235, 245, 0.6);
             transition: color 0.2s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: rgba(60, 60, 67, 0.3);
         }
 
         .investor-modal-close:hover {
-            color: #fff;
-        }
-
-        .investor-details {
-            color: #fff;
+            color: white;
+            background: rgba(60, 60, 67, 0.5);
         }
 
         .investor-details h2 {
             font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: #fff;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(74, 222, 128, 0.1);
         }
 
         .investor-stats {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
+            gap: 16px;
+            margin: 20px 0;
         }
 
         .investor-stat {
-            background-color: #2a2a2a;
-            padding: 1rem;
-            border-radius: 6px;
+            background: rgba(44, 44, 46, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 14px;
+            padding: 16px;
             text-align: center;
+            border: 1px solid rgba(74, 222, 128, 0.08);
         }
 
         .investor-stat-value {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
         .investor-stat-label {
-            color: #888;
-            font-size: 0.875rem;
+            color: rgba(235, 235, 245, 0.6);
+            font-size: 0.9rem;
         }
 
-        /* Update address cell to use handleInvestorClick */
-        .address-cell a {
-            color: #3b82f6;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .address-cell a:hover {
-            text-decoration: underline;
+        .almanak-sale {
+            background: rgba(74, 222, 128, 0.15);
+            border-left: 3px solid var(--primary-color);
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
-    <!-- Root div where React will render -->
     <div id="app">Loading...</div>
-    
-    <!-- React app script -->
     <script type="text/babel">
-        // Main app component
-        function AlmanakTracker() {
-            // State hooks
-            const [deposits, setDeposits] = React.useState([]);
-            const [totalInvestment, setTotalInvestment] = React.useState(0);
+        const CONFIG = {
+            pageTitle: "ALMANAK Legion Sale Tracker",
+            projectName: "ALMANAK",
+            logoSrc: "almanak.jpg",
+            logoAlt: "ALMANAK Logo",
+            favicon: "almanak.jpg",
+            apiEndpoints: {
+                totalInvestment: "/api/almanak/total-investment",
+                deposits: "/api/almanak/deposits",
+                investor: "/api/investor/:address",
+            },
+            salePrice: 0.045,
+            colors: {
+                primary: "#4ade80",
+                secondary: "#22c55e",
+                background: "#0f0f0f",
+                cardBackground: "rgba(28, 28, 30, 0.7)",
+                headerGradientStart: "rgba(74, 222, 128, 0.8)",
+                headerGradientEnd: "rgba(34, 197, 94, 0.8)",
+                positiveProfit: "#30d158",
+                negativeProfit: "#ff453a",
+            },
+            depositsPerPage: 10,
+            backLink: "/dashboard",
+            backLinkText: "Back to Dashboard",
+            calculatorModes: ["amount", "tokens", "address"],
+            calculatorPlaceholders: {
+                amount: "e.g. 1000",
+                tokens: "e.g. 22222",
+                address: "0x...",
+            },
+            calculatorLabels: {
+                amount: "Enter USDC Investment Amount",
+                tokens: "Enter Token Amount",
+                address: "Enter Wallet Address",
+            },
+            isUpcoming: true,
+        };
+
+        // Set page title and favicon dynamically
+        document.title = CONFIG.pageTitle;
+        if (CONFIG.favicon) {
+            const favicon = document.createElement("link");
+            favicon.rel = "icon";
+            favicon.href = CONFIG.favicon;
+            document.head.appendChild(favicon);
+        }
+
+        function PriceStats({ formatAmount }) {
+            return (
+                <div className="card p-4 mb-4">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+                        <div className="flex items-center mb-4 md:mb-0">
+                            <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="w-8 h-8 mr-3" onError={(e) => e.target.src = CONFIG.logoSrc.replace('.jpg', '.png')} />
+                            <span className="text-lg font-semibold">{CONFIG.projectName} Sale Information</span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto">
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Sale Price</div>
+                                <div className="font-bold">{formatAmount(CONFIG.salePrice, true)}</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">FDV</div>
+                                <div className="font-bold">$45,000,000</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Token Symbol</div>
+                                <div className="font-bold">ALMANAK</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-gray-400 text-sm">Vesting</div>
+                                <div className="font-bold text-green-400">30% TGE + 70% Linear</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-4 p-4 bg-opacity-20 bg-green-500 rounded-lg border border-green-500 border-opacity-30">
+                        <div className="text-sm font-semibold mb-2 text-green-400">Vesting Schedule</div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <div className="text-gray-400">TGE Unlock</div>
+                                <div className="font-medium">30% immediately</div>
+                            </div>
+                            <div>
+                                <div className="text-gray-400">Cliff Period</div>
+                                <div className="font-medium">6 months</div>
+                            </div>
+                            <div>
+                                <div className="text-gray-400">Linear Vesting</div>
+                                <div className="font-medium">70% over 24 months</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function UpcomingSaleCalculator({ calculatorMode, setCalculatorMode, inputValue, setInputValue, formatAmount }) {
+            const [calculationResult, setCalculationResult] = React.useState(null);
+
+            const handleCalculate = () => {
+                try {
+                    setCalculationResult(null);
+                    
+                    if (calculatorMode === 'amount') {
+                        const amount = parseFloat(inputValue);
+                        if (isNaN(amount) || amount <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
+                            return;
+                        }
+                        const tokens = amount / CONFIG.salePrice;
+                        const tgeTokens = tokens * 0.30; // 30% at TGE
+                        const vestedTokens = tokens * 0.70; // 70% vested
+                        setCalculationResult({ 
+                            type: 'amount', 
+                            investmentAmount: amount, 
+                            tokensReceived: tokens,
+                            tgeTokens: tgeTokens,
+                            vestedTokens: vestedTokens
+                        });
+                    } else if (calculatorMode === 'tokens') {
+                        const tokens = parseFloat(inputValue);
+                        if (isNaN(tokens) || tokens <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid token amount greater than 0.' });
+                            return;
+                        }
+                        const usdcAmount = tokens * CONFIG.salePrice;
+                        const tgeTokens = tokens * 0.30; // 30% at TGE
+                        const vestedTokens = tokens * 0.70; // 70% vested
+                        setCalculationResult({ 
+                            type: 'tokens', 
+                            investmentAmount: usdcAmount, 
+                            tokensReceived: tokens,
+                            tgeTokens: tgeTokens,
+                            vestedTokens: vestedTokens
+                        });
+                    } else {
+                        setCalculationResult({ error: 'Address lookup not available for upcoming sales.' });
+                    }
+                } catch (error) {
+                    setCalculationResult({ error: error.message });
+                }
+            };
+
+            return (
+                <div className="card p-4 mt-4">
+                    <div className="stats-title mb-4">Sale Calculator</div>
+                    <div className="card-subtitle mb-4">Calculate your potential allocation</div>
+                    <div className="flex mb-4">
+                        {CONFIG.calculatorModes.filter(mode => mode !== 'address').map(mode => (
+                            <button
+                                key={mode}
+                                className={`tab-button ${calculatorMode === mode ? 'active' : ''}`}
+                                onClick={() => setCalculatorMode(mode)}
+                            >
+                                {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="bg-opacity-30 bg-black p-4 rounded">
+                        <div>
+                            <label className="block text-sm mb-1">{CONFIG.calculatorLabels[calculatorMode]}</label>
+                            <input
+                                type="number"
+                                className="calculator-input"
+                                placeholder={CONFIG.calculatorPlaceholders[calculatorMode]}
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
+                            />
+                        </div>
+                        <button
+                            className="pagination-button w-full mt-4"
+                            onClick={handleCalculate}
+                            disabled={!inputValue}
+                        >
+                            Calculate
+                        </button>
+                        {calculationResult && !calculationResult.error && (
+                            <div className="result-card mt-4">
+                                <div className="text-sm text-gray-400 mb-2">Calculation Results</div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Investment:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.investmentAmount)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Total Tokens:</span>
+                                    <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()} ALMANAK</span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="text-sm font-semibold mb-2 text-green-400">Vesting Breakdown</div>
+                                <div className="flex justify-between mb-1">
+                                    <span className="text-sm">At TGE (30%):</span>
+                                    <span className="font-medium text-sm">{calculationResult.tgeTokens.toLocaleString()} ALMANAK</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span className="text-sm">Vested (70%):</span>
+                                    <span className="font-medium text-sm">{calculationResult.vestedTokens.toLocaleString()} ALMANAK</span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="text-xs text-gray-400">
+                                    * Based on $45M FDV and ${CONFIG.salePrice} per ALMANAK token
+                                </div>
+                                <div className="text-xs text-gray-400">
+                                    * 30% unlocked at TGE, 70% linear over 24 months (6 months cliff)
+                                </div>
+                            </div>
+                        )}
+                        {calculationResult && calculationResult.error && (
+                            <div className="result-card mt-4 text-red-400">
+                                {calculationResult.error}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        function InvestorModal({ showModal, setShowModal, selectedInvestor, investorLoading, formatAmount }) {
+            return showModal ? (
+                <div className="investor-modal">
+                    <div className="investor-modal-content">
+                        <span className="investor-modal-close" onClick={() => setShowModal(false)}>×</span>
+                        <div className="investor-details">
+                            <h2>Investor Details</h2>
+                            {investorLoading && (
+                                <div className="flex items-center justify-center py-8">
+                                    <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                                </div>
+                            )}
+                            {!investorLoading && selectedInvestor && (
+                                <div>
+                                    <div className="mb-4">
+                                        <div className="text-gray-400 text-sm mb-1">Full Address</div>
+                                        <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
+                                    </div>
+                                    <div className="investor-stats">
+                                        <div className="investor-stat">
+                                            <div className="investor-stat-value">{formatAmount(selectedInvestor.almanak_total)}</div>
+                                            <div className="investor-stat-label">{CONFIG.projectName} Investment</div>
+                                        </div>
+                                        <div className="investor-stat">
+                                            <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                            <div className="investor-stat-label">Total Invested (All Sales)</div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6">
+                                        <h3 className="font-bold text-lg mb-3">All Sales</h3>
+                                        <div className="sales-table-container">
+                                            <table className="data-table">
+                                                <thead>
+                                                    <tr className="table-header">
+                                                        <th>Sale</th>
+                                                        <th>Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {selectedInvestor.sales.map((sale, index) => (
+                                                        <tr key={index} className={`table-row ${sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? 'almanak-sale' : ''}`}>
+                                                            <td>
+                                                                <span className={`sale-badge ${sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? 'almanak' : 'other'}`}>
+                                                                    {sale.sale.toLowerCase() === CONFIG.projectName.toLowerCase() ? '★ ' : ''}{sale.sale.toUpperCase()}
+                                                                </span>
+                                                            </td>
+                                                            <td>{formatAmount(sale.amount)}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            {!investorLoading && !selectedInvestor && (
+                                <div className="text-red-500 text-center py-4">
+                                    Failed to load investor details
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : null;
+        }
+
+        function TrackerApp() {
             const [loading, setLoading] = React.useState(true);
             const [error, setError] = React.useState(null);
+            const [deposits, setDeposits] = React.useState([]);
+            const [totalInvestment, setTotalInvestment] = React.useState(0);
+            const [stats, setStats] = React.useState({ average: 0, median: 0, highest: 0, lowest: 0 });
             const [sortOrder, setSortOrder] = React.useState('desc');
             const [currentPage, setCurrentPage] = React.useState(1);
-            const [stats, setStats] = React.useState({
-                average: 0,
-                median: 0,
-                highest: 0,
-                lowest: 0
-            });
-            
-            // Add investor modal state
-            const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [showModal, setShowModal] = React.useState(false);
+            const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [investorLoading, setInvestorLoading] = React.useState(false);
-            
-            // Constants
-            const depositsPerPage = 15;
-            
-            // Fetch data on component mount
+            const [calculatorMode, setCalculatorMode] = React.useState('amount');
+            const [inputValue, setInputValue] = React.useState('');
+
+            const formatAmount = (amount, includeDollar = false) => {
+                if (amount === null || amount === undefined || isNaN(amount)) return '$0.00';
+                const formatted = amount.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: includeDollar ? 6 : 2
+                });
+                return includeDollar ? `$${formatted}` : `$${formatted}`;
+            };
+
+            const formatAddress = (address) => {
+                return `${address.slice(0, 6)}...${address.slice(-4)}`;
+            };
+
             React.useEffect(() => {
                 fetchData();
             }, []);
-            
-            // Function to fetch data from API
+
             const fetchData = async () => {
                 try {
                     setLoading(true);
-                    
-                    // Fetch total investment
-                    const totalRes = await fetch('/api/almanak/total-investment');
-                    if (!totalRes.ok) {
-                        throw new Error('Failed to fetch total investment');
+                    const [totalResponse, depositsResponse] = await Promise.all([
+                        fetch(CONFIG.apiEndpoints.totalInvestment),
+                        fetch(CONFIG.apiEndpoints.deposits)
+                    ]);
+
+                    if (!totalResponse.ok || !depositsResponse.ok) {
+                        throw new Error('Failed to fetch data');
                     }
-                    const totalData = await totalRes.json();
+
+                    const totalData = await totalResponse.json();
+                    const depositsData = await depositsResponse.json();
+
                     setTotalInvestment(totalData.total);
-                    
-                    // Fetch deposits
-                    const depositsRes = await fetch('/api/almanak/deposits');
-                    if (!depositsRes.ok) {
-                        throw new Error('Failed to fetch deposits');
-                    }
-                    const depositsData = await depositsRes.json();
-                    setDeposits(depositsData.deposits || []);
-                    
-                    // Calculate statistics
-                    if (depositsData.deposits && depositsData.deposits.length > 0) {
+                    setDeposits(depositsData.deposits);
+
+                    // Calculate stats
+                    if (depositsData.deposits.length > 0) {
                         const amounts = depositsData.deposits.map(d => d.amount);
-                        const sortedAmounts = [...amounts].sort((a, b) => a - b);
-                        
+                        const sortedAmounts = amounts.slice().sort((a, b) => a - b);
                         setStats({
                             average: amounts.reduce((a, b) => a + b, 0) / amounts.length,
                             median: sortedAmounts.length % 2 === 0 
@@ -389,196 +755,131 @@
                             lowest: Math.min(...amounts)
                         });
                     }
-                    
+
                     setLoading(false);
                 } catch (err) {
-                    console.error("Error fetching data:", err);
                     setError(err.message);
                     setLoading(false);
                 }
             };
-            
-            // Function to format currency
-            const formatAmount = (amount) => {
-                return amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            };
-            
-            // Format wallet address to shorter format
-            const formatAddress = (address) => {
-                if (!address) return '';
-                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
-            };
-            
-            // Sort deposits based on current sort order
-            const sortedDeposits = React.useMemo(() => {
-                return [...deposits].sort((a, b) => {
-                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
-                });
-            }, [deposits, sortOrder]);
-            
-            // Toggle sort order
-            const toggleSortOrder = () => {
-                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            };
-            
-            // Pagination calculations
-            const indexOfLastDeposit = currentPage * depositsPerPage;
-            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
-            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
-            const totalPages = Math.max(1, Math.ceil(deposits.length / depositsPerPage));
-            
-            // Function to handle back navigation
-            const handleBack = () => {
-                // Go to dashboard
-                window.location.href = '/dashboard';
-            };
-            
-            // Add handleInvestorClick function
+
             const handleInvestorClick = async (address) => {
                 try {
                     setInvestorLoading(true);
                     setShowModal(true);
                     setSelectedInvestor(null);
-                    
-                    console.log(`Fetching investor details for address: ${address}`);
-                    const response = await fetch(`/api/investor/${address}`);
-                    console.log('Response status:', response.status);
-                    
-                    if (!response.ok) {
-                        const errorText = await response.text();
-                        console.error('Error response:', errorText);
-                        throw new Error(`Failed to fetch investor details: ${response.status} ${errorText}`);
-                    }
-                    
-                    const data = await response.json();
-                    console.log('Received data:', data);
-                    
-                    if (data.error) {
-                        throw new Error(data.error);
-                    }
 
-                    // Filter sales to only show Almanak sales
-                    const almanakSales = data.sales.filter(sale => sale.sale.toLowerCase() === 'almanak');
-                    
-                    if (almanakSales.length === 0) {
-                        throw new Error('No Almanak sales found for this address');
-                    }
+                    const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', address));
+                    if (!response.ok) throw new Error('Failed to fetch investor details');
+
+                    const data = await response.json();
+                    const almanakSales = data.sales.filter(sale => sale.sale.toLowerCase().includes('almanak'));
+                    const almanakTotal = almanakSales.reduce((sum, sale) => sum + sale.amount, 0);
 
                     setSelectedInvestor({
                         address,
-                        total_invested: almanakSales.reduce((sum, sale) => sum + sale.amount, 0),
-                        sales_participated: almanakSales.length,
-                        sales: almanakSales
+                        total_invested: data.total_invested,
+                        sales_participated: data.sales_participated,
+                        almanak_total: almanakTotal,
+                        sales: data.sales
                     });
                 } catch (error) {
-                    console.error('Error in handleInvestorClick:', error);
                     setSelectedInvestor(null);
                 } finally {
                     setInvestorLoading(false);
                 }
             };
 
-            // Add closeModal function
-            const closeModal = () => {
-                setShowModal(false);
-                setSelectedInvestor(null);
+            const sortedDeposits = React.useMemo(() => {
+                return [...deposits].sort((a, b) => {
+                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
+                });
+            }, [deposits, sortOrder]);
+
+            const toggleSortOrder = () => {
+                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
             };
-            
-            // Show loading state
+
+            const indexOfLastDeposit = currentPage * CONFIG.depositsPerPage;
+            const indexOfFirstDeposit = indexOfLastDeposit - CONFIG.depositsPerPage;
+            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
+            const totalPages = Math.max(1, Math.ceil(deposits.length / CONFIG.depositsPerPage));
+
             if (loading) {
                 return (
                     <div className="flex items-center justify-center h-screen">
                         <div className="text-center p-8 card max-w-md">
                             <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                            <p className="mb-6">Loading ALMANAK Sale Data...</p>
+                            <p className="mb-6">Loading {CONFIG.projectName} Sale Data...</p>
                         </div>
                     </div>
                 );
             }
-            
-            // Show error state
+
             if (error) {
                 return (
                     <div className="main-container">
                         <div className="card p-8 text-center">
                             <h2 className="text-xl text-red-500 mb-4">Error</h2>
                             <p>{error}</p>
-                            <button 
-                                onClick={fetchData} 
-                                className="pagination-button mt-4"
-                            >
-                                Retry
-                            </button>
+                            <button onClick={fetchData} className="pagination-button mt-4">Retry</button>
                         </div>
                     </div>
                 );
             }
-            
-            // Main component render
+
             return (
                 <div className="main-container">
-                    {/* Back to Home Button */}
-                    <a href="/dashboard" className="back-button">
+                    <a href={CONFIG.backLink} className="back-button">
                         <i className="fas fa-arrow-left mr-2"></i>
-                        Back to Dashboard
+                        {CONFIG.backLinkText}
                     </a>
-                    
-                    {/* Header */}
                     <div className="header-card">
-                        <div className="header-title">ALMANAK</div>
-                        <img src="almanak.jpg" alt="ALMANAK Logo" className="h-16" />
+                        <div className="header-title">{CONFIG.projectName}</div>
+                        <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="h-16" />
                     </div>
                     
-                    {/* Main Content Grid */}
+                    <PriceStats formatAmount={formatAmount} />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Left Column - Stats */}
                         <div className="md:col-span-1">
-                            {/* Total USDC Card */}
                             <div className="card p-6 text-center">
-                                <div className="card-title">Total USDC Invested</div>
+                                <div className="card-title">Total USDC {CONFIG.isUpcoming ? 'Interest' : 'Invested'}</div>
                                 <div className="amount-display">{formatAmount(totalInvestment)}</div>
                                 <div className="text-gray-400 text-sm">{deposits.length} unique addresses</div>
                             </div>
-                            
-                            {/* Stats section */}
                             <div className="stats-section">
                                 <div className="stats-title">Investment Stats</div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Average</div>
                                     <div className="stats-value">{formatAmount(stats.average)}</div>
                                 </div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Median</div>
                                     <div className="stats-value">{formatAmount(stats.median)}</div>
                                 </div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Highest</div>
                                     <div className="stats-value">{formatAmount(stats.highest)}</div>
                                 </div>
-                                
                                 <div className="stats-card">
                                     <div className="stats-label">Lowest</div>
                                     <div className="stats-value">{formatAmount(stats.lowest)}</div>
                                 </div>
                             </div>
+                            <UpcomingSaleCalculator
+                                calculatorMode={calculatorMode}
+                                setCalculatorMode={setCalculatorMode}
+                                inputValue={inputValue}
+                                setInputValue={setInputValue}
+                                formatAmount={formatAmount}
+                            />
                         </div>
-                        
-                        {/* Right Column - Investors Table */}
                         <div className="md:col-span-2">
                             <div className="card">
                                 <div className="p-4 border-b border-gray-800">
-                                    <div className="card-title">Top Investors</div>
-                                    <div className="card-subtitle">Ranked by investment amount</div>
+                                    <div className="card-title">Top {CONFIG.isUpcoming ? 'Interested' : ''} Investors</div>
+                                    <div className="card-subtitle">Ranked by {CONFIG.isUpcoming ? 'interest' : 'investment'} amount</div>
                                 </div>
-                                
                                 <div className="table-container">
                                     <table className="data-table">
                                         <thead>
@@ -613,19 +914,13 @@
                                                             {formatAddress(deposit.address)}
                                                         </a>
                                                     </td>
-                                                    <td className="text-right font-mono">
-                                                        {formatAmount(deposit.amount)}
-                                                    </td>
-                                                    <td className="text-right">
-                                                        {((deposit.amount / totalInvestment) * 100).toFixed(2)}%
-                                                    </td>
+                                                    <td className="text-right font-mono">{formatAmount(deposit.amount)}</td>
+                                                    <td className="text-right">{((deposit.amount / totalInvestment) * 100).toFixed(2)}%</td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                     </table>
                                 </div>
-                                
-                                {/* Pagination */}
                                 {totalPages > 1 && (
                                     <div className="pagination">
                                         <button
@@ -635,11 +930,7 @@
                                         >
                                             Previous
                                         </button>
-                                        
-                                        <div className="pagination-info">
-                                            {currentPage} of {totalPages}
-                                        </div>
-                                        
+                                        <div className="pagination-info">{currentPage} of {totalPages}</div>
                                         <button
                                             onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
                                             disabled={currentPage === totalPages}
@@ -652,79 +943,18 @@
                             </div>
                         </div>
                     </div>
-                    
-                    {/* Investor Modal */}
-                    {showModal && (
-                        <div className="investor-modal">
-                            <div className="investor-modal-content">
-                                <div className="investor-modal-close" onClick={closeModal}>
-                                    ×
-                                </div>
-                                {investorLoading ? (
-                                    <div className="text-center py-8">
-                                        <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin mb-4"></div>
-                                        <p>Loading investor details...</p>
-                                    </div>
-                                ) : selectedInvestor ? (
-                                    <div className="investor-details">
-                                        <h2>Investor Details</h2>
-                                        <div className="mb-4">
-                                            <p className="font-mono break-all">{selectedInvestor.address}</p>
-                                            <a 
-                                                href={`https://debank.com/profile/${selectedInvestor.address}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-blue-400 hover:text-blue-300"
-                                            >
-                                                View on DeBank
-                                            </a>
-                                        </div>
-                                        
-                                        <div className="investor-stats">
-                                            <div className="investor-stat">
-                                                <div className="investor-stat-value">
-                                                    {formatAmount(selectedInvestor.total_invested)}
-                                                </div>
-                                                <div className="investor-stat-label">Total Invested</div>
-                                            </div>
-                                            <div className="investor-stat">
-                                                <div className="investor-stat-value">
-                                                    {selectedInvestor.sales_participated}
-                                                </div>
-                                                <div className="investor-stat-label">Sales Participated</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="mt-6">
-                                            <h3 className="text-lg font-bold mb-3">Investment History</h3>
-                                            <div className="space-y-2">
-                                                {selectedInvestor.sales.map((sale, index) => (
-                                                    <div key={index} className="bg-gray-800 p-3 rounded">
-                                                        <div className="flex justify-between">
-                                                            <span>{formatAmount(sale.amount)}</span>
-                                                            <span className="text-gray-400">
-                                                                {new Date(sale.timestamp).toLocaleDateString()}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-8 text-red-400">
-                                        Failed to load investor details
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
+                    <InvestorModal
+                        showModal={showModal}
+                        setShowModal={setShowModal}
+                        selectedInvestor={selectedInvestor}
+                        investorLoading={investorLoading}
+                        formatAmount={formatAmount}
+                    />
                 </div>
             );
         }
-        
-        // Render the app to the DOM
-        ReactDOM.render(<AlmanakTracker />, document.getElementById('app'));
+
+        ReactDOM.render(<TrackerApp />, document.getElementById('app'));
     </script>
 </body>
 </html>

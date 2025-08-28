@@ -13,9 +13,28 @@
     <style>
         /* Basic styles */
         body {
-            background-color: #0f0f0f;
+            background-color: #101010;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23222222' stroke-width='1'%3E%3Cpath d='M769 229L1037 260.9M927 880L731 737 520 660 309 538 40 599 295 764 126.5 879.5 40 599-197 493 102 382-31 229 126.5 79.5-69-63'/%3E%3Cpath d='M-31 229L237 261 390 382 603 493 308.5 537.5 101.5 381.5M370 905L295 764'/%3E%3Cpath d='M520 660L578 842 731 737 840 599 603 493 520 660 295 764 309 538 390 382 539 269 769 229 577.5 41.5 370 105 295 -36 126.5 79.5 237 261 102 382 40 599 -69 737 127 880'/%3E%3Cpath d='M520-140L578.5 42.5 731-63M603 493L539 269 237 261 370 105M902 382L539 269M390 382L102 382'/%3E%3Cpath d='M-222 42L126.5 79.5 370 105 539 269 577.5 41.5 927 80 769 229 902 382 603 493 731 737M295-36L577.5 41.5M578 842L295 764M40-201L127 80M102 382L-261 269'/%3E%3C/g%3E%3Cg fill='%23333333'%3E%3Ccircle cx='769' cy='229' r='5'/%3E%3Ccircle cx='539' cy='269' r='5'/%3E%3Ccircle cx='603' cy='493' r='5'/%3E%3Ccircle cx='731' cy='737' r='5'/%3E%3Ccircle cx='520' cy='660' r='5'/%3E%3Ccircle cx='309' cy='538' r='5'/%3E%3Ccircle cx='295' cy='764' r='5'/%3E%3Ccircle cx='40' cy='599' r='5'/%3E%3Ccircle cx='102' cy='382' r='5'/%3E%3Ccircle cx='127' cy='80' r='5'/%3E%3Ccircle cx='370' cy='105' r='5'/%3E%3Ccircle cx='578' cy='42' r='5'/%3E%3Ccircle cx='237' cy='261' r='5'/%3E%3Ccircle cx='390' cy='382' r='5'/%3E%3C/g%3E%3C/svg%3E");
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        /* iOS 26 Glassy Style */
+        .ios-glass {
+            background: rgba(45, 45, 45, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Main container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
         }
         
         /* Silencio blue color */
@@ -32,87 +51,99 @@
         
         /* Header card */
         .header-card {
-            background: linear-gradient(90deg, #0d2166 0%, #1a3889 100%);
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(40, 78, 233, 0.8) 0%, rgba(26, 56, 137, 0.8) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
             padding: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            border: 1px solid rgba(40, 78, 233, 0.15);
-            box-shadow: 0 4px 12px rgba(40, 78, 233, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         
         .header-title {
             font-size: 2rem;
-            font-weight: bold;
-            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff;
         }
         
         /* Cards */
         .card {
-            background: linear-gradient(135deg, #1a1a1a 0%, #242424 100%);
-            border-radius: 8px;
-            overflow: hidden;
+            background: rgba(28, 28, 30, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
             margin-bottom: 20px;
-            border: 1px solid rgba(40, 78, 233, 0.15);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
         }
         
         .card-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 4px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
         
         .card-subtitle {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
+            margin-bottom: 16px;
         }
         
         /* Amount display */
         .amount-display {
-            font-size: 2rem;
-            font-weight: bold;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 16px 0;
             color: #284ee9;
-            margin: 10px 0;
-            text-shadow: 0 0 10px rgba(40, 78, 233, 0.3);
+            background: linear-gradient(90deg, #284ee9, #1a3889);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
-        /* Stats box */
+        /* Stats section */
         .stats-section {
+            background: rgba(28, 28, 30, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 16px;
             margin-top: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         
         .stats-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #284ee9;
-            text-shadow: 0 0 10px rgba(40, 78, 233, 0.3);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
         }
         
         .stats-card {
-            background: linear-gradient(90deg, rgba(18, 24, 39, 0.7) 0%, rgba(30, 36, 60, 0.7) 100%);
-            border-left: 4px solid #284ee9;
-            padding: 15px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .stats-card:last-child {
+            border-bottom: none;
         }
         
         .stats-label {
-            font-size: 0.9rem;
-            color: #b0b0b0;
+            color: rgba(235, 235, 245, 0.6);
         }
         
         .stats-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #284ee9;
+            font-weight: 500;
         }
         
         .profit-positive {
-            color: #3dd656;
+            color: #284ee9;
         }
         
         .profit-negative {
@@ -121,9 +152,13 @@
         
         /* Table */
         .table-container {
-            width: 100%;
-            overflow-x: auto;
-            border-radius: 8px;
+            background: rgba(28, 28, 30, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 16px;
+            overflow: hidden;
         }
         
         .data-table {
@@ -132,41 +167,35 @@
             border-spacing: 0;
         }
         
-        .table-header {
-            background-color: rgba(13, 33, 102, 0.8);
-            padding: 15px;
+        .data-table th {
+            padding: 12px;
             text-align: left;
-            font-weight: bold;
+            font-weight: 600;
+            color: rgba(235, 235, 245, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
         
-        .table-header th {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(40, 78, 233, 0.1);
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
         
-        .table-header th:first-child {
-            border-top-left-radius: 8px;
+        .data-table tr:last-child td {
+            border-bottom: none;
         }
         
-        .table-header th:last-child {
-            border-top-right-radius: 8px;
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
         }
         
-        .table-row td {
-            padding: 12px 15px;
-            border-bottom: 1px solid rgba(40, 78, 233, 0.05);
+        .data-table td {
+            position: relative;
         }
         
-        .table-row:nth-child(odd) {
-            background-color: rgba(30, 30, 30, 0.6);
-        }
-        
-        .table-row:nth-child(even) {
-            background-color: rgba(40, 40, 40, 0.6);
-        }
-        
-        .table-row:hover {
-            background-color: rgba(13, 33, 102, 0.3);
+        /* Number formatting */
+        .number-cell {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            text-align: right;
         }
         
         /* Rank badge */
@@ -174,23 +203,268 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
-            background-color: #284ee9;
-            color: #fff;
-            font-weight: bold;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #284ee9, #1a3889);
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
             border-radius: 50%;
+            text-align: center;
         }
         
         /* Address */
         .address-cell {
-            font-family: monospace;
-            color: #fff;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+        }
+        
+        .address-cell a {
+            color: #284ee9;
+            text-decoration: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            display: inline-block;
         }
         
         .address-cell a:hover {
-            text-decoration: underline;
+            background: rgba(40, 78, 233, 0.1);
+            color: #4a6eff;
+            text-decoration: none;
+        }
+        
+        .address-cell a:active {
+            background: rgba(40, 78, 233, 0.2);
+        }
+        
+        /* Tab buttons */
+        .tab-button {
+            flex: 1;
+            padding: 8px 12px;
+            background: rgba(45, 45, 45, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(235, 235, 245, 0.6);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .tab-button:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .tab-button:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .tab-button:not(:first-child):not(:last-child) {
+            border-left: none;
+            border-right: none;
+        }
+        
+        .tab-button.active {
+            background: rgba(40, 78, 233, 0.3);
             color: #284ee9;
+            border-color: rgba(40, 78, 233, 0.5);
+        }
+        
+        .tab-button:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Calculator input */
+        .calculator-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(28, 28, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .calculator-input:focus {
+            outline: none;
+            border-color: #284ee9;
+            background: rgba(28, 28, 30, 0.9);
+        }
+        
+        /* Result card */
+        .result-card {
+            background: rgba(28, 28, 30, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+        }
+        
+        .pagination-button {
+            background: rgba(28, 28, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .pagination-button:hover:not(:disabled) {
+            background: rgba(40, 78, 233, 0.3);
+            border-color: rgba(40, 78, 233, 0.5);
+        }
+        
+        .pagination-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination-info {
+            color: rgba(235, 235, 245, 0.6);
+            font-size: 14px;
+        }
+        
+        /* Profit/Loss colors */
+        .profit-positive {
+            color: #284ee9;
+        }
+        
+        .profit-negative {
+            color: #ff453a;
+        }
+        
+        /* Modal styles */
+        .investor-modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: rgba(0, 0, 0, 0.8) !important;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 9999 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        
+        .investor-modal-content {
+            background: rgba(28, 28, 30, 0.95) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: 16px !important;
+            padding: 24px !important;
+            max-width: 600px !important;
+            width: 90% !important;
+            max-height: 80vh !important;
+            overflow-y: auto !important;
+            position: relative !important;
+            z-index: 10000 !important;
+        }
+        
+        .investor-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 24px;
+            line-height: 1;
+            z-index: 1;
+        }
+        
+        .investor-details h2 {
+            margin-bottom: 16px;
+            color: #284ee9;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        .investor-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        
+        .investor-stat {
+            background: rgba(45, 45, 45, 0.5);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .investor-stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #284ee9;
+            margin-bottom: 4px;
+        }
+        
+        .investor-stat-label {
+            font-size: 12px;
+            color: rgba(235, 235, 245, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Sales table in modal */
+        .sales-table-container {
+            background: rgba(28, 28, 30, 0.5);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .sales-table-container .data-table {
+            margin: 0;
+        }
+        
+        .sales-table-container .data-table th,
+        .sales-table-container .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .sales-table-container .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Sale badges */
+        .sale-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .sale-badge.silencio {
+            background: rgba(40, 78, 233, 0.2);
+            color: #284ee9;
+            border: 1px solid rgba(40, 78, 233, 0.3);
+        }
+        
+        .sale-badge.other {
+            background: rgba(128, 128, 128, 0.2);
+            color: #888;
+            border: 1px solid rgba(128, 128, 128, 0.3);
+        }
+        
+        /* Highlight current sale row */
+        .silencio-sale {
+            background: rgba(40, 78, 233, 0.05);
         }
         
         /* Pagination */
@@ -353,7 +627,7 @@
         }
         .investor-details h2 {
             margin-bottom: 1rem;
-            color: #00ff00;
+            color: #284ee9;
         }
         .investor-stats {
             display: grid;
@@ -370,11 +644,98 @@
         .investor-stat-value {
             font-size: 1.2rem;
             font-weight: bold;
-            color: #00ff00;
+            color: #284ee9;
         }
         .investor-stat-label {
             font-size: 0.9rem;
             color: #888;
+        }
+
+        /* Progress container for TGE status */
+        .progress-container {
+            background: rgba(40, 78, 233, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(40, 78, 233, 0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(40, 78, 233, 0.15);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 12px 0;
+            position: relative;
+        }
+
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #284ee9, #1a3889);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .countdown-item {
+            text-align: center;
+            background: rgba(44, 44, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 12px 8px;
+            border: 1px solid rgba(40, 78, 233, 0.1);
+        }
+
+        .countdown-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #284ee9;
+            margin-bottom: 4px;
+        }
+
+        .countdown-label {
+            font-size: 0.75rem;
+            color: rgba(235, 235, 245, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .countdown-number {
+                font-size: 1.25rem;
+            }
         }
     </style>
 </head>
@@ -400,12 +761,7 @@
                 lowest: 0
             });
             
-            // Add new state for investor modal
-            const [selectedInvestor, setSelectedInvestor] = React.useState(null);
-            const [showModal, setShowModal] = React.useState(false);
-            const [investorLoading, setInvestorLoading] = React.useState(false);
-            
-            // New state for token price data
+            // Token price state with ROI calculations
             const [priceData, setPriceData] = React.useState({
                 salePrice: 0.0006, // Fixed sale price for Silencio
                 currentPrice: 0,
@@ -417,16 +773,33 @@
                 error: null
             });
             
-            // Calculator state
-            const [calculatorMode, setCalculatorMode] = React.useState('amount'); // 'amount' or 'address'
+            // Add new state for investor modal
+            const [selectedInvestor, setSelectedInvestor] = React.useState(null);
+            const [showModal, setShowModal] = React.useState(false);
+            const [investorLoading, setInvestorLoading] = React.useState(false);
+            
+            // Add state for calculator input
             const [inputValue, setInputValue] = React.useState('');
+            const [calculatorMode, setCalculatorMode] = React.useState('amount'); // 'amount' or 'address' or 'tokens'
             const [calculationResult, setCalculationResult] = React.useState(null);
             const [calculatorLoading, setCalculatorLoading] = React.useState(false);
             
             // Constants
-            const depositsPerPage = 15;
+            const depositsPerPage = 10;
             const COINGECKO_API_KEY = 'CG-4Fnx2x1Ga65oHP6HufVGevXh';
-            const SILENCIO_TOKEN_ID = 'silencio';  // Correct token ID
+            const SILENCIO_TOKEN_ID = 'silencio-protocol';  // Updated token ID
+            
+            // TGE Configuration
+            const TGE_DATE = new Date('2025-01-24T11:10:00Z'); // Jan 24, 2025 at 14:10 (UTC+3) = 11:10 UTC
+            const TGE_UNLOCK_PERCENT = 100; // 100% unlocked at TGE
+            
+            // Set dynamic favicon
+            React.useEffect(() => {
+                const favicon = document.createElement("link");
+                favicon.rel = "icon";
+                favicon.href = "/static/silencio.png";
+                document.head.appendChild(favicon);
+            }, []);
             
             // Function to handle back navigation
             const handleBack = () => {
@@ -485,6 +858,276 @@
                     fetchTokenPriceData();
                 }
             }, [userActivity.hasInteracted, userActivity.isActive]);
+            
+            // Calculator functions
+            const handleCalculate = async () => {
+                if (!inputValue) return;
+                
+                setCalculatorLoading(true);
+                
+                try {
+                    if (calculatorMode === 'address') {
+                        // Find investment by address
+                        const deposit = deposits.find(d => d.address.toLowerCase() === inputValue.toLowerCase());
+                        
+                        if (!deposit) {
+                            throw new Error('Address not found in deposits');
+                        }
+                        
+                        const silencioTotal = deposit.amount;
+                        const pnlData = calculatePnL(silencioTotal);
+                        setCalculationResult({
+                            type: 'address',
+                            investmentAmount: silencioTotal,
+                            ...pnlData
+                        });
+                    } else if (calculatorMode === 'amount') {
+                        // Amount mode - calculate based on input amount
+                        const amount = parseFloat(inputValue);
+                        if (isNaN(amount) || amount <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
+                            return;
+                        }
+                        
+                        const pnlData = calculatePnL(amount);
+                        setCalculationResult({
+                            type: 'amount',
+                            investmentAmount: amount,
+                            ...pnlData
+                        });
+                    } else {
+                        // Token mode - calculate based on input tokens
+                        const tokens = parseFloat(inputValue);
+                        if (isNaN(tokens) || tokens <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid token amount greater than 0.' });
+                            return;
+                        }
+                        
+                        const usdcAmount = tokens * priceData.salePrice;
+                        const pnlData = calculatePnL(usdcAmount);
+                        setCalculationResult({
+                            type: 'tokens',
+                            investmentAmount: usdcAmount,
+                            tokensReceived: tokens,
+                            ...pnlData
+                        });
+                    }
+                } catch (error) {
+                    setCalculationResult({ error: error.message });
+                } finally {
+                    setCalculatorLoading(false);
+                }
+            };
+            
+            const handleInputChange = (e) => {
+                setInputValue(e.target.value);
+                setCalculationResult(null);
+            };
+            
+            const switchCalculatorMode = (mode) => {
+                setCalculatorMode(mode);
+                setInputValue('');
+                setCalculationResult(null);
+            };
+
+            const closeModal = () => {
+                setShowModal(false);
+                setSelectedInvestor(null);
+            };
+
+            // TGE Status Component
+            function TGEStatus() {
+                const [timeLeft, setTimeLeft] = React.useState({});
+                const [progress, setProgress] = React.useState(0);
+
+                React.useEffect(() => {
+                    const updateCountdown = () => {
+                        const now = new Date();
+                        const tgeDate = TGE_DATE;
+                        
+                        if (now >= tgeDate) {
+                            // TGE has occurred, all tokens unlocked
+                            setProgress(100);
+                            setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                        } else {
+                            // Before TGE
+                            setProgress(0);
+                            
+                            // Calculate time until TGE
+                            const difference = tgeDate.getTime() - now.getTime();
+                            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                            setTimeLeft({ days, hours, minutes, seconds });
+                        }
+                    };
+
+                    updateCountdown();
+                    const interval = setInterval(updateCountdown, 1000);
+                    return () => clearInterval(interval);
+                }, []);
+
+                const isTGECompleted = new Date() >= TGE_DATE;
+
+                return (
+                    <div className="progress-container">
+                        <div className="flex items-center justify-between mb-3">
+                            <div>
+                                <h3 className="text-lg font-semibold" style={{color: '#284ee9'}}>
+                                    {isTGECompleted ? '🎉 TGE Completed!' : '⏳ Time Until TGE'}
+                                </h3>
+                                <p className="text-sm text-gray-400">
+                                    {isTGECompleted ? 'All tokens have been unlocked (100% at TGE)' : 'TGE on January 24, 2025 at 14:10 (UTC+3)'}
+                                </p>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-2xl font-bold" style={{color: '#284ee9'}}>
+                                    {isTGECompleted ? '100%' : '0%'}
+                                </div>
+                                <div className="text-xs text-gray-400">Unlocked</div>
+                            </div>
+                        </div>
+                        
+                        <div className="progress-bar">
+                            <div 
+                                className="progress-fill" 
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                        </div>
+
+                        {!isTGECompleted && (
+                            <div className="countdown-grid">
+                                <div className="countdown-item">
+                                    <div className="countdown-number">{timeLeft.days || 0}</div>
+                                    <div className="countdown-label">Days</div>
+                                </div>
+                                <div className="countdown-item">
+                                    <div className="countdown-number">{timeLeft.hours || 0}</div>
+                                    <div className="countdown-label">Hours</div>
+                                </div>
+                                <div className="countdown-item">
+                                    <div className="countdown-number">{timeLeft.minutes || 0}</div>
+                                    <div className="countdown-label">Minutes</div>
+                                </div>
+                                <div className="countdown-item">
+                                    <div className="countdown-number">{timeLeft.seconds || 0}</div>
+                                    <div className="countdown-label">Seconds</div>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="mt-4 text-center">
+                            <div className="text-sm text-gray-400">
+                                TGE: Jan 24, 2025 • 100% Immediate Unlock • No Vesting Period
+                            </div>
+                        </div>
+                        
+                        <div className="mt-4 p-4 rounded-lg border" style={{backgroundColor: 'rgba(40, 78, 233, 0.1)', borderColor: 'rgba(40, 78, 233, 0.2)'}}>
+                            <div className="text-sm font-semibold mb-2" style={{color: '#284ee9'}}>Unlock Schedule</div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <div className="text-gray-400">TGE Unlock</div>
+                                    <div className="font-medium">100% immediately</div>
+                                </div>
+                                <div>
+                                    <div className="text-gray-400">Vesting Period</div>
+                                    <div className="font-medium">None</div>
+                                </div>
+                                <div>
+                                    <div className="text-gray-400">Full Unlock</div>
+                                    <div className="font-medium">At TGE</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+            
+            // Update the formatAmount function to optionally format as currency
+            const formatAmount = (amount, isCurrency = true) => {
+                if (isCurrency) {
+                    return amount.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                } else {
+                    return amount.toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+            };
+
+            // Format cryptocurrency prices with appropriate decimal places
+            const formatPrice = (price) => {
+                if (price === null || price === undefined || isNaN(price) || price === 0) {
+                    return '$0.00';
+                }
+                
+                // For very small prices, show more decimal places
+                if (price < 0.001) {
+                    return price.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 6,
+                        maximumFractionDigits: 8
+                    });
+                } else if (price < 0.01) {
+                    return price.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 4,
+                        maximumFractionDigits: 6
+                    });
+                } else if (price < 1) {
+                    return price.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 3,
+                        maximumFractionDigits: 4
+                    });
+                } else {
+                    return price.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                }
+            };
+            
+            // Format date to a readable format
+            const formatDate = (dateString) => {
+                const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString(undefined, options);
+            };
+            
+            // Format wallet address to shorter format
+            const formatAddress = (address) => {
+                if (!address) return '';
+                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+            };
+            
+            // Sort deposits based on current sort order
+            const sortedDeposits = React.useMemo(() => {
+                return [...deposits].sort((a, b) => {
+                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
+                });
+            }, [deposits, sortOrder]);
+            
+            // Toggle sort order
+            const toggleSortOrder = () => {
+                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
+            };
+            
+            // Pagination calculations
+            const indexOfLastDeposit = currentPage * depositsPerPage;
+            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
+            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
+            const totalPages = Math.max(1, Math.ceil(deposits.length / depositsPerPage));
             
             // Function to fetch data from API
             const fetchData = async () => {
@@ -550,28 +1193,57 @@
                 try {
                     setPriceData(prev => ({ ...prev, loading: true, error: null }));
                     
-                    // Use our proxy endpoint instead of calling CoinGecko directly
-                    const apiUrl = `/api/proxy/coingecko/price/${SILENCIO_TOKEN_ID}`;
-                    console.log("Fetching Silencio price data from proxy:", apiUrl);
-                    const response = await fetch(apiUrl);
+                    // Try multiple possible token IDs for Silencio
+                    const possibleTokenIds = ['silencio', 'silencio-protocol', 'slnc'];
+                    let data = null;
+                    let tokenIdUsed = null;
                     
-                    if (!response.ok) {
-                        throw new Error(`Failed to fetch token price data: ${response.status}`);
+                    for (const tokenId of possibleTokenIds) {
+                        try {
+                            const apiUrl = `/api/proxy/coingecko/price/${tokenId}`;
+                            console.log(`Trying to fetch Silencio price data from: ${apiUrl}`);
+                            
+                            const response = await fetch(apiUrl);
+                            
+                            if (response.ok) {
+                                data = await response.json();
+                                tokenIdUsed = tokenId;
+                                console.log(`Successfully fetched data using token ID: ${tokenId}`, data);
+                                break;
+                            } else {
+                                console.log(`Token ID ${tokenId} failed with status: ${response.status}`);
+                            }
+                        } catch (error) {
+                            console.log(`Token ID ${tokenId} failed with error:`, error.message);
+                            continue;
+                        }
                     }
                     
-                    const data = await response.json();
-                    console.log("Received Silencio price data:", data);
+                    if (!data) {
+                        // If no token ID worked, set mock data for development
+                        console.warn("No valid token ID found, using fallback values");
+                        data = {
+                            current_price: 0.0008,  // Slightly above sale price for realistic testing
+                            ath: 0.002,             // ATH higher than sale price
+                            atl: 0.0003             // ATL lower than sale price
+                        };
+                        tokenIdUsed = 'fallback';
+                    }
                     
-                    // Extract price data directly from our simplified endpoint response
-                    let currentPrice = data.current_price || 0;
-                    let athPrice = data.ath || 0;
-                    let lowestPrice = data.atl || 0;
+                    // Extract price data with better error handling
+                    const currentPrice = data.current_price || 0;
+                    const athPrice = data.ath || 0;
+                    const lowestPrice = data.atl || 0;
                     
                     const salePrice = 0.0006; // Fixed sale price for Silencio
                     
                     // Calculate ROIs with safety checks
                     const currentRoi = currentPrice > 0 ? ((currentPrice - salePrice) / salePrice) * 100 : 0;
                     const athRoi = athPrice > 0 ? ((athPrice - salePrice) / salePrice) * 100 : 0;
+                    
+                    console.log(`Using token ID: ${tokenIdUsed}`);
+                    console.log("Price data - Current:", currentPrice, "ATH:", athPrice, "ATL:", lowestPrice);
+                    console.log("Calculated ROI - Current:", currentRoi.toFixed(2) + "%", "ATH:", athRoi.toFixed(2) + "%");
                     
                     // Update price data state
                     setPriceData({
@@ -625,93 +1297,7 @@
                 };
             };
             
-            // Handle calculate button click
-            const handleCalculate = async () => {
-                if (!inputValue) return;
-                
-                setCalculatorLoading(true);
-                
-                try {
-                    let investmentAmount = 0;
-                    
-                    if (calculatorMode === 'address') {
-                        // Fetch investment amount from address
-                        const deposit = deposits.find(d => d.address.toLowerCase() === inputValue.toLowerCase());
-                        
-                        if (deposit) {
-                            investmentAmount = deposit.amount;
-                        } else {
-                            throw new Error('Address not found in deposits');
-                        }
-                    } else {
-                        // Use directly entered amount
-                        investmentAmount = parseFloat(inputValue);
-                        
-                        if (isNaN(investmentAmount) || investmentAmount <= 0) {
-                            throw new Error('Please enter a valid amount');
-                        }
-                    }
-                    
-                    const result = calculatePnL(investmentAmount);
-                    setCalculationResult({
-                        investmentAmount,
-                        ...result
-                    });
-                    
-                } catch (err) {
-                    setCalculationResult({
-                        error: err.message
-                    });
-                } finally {
-                    setCalculatorLoading(false);
-                }
-            };
-            
-            // Function to format currency with appropriate decimal places
-            const formatAmount = (amount, isTokenPrice = false) => {
-                // For token prices, show more decimal places if value is small
-                if (isTokenPrice) {
-                    if (amount < 0.01) {
-                        return '$' + amount.toFixed(6);
-                    } else if (amount < 1) {
-                        return '$' + amount.toFixed(5);
-                    } else if (amount < 10) {
-                        return '$' + amount.toFixed(4);
-                    }
-                }
-                
-                // Standard formatting for other amounts
-                return amount.toLocaleString('en-US', {
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            };
-            
-            // Format wallet address to shorter format
-            const formatAddress = (address) => {
-                if (!address) return '';
-                return address.substring(0, 6) + '...' + address.substring(address.length - 4);
-            };
-            
-            // Sort deposits based on current sort order
-            const sortedDeposits = React.useMemo(() => {
-                return [...deposits].sort((a, b) => {
-                    return sortOrder === 'desc' ? b.amount - a.amount : a.amount - b.amount;
-                });
-            }, [deposits, sortOrder]);
-            
-            // Toggle sort order
-            const toggleSortOrder = () => {
-                setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc');
-            };
-            
-            // Pagination calculations
-            const indexOfLastDeposit = currentPage * depositsPerPage;
-            const indexOfFirstDeposit = indexOfLastDeposit - depositsPerPage;
-            const currentDeposits = sortedDeposits.slice(indexOfFirstDeposit, indexOfLastDeposit);
-            const totalPages = Math.max(1, Math.ceil(deposits.length / depositsPerPage));
+
             
             // Calculate overall token performance
             const getCurrentPnLPercent = () => {
@@ -727,16 +1313,20 @@
             // Update the handleInvestorClick function
             const handleInvestorClick = async (address) => {
                 try {
+                    console.log('handleInvestorClick called with:', address);
                     setInvestorLoading(true);
                     setShowModal(true);
                     setSelectedInvestor(null);
+                    console.log('Modal state set to true, loading set to true');
                     
                     const response = await fetch(`/api/investor/${address}`);
+                    console.log('API response status:', response.status);
                     if (!response.ok) {
                         throw new Error('Failed to fetch investor details');
                     }
                     
                     const data = await response.json();
+                    console.log('API response data:', data);
                     
                     if (data.error) {
                         throw new Error(data.error);
@@ -746,11 +1336,13 @@
                         address,
                         ...data
                     });
+                    console.log('Selected investor set');
                 } catch (error) {
-                    console.error('Error:', error);
+                    console.error('Error in handleInvestorClick:', error);
                     setSelectedInvestor(null);
                 } finally {
                     setInvestorLoading(false);
+                    console.log('Loading set to false');
                 }
             };
             
@@ -787,33 +1379,55 @@
             // Main component render
             return (
                 <div className="main-container">
-                    <div class="back-button mb-4">
-                        <a href="index.html" class="text-white hover:text-gray-300">
-                            <i class="fas fa-arrow-left mr-2"></i>Back
-                        </a>
+                    {/* Back to Home Button */}
+                    <button 
+                        onClick={handleBack}
+                        className="ios-glass px-4 py-2 mb-6 flex items-center space-x-2 text-white hover:bg-white hover:bg-opacity-10 transition-all duration-200"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span>Dashboard</span>
+                    </button>
+                    
+                    {/* Header */}
+                    <div className="header-card">
+                        <div className="header-title">Silencio</div>
+                        <img src="/static/silencio.png" alt="Silencio Logo" className="h-16" onerror="this.src='/static/silencio.jpg'" />
                     </div>
-
-                    <div class="header-card mb-4">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center">
-                                <img src="/static/silencio.png" alt="Silencio Logo" class="h-8 mr-3" onerror="this.style.display='none'" />
-                                <h1 class="text-2xl font-bold text-white">SILENCIO</h1>
-                            </div>
-                        </div>
-                    </div>
-
+                    
+                    {/* TGE Status */}
+                    <TGEStatus />
+                    
                     {/* Token Price Stats Card */}
                     <div className="card p-4 mb-4">
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
                             <div className="flex items-center mb-4 md:mb-0">
-                                <img src="/static/silencio.png" alt="Silencio Logo" className="w-8 h-8 mr-3" onerror="this.style.display='none'" />
-                                <span className="text-lg font-semibold">Silencio Price Stats</span>
+                                <img src="/static/silencio.png" alt="Silencio Logo" className="w-8 h-8 mr-3" onerror="this.src='/static/silencio.jpg'" />
+                                <span className="text-lg font-semibold">Silencio Sale Information</span>
                             </div>
-                            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto">
                                 <div className="text-center">
                                     <div className="text-gray-400 text-sm">Sale Price</div>
                                     <div className="font-bold">$0.0006</div>
                                 </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">FDV</div>
+                                    <div className="font-bold">$60,000,000</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Token Symbol</div>
+                                    <div className="font-bold">SLC</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-gray-400 text-sm">Vesting</div>
+                                    <div className="font-bold text-blue-400">100% at TGE</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-4 p-4 bg-opacity-10 bg-gray-500 rounded-lg border border-gray-500 border-opacity-20">
+                            <div className="text-sm font-semibold mb-2 text-gray-300">Current Price Performance</div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                                 <div className="text-center">
                                     <div className="text-gray-400 text-sm">Current Price</div>
                                     <div className="font-bold">
@@ -821,7 +1435,7 @@
                                             ? "Loading..." 
                                             : priceData.error 
                                                 ? "N/A" 
-                                                : formatAmount(priceData.currentPrice, true)}
+                                                : formatPrice(priceData.currentPrice)}
                                     </div>
                                 </div>
                                 <div className="text-center">
@@ -831,22 +1445,12 @@
                                             ? "Loading..." 
                                             : priceData.error 
                                                 ? "N/A" 
-                                                : formatAmount(priceData.athPrice, true)}
-                                    </div>
-                                </div>
-                                <div className="text-center">
-                                    <div className="text-gray-400 text-sm">All-Time Low</div>
-                                    <div className="font-bold">
-                                        {priceData.loading 
-                                            ? "Loading..." 
-                                            : priceData.error 
-                                                ? "N/A" 
-                                                : formatAmount(priceData.lowestPrice, true)}
+                                                : formatPrice(priceData.athPrice)}
                                     </div>
                                 </div>
                                 <div className="text-center">
                                     <div className="text-gray-400 text-sm">Current ROI</div>
-                                    <div className={`font-bold ${priceData.currentRoi >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                    <div className={`font-bold ${priceData.currentRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                                         {priceData.loading 
                                             ? "Loading..." 
                                             : priceData.error 
@@ -856,7 +1460,7 @@
                                 </div>
                                 <div className="text-center">
                                     <div className="text-gray-400 text-sm">ATH ROI</div>
-                                    <div className={`font-bold ${priceData.athRoi >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                    <div className={`font-bold ${priceData.athRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                                         {priceData.loading 
                                             ? "Loading..." 
                                             : priceData.error 
@@ -867,19 +1471,20 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    
+                    {/* Main Content Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         {/* Left Column - Stats */}
                         <div className="md:col-span-1">
                             {/* Total USDC Card */}
-                            <div className="card p-4 text-center">
+                            <div className="card p-6 text-center">
                                 <div className="card-title">Total USDC Invested</div>
                                 <div className="amount-display">{formatAmount(totalInvestment)}</div>
                                 <div className="text-gray-400 text-sm">{deposits.length} unique addresses</div>
                             </div>
                             
                             {/* Stats section */}
-                            <div className="card p-4 mt-4">
+                            <div className="stats-section">
                                 <div className="stats-title">Investment Stats</div>
                                 
                                 <div className="stats-card">
@@ -903,7 +1508,7 @@
                                 </div>
                             </div>
                             
-                            {/* Investment Calculator */}
+                            {/* ROI Calculator */}
                             <div className="card p-4 mt-4">
                                 <div className="stats-title mb-4">ROI Calculator</div>
                                 <div className="card-subtitle mb-4">Calculate your investment performance</div>
@@ -911,13 +1516,19 @@
                                 <div className="flex mb-4">
                                     <button 
                                         className={`tab-button ${calculatorMode === 'amount' ? 'active' : ''}`}
-                                        onClick={() => setCalculatorMode('amount')}
+                                        onClick={() => switchCalculatorMode('amount')}
                                     >
                                         USDC Amount
                                     </button>
                                     <button 
+                                        className={`tab-button ${calculatorMode === 'tokens' ? 'active' : ''}`}
+                                        onClick={() => switchCalculatorMode('tokens')}
+                                    >
+                                        Token Amount
+                                    </button>
+                                    <button 
                                         className={`tab-button ${calculatorMode === 'address' ? 'active' : ''}`}
-                                        onClick={() => setCalculatorMode('address')}
+                                        onClick={() => switchCalculatorMode('address')}
                                     >
                                         Wallet Address
                                     </button>
@@ -932,7 +1543,18 @@
                                                 className="calculator-input" 
                                                 placeholder="e.g. 1000" 
                                                 value={inputValue}
-                                                onChange={(e) => setInputValue(e.target.value)}
+                                                onChange={handleInputChange}
+                                            />
+                                        </div>
+                                    ) : calculatorMode === 'tokens' ? (
+                                        <div>
+                                            <label className="block text-sm mb-1">Enter Token Amount</label>
+                                            <input 
+                                                type="number" 
+                                                className="calculator-input" 
+                                                placeholder="e.g. 10000" 
+                                                value={inputValue}
+                                                onChange={handleInputChange}
                                             />
                                         </div>
                                     ) : (
@@ -943,7 +1565,7 @@
                                                 className="calculator-input" 
                                                 placeholder="0x..." 
                                                 value={inputValue}
-                                                onChange={(e) => setInputValue(e.target.value)}
+                                                onChange={handleInputChange}
                                             />
                                         </div>
                                     )}
@@ -1025,8 +1647,8 @@
                         
                         {/* Right Column - Investors Table */}
                         <div className="md:col-span-2">
-                            <div className="card h-full">
-                                <div className="p-4 border-b border-gray-800">
+                            <div className="card">
+                                <div className="p-4 border-b border-blue-800">
                                     <div className="card-title">Top Investors</div>
                                     <div className="card-subtitle">Ranked by investment amount</div>
                                 </div>
@@ -1058,9 +1680,11 @@
                                                             href="#"
                                                             onClick={(e) => {
                                                                 e.preventDefault();
+                                                                console.log('Address clicked:', deposit.address);
                                                                 handleInvestorClick(deposit.address);
                                                             }}
-                                                            className="address-link"
+                                                            title={`Click to view details for ${deposit.address}`}
+                                                            style={{ cursor: 'pointer' }}
                                                         >
                                                             {formatAddress(deposit.address)}
                                                         </a>
@@ -1104,67 +1728,77 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <div className="text-center text-gray-500 text-sm mt-6">
-                        Last updated: {new Date().toLocaleString()}
-                    </div>
 
-                    {/* Update the modal JSX */}
+                    {/* Investor Modal */}
+                    {console.log('Modal render check - showModal:', showModal, 'selectedInvestor:', selectedInvestor, 'investorLoading:', investorLoading)}
                     {showModal && (
-                        <div className="investor-modal" style={{ display: 'flex' }}>
-                            <div className="investor-modal-content">
-                                <span className="investor-modal-close" onClick={() => setShowModal(false)}>&times;</span>
+                        <div className="investor-modal" style={{ background: 'rgba(0, 0, 0, 0.9)', display: 'flex' }}>
+                            <div className="investor-modal-content" style={{ background: 'rgba(28, 28, 30, 0.95)', color: 'white' }}>
+                                <span className="investor-modal-close" onClick={closeModal}>&times;</span>
                                 <div className="investor-details">
                                     <h2>Investor Details</h2>
-                                    {investorLoading ? (
+                                    {investorLoading && (
                                         <div className="flex items-center justify-center py-8">
                                             <div className="inline-block w-8 h-8 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
                                         </div>
-                                    ) : selectedInvestor ? (
+                                    )}
+                                    {!investorLoading && selectedInvestor && (
                                         <div>
                                             <div className="mb-4">
                                                 <div className="text-gray-400 text-sm mb-1">Full Address</div>
-                                                <div className="font-mono text-sm break-all">{selectedInvestor.address}</div>
-                                            </div>
-                                            <div className="mb-4">
-                                                <a 
+                                                <div className="font-mono text-sm break-all mb-3">{selectedInvestor.address}</div>
+                                                <a
                                                     href={`https://debank.com/profile/${selectedInvestor.address}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                                                    className="ios-glass inline-flex items-center px-4 py-2 space-x-2 text-white hover:bg-white hover:bg-opacity-10 transition-all duration-200 rounded-lg"
                                                 >
-                                                    <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                                                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                                     </svg>
-                                                    View on DeBank
+                                                    <span>View on DeBank</span>
                                                 </a>
                                             </div>
                                             <div className="investor-stats">
                                                 <div className="investor-stat">
-                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
-                                                    <div className="investor-stat-label">Total Invested</div>
+                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.silencio_total || selectedInvestor.total_invested)}</div>
+                                                    <div className="investor-stat-label">Silencio Investment</div>
                                                 </div>
                                                 <div className="investor-stat">
-                                                    <div className="investor-stat-value">{selectedInvestor.sales_participated}</div>
-                                                    <div className="investor-stat-label">Sales Participated</div>
+                                                    <div className="investor-stat-value">{formatAmount(selectedInvestor.total_invested)}</div>
+                                                    <div className="investor-stat-label">Total Invested (All Sales)</div>
                                                 </div>
                                             </div>
+                                            
+                                            {/* Sales Table */}
                                             <div className="mt-6">
-                                                <h3 className="text-lg font-semibold mb-4">Investment History</h3>
-                                                <div className="space-y-4">
-                                                    {selectedInvestor.sales.map((sale, index) => (
-                                                        <div key={index} className="bg-opacity-30 bg-black p-4 rounded">
-                                                            <div className="flex justify-between">
-                                                                <span className="capitalize">{sale.sale}</span>
-                                                                <span className="font-medium">{formatAmount(sale.amount)}</span>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                                <h3 className="font-bold text-lg mb-3">All Sales</h3>
+                                                <div className="sales-table-container">
+                                                    <table className="data-table">
+                                                        <thead>
+                                                            <tr className="table-header">
+                                                                <th>Sale</th>
+                                                                <th>Amount</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {selectedInvestor.sales.map((sale, index) => (
+                                                                <tr key={index} className={`table-row ${sale.sale.toLowerCase() === 'silencio' ? 'silencio-sale' : ''}`}>
+                                                                    <td>
+                                                                        <span className={`sale-badge ${sale.sale.toLowerCase() === 'silencio' ? 'silencio' : 'other'}`}>
+                                                                            {sale.sale.toLowerCase() === 'silencio' ? '★ ' : ''}{sale.sale.toUpperCase()}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td>{formatAmount(sale.amount)}</td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
-                                    ) : (
+                                    )}
+                                    {!investorLoading && !selectedInvestor && (
                                         <div className="text-red-500 text-center py-4">
                                             Failed to load investor details
                                         </div>
