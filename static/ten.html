@@ -259,108 +259,7 @@
             border: 1px solid rgba(0, 212, 255, 0.2);
         }
 
-        .live-feed-card {
-            background: var(--card-background);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(0, 212, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-        }
 
-        .live-feed-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        .live-feed-title h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: white;
-        }
-
-        .live-feed-title i {
-            color: var(--primary-color);
-        }
-
-        .live-feed-content {
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 8px;
-        }
-
-        .live-feed-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .live-feed-content::-webkit-scrollbar-track {
-            background: rgba(0, 212, 255, 0.1);
-            border-radius: 3px;
-        }
-
-        .live-feed-content::-webkit-scrollbar-thumb {
-            background: rgba(0, 212, 255, 0.3);
-            border-radius: 3px;
-        }
-
-        .live-feed-content::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 212, 255, 0.5);
-        }
-
-        .feed-item {
-            padding: 12px;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.06);
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .feed-item:last-child {
-            border-bottom: none;
-        }
-
-        .feed-item:hover {
-            background: rgba(0, 212, 255, 0.05);
-            border-radius: 8px;
-        }
-
-        .feed-item-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .feed-item-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .feed-item-address {
-            font-weight: 500;
-            color: white;
-            font-size: 0.875rem;
-        }
-
-        .feed-item-time {
-            font-size: 0.75rem;
-            color: rgba(235, 235, 245, 0.6);
-        }
-
-        .feed-item-amount {
-            font-weight: bold;
-            color: var(--primary-color);
-            font-size: 0.875rem;
-        }
-
-        .ten-logo {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-        }
 
         /* Modal styles */
         .investor-modal {
@@ -906,118 +805,6 @@
             );
         }
 
-        function LiveFeed({ formatAmount }) {
-            const [liveFeedData, setLiveFeedData] = React.useState([]);
-            const [liveFeedLoading, setLiveFeedLoading] = React.useState(true);
-
-            const formatAddress = (address) => {
-                if (!address) return 'Anonymous';
-                return `${address.slice(0, 6)}...${address.slice(-4)}`;
-            };
-
-            const timeAgo = (timestamp) => {
-                if (!timestamp) return 'Recently';
-                try {
-                    const now = new Date();
-                    const date = new Date(timestamp);
-                    const diffInSeconds = Math.floor((now - date) / 1000);
-                    
-                    if (diffInSeconds < 60) return 'Just now';
-                    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-                    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-                    return `${Math.floor(diffInSeconds / 86400)}d ago`;
-                } catch (error) {
-                    return 'Recently';
-                }
-            };
-
-            const handleTransactionClick = (hash) => {
-                if (hash) {
-                    window.open(`https://etherscan.io/tx/${hash}`, '_blank');
-                }
-            };
-
-            React.useEffect(() => {
-                const fetchLiveFeed = async () => {
-                    try {
-                        const response = await fetch('/api/live-feed?limit=10');
-                        if (!response.ok) throw new Error('Failed to fetch live feed');
-                        
-                        const data = await response.json();
-                        setLiveFeedData(data.transactions || []);
-                    } catch (error) {
-                        console.error('Error fetching live feed:', error);
-                        setLiveFeedData([]);
-                    } finally {
-                        setLiveFeedLoading(false);
-                    }
-                };
-
-                fetchLiveFeed();
-                
-                // Update every 10 seconds
-                const interval = setInterval(fetchLiveFeed, 10000);
-                return () => clearInterval(interval);
-            }, []);
-
-            return (
-                <div className="live-feed-card">
-                    <div className="live-feed-title">
-                        <h3>Live Feed</h3>
-                        <i className="fas fa-bolt"></i>
-                    </div>
-                    <div className="live-feed-content">
-                        {liveFeedLoading ? (
-                            <div className="text-center p-4">
-                                <div className="text-gray-400">Loading live transactions...</div>
-                            </div>
-                        ) : liveFeedData.length === 0 ? (
-                            <div className="text-center p-4">
-                                <i className="fas fa-exclamation-circle text-yellow-500 text-lg mb-2"></i>
-                                <p className="text-gray-400 mb-1">No recent transactions</p>
-                                <p className="text-xs text-gray-500">TEN Protocol sale is live - be the first to participate!</p>
-                            </div>
-                        ) : (
-                            liveFeedData.map((tx, index) => (
-                                <div 
-                                    key={index} 
-                                    className="feed-item" 
-                                    onClick={() => handleTransactionClick(tx.hash)}
-                                >
-                                    <div className="feed-item-content">
-                                        <div className="feed-item-left">
-                                            {tx.sale === 'ten' ? (
-                                                <img 
-                                                    src="ten.png" 
-                                                    alt="TEN" 
-                                                    className="ten-logo"
-                                                    onError={(e) => e.target.style.display = 'none'}
-                                                />
-                                            ) : (
-                                                <span className={`sale-badge ${tx.sale || 'other'}`}>
-                                                    {tx.sale || 'Other'}
-                                                </span>
-                                            )}
-                                            <div>
-                                                <div className="feed-item-address">
-                                                    {formatAddress(tx.from)}
-                                                </div>
-                                                <div className="feed-item-time">
-                                                    {timeAgo(tx.timestamp)}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="feed-item-amount">
-                                            {formatAmount(tx.amount)}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
-            );
-        }
 
         function InvestmentStats({ deposits, formatAmount }) {
             const calculateStats = () => {
@@ -1242,7 +1029,6 @@
             const [calculatorMode, setCalculatorMode] = React.useState('amount');
             const [inputValue, setInputValue] = React.useState('');
             const [saleData, setSaleData] = React.useState(null);
-            const [recentTransactions, setRecentTransactions] = React.useState([]);
             const [loading, setLoading] = React.useState(true);
             const [error, setError] = React.useState(null);
             const [deposits, setDeposits] = React.useState([]);
@@ -1309,10 +1095,6 @@
                         // Set deposits for All Investors table
                         setDeposits(depositsData.deposits || []);
                         
-                        // Fetch recent transactions for live feed
-                        const transactions = (depositsData.deposits && depositsData.deposits.slice(0, 10)) || [];
-                        setRecentTransactions(transactions);
-                        
                     } catch (err) {
                         console.error('Error fetching data:', err);
                         setError('Failed to load sale data');
@@ -1367,8 +1149,6 @@
                             </div>
                             
                             <InvestmentStats deposits={deposits} formatAmount={formatAmount} />
-                            
-                            <LiveFeed formatAmount={formatAmount} />
                             
                             <UpcomingSaleCalculator
                                 calculatorMode={calculatorMode}

@@ -640,46 +640,32 @@ def intuition_investors():
 
 # API Endpoints for TEN Protocol
 @app.route('/api/ten/total-investment', methods=['GET'])
-@cached('ten_total', 'ten_total_timestamp')
 def ten_total_investment():
     """Get total investment for TEN Protocol sale"""
-    try:
-        transfers = get_ten_usdc_deposits()
-        deposits_list = aggregate_ten_deposits(transfers)
-        
-        total_investment = sum(deposit["amount"] for deposit in deposits_list)
-        return jsonify({"total": total_investment, "is_live": True})
-    except Exception as e:
-        print(f"Error fetching TEN total investment: {str(e)}")
-        return jsonify({"error": "Failed to fetch TEN total investment"}), 500
+    if 'ten' in STATIC_DATA:
+        return jsonify({"total": STATIC_DATA['ten']['total'], "is_live": False})
+    return jsonify({"error": "TEN Protocol data not found"}), 404
 
 @app.route('/api/ten/deposits', methods=['GET'])
-@cached('ten_deposits', 'ten_deposits_timestamp')
 def ten_deposits():
     """Get all deposits for TEN Protocol sale"""
-    try:
-        transfers = get_ten_usdc_deposits()
-        deposits_list = aggregate_ten_deposits(transfers)
-        
+    if 'ten' in STATIC_DATA:
         return jsonify({
-            "deposits": deposits_list,
-            "count": len(deposits_list),
-            "is_live": True
+            "deposits": STATIC_DATA['ten']['deposits'],
+            "count": STATIC_DATA['ten']['count'],
+            "is_live": False
         })
-    except Exception as e:
-        print(f"Error fetching TEN deposits: {str(e)}")
-        return jsonify({"error": "Failed to fetch TEN deposits"}), 500
+    return jsonify({"error": "TEN Protocol data not found"}), 404
 
 @app.route('/api/ten/stats', methods=['GET'])
 def ten_stats():
     """Get statistics for TEN Protocol sale"""
-    try:
-        transfers = get_ten_usdc_deposits()
-        deposits_list = aggregate_ten_deposits(transfers)
+    if 'ten' in STATIC_DATA:
+        deposits_list = STATIC_DATA['ten']['deposits']
+        total_investment = STATIC_DATA['ten']['total']
+        total_investors = STATIC_DATA['ten']['count']
         
         if deposits_list:
-            total_investment = sum(deposit["amount"] for deposit in deposits_list)
-            total_investors = len(deposits_list)
             highest_allocation = max(deposits_list, key=lambda x: x["amount"])
             lowest_allocation = min(deposits_list, key=lambda x: x["amount"])
             average_allocation = total_investment / total_investors if total_investors > 0 else 0
@@ -687,8 +673,6 @@ def ten_stats():
             # Top 5 investors
             top_investors = sorted(deposits_list, key=lambda x: x["amount"], reverse=True)[:5]
         else:
-            total_investment = 0
-            total_investors = 0
             highest_allocation = {"address": "", "amount": 0}
             lowest_allocation = {"address": "", "amount": 0}
             average_allocation = 0
@@ -701,43 +685,39 @@ def ten_stats():
             "lowest_allocation": lowest_allocation,
             "average_allocation": average_allocation,
             "top_investors": top_investors,
-            "is_live": True
+            "is_live": False
         })
-    except Exception as e:
-        print(f"Error fetching TEN stats: {str(e)}")
-        return jsonify({"error": "Failed to fetch TEN stats"}), 500
+    return jsonify({"error": "TEN Protocol data not found"}), 404
 
 @app.route('/api/ten/investors', methods=['GET'])
 def ten_investors():
     """Get investor data for TEN Protocol sale with pagination"""
-    try:
-        # Get optional pagination parameters
-        page = request.args.get('page', default=1, type=int)
-        limit = request.args.get('limit', default=100, type=int)
+    if 'ten' not in STATIC_DATA:
+        return jsonify({"error": "TEN Protocol data not found"}), 404
         
-        # Limit values for safety
-        limit = min(limit, 500)  # Max 500 per page
-        page = max(page, 1)      # Min page 1
-        
-        transfers = get_ten_usdc_deposits()
-        deposits_list = aggregate_ten_deposits(transfers)
-        
-        # Calculate pagination
-        start_idx = (page - 1) * limit
-        end_idx = start_idx + limit
-        paginated_deposits = deposits_list[start_idx:end_idx]
-        
-        return jsonify({
-            "investors": paginated_deposits,
-            "page": page,
-            "limit": limit,
-            "total_investors": len(deposits_list),
-            "total_pages": (len(deposits_list) + limit - 1) // limit,
-            "is_live": True
-        })
-    except Exception as e:
-        print(f"Error fetching TEN investors: {str(e)}")
-        return jsonify({"error": "Failed to fetch TEN investors"}), 500
+    # Get optional pagination parameters
+    page = request.args.get('page', default=1, type=int)
+    limit = request.args.get('limit', default=100, type=int)
+    
+    # Limit values for safety
+    limit = min(limit, 500)  # Max 500 per page
+    page = max(page, 1)      # Min page 1
+    
+    deposits_list = STATIC_DATA['ten']['deposits']
+    
+    # Calculate pagination
+    start_idx = (page - 1) * limit
+    end_idx = start_idx + limit
+    paginated_deposits = deposits_list[start_idx:end_idx]
+    
+    return jsonify({
+        "investors": paginated_deposits,
+        "page": page,
+        "limit": limit,
+        "total_investors": len(deposits_list),
+        "total_pages": (len(deposits_list) + limit - 1) // limit,
+        "is_live": False
+    })
 
 # Route handlers
 @app.route('/')
@@ -981,45 +961,16 @@ def sale_total_investment(sale_name):
     else:
         return jsonify({"error": f"Sale {sale_name} not found"}), 404
 
-# Updated live feed endpoint to include TEN active sale
+# DISABLED: Live feed endpoint removed as requested
 @app.route('/api/live-feed', methods=['GET'])
 def live_feed():
-    """Return live transaction data from active sales"""
-    try:
-        all_transactions = []
-        
-        # Get TEN transactions (active sale)
-        try:
-            ten_transactions = get_recent_ten_transactions(limit=20)
-            all_transactions.extend(ten_transactions)
-        except Exception as e:
-            print(f"Error fetching TEN transactions for live feed: {str(e)}")
-        
-        # Sort all transactions by timestamp (most recent first)
-        if all_transactions:
-            # Filter out transactions without timestamps and sort
-            timestamped_transactions = [tx for tx in all_transactions if tx.get('timestamp')]
-            if timestamped_transactions:
-                timestamped_transactions.sort(key=lambda x: x['timestamp'], reverse=True)
-                all_transactions = timestamped_transactions
-        
-        # Limit to 10 most recent transactions
-        all_transactions = all_transactions[:10]
-        
-        return jsonify({
-            "transactions": all_transactions,
-            "count": len(all_transactions),
-            "message": "TEN Protocol sale is live!" if all_transactions else "No recent transactions",
-            "is_live": len(all_transactions) > 0
-        })
-    except Exception as e:
-        print(f"Error in live feed endpoint: {str(e)}")
-        return jsonify({
-            "transactions": [],
-            "count": 0,
-            "message": "Error fetching live data",
-            "is_live": False
-        })
+    """Live feed endpoint disabled - no longer fetching transaction data"""
+    return jsonify({
+        "transactions": [],
+        "count": 0,
+        "message": "Live feed has been disabled",
+        "is_live": False
+    })
 
 @app.route('/api/<string:sale_name>/deposits', methods=['GET'])
 def sale_deposits(sale_name):
@@ -1161,13 +1112,11 @@ def get_all_individual_investments():
     except Exception as e:
         print(f"Error loading Session data for investments: {str(e)}")
     
-    # Add TEN data (live)
+    # Add TEN data (static)
     try:
-        transfers = get_ten_usdc_deposits()
-        deposits_list = aggregate_ten_deposits(transfers)
-        
-        for deposit in deposits_list:
-            all_investments.append(deposit["amount"])
+        if 'ten' in STATIC_DATA:
+            for deposit in STATIC_DATA['ten']['deposits']:
+                all_investments.append(deposit["amount"])
     except Exception as e:
         print(f"Error loading TEN data for investments: {str(e)}")
     
@@ -1251,20 +1200,18 @@ def global_stats():
     except Exception as e:
         print(f"Error processing Session data for global stats: {e}")
     
-    # Add TEN data (live)
+    # Add TEN data (static)
     try:
-        transfers = get_ten_usdc_deposits()
-        deposits_list = aggregate_ten_deposits(transfers)
-        
-        for deposit in deposits_list:
-            address = deposit.get('address', '').lower()
-            if not address:
-                continue
+        if 'ten' in STATIC_DATA:
+            for deposit in STATIC_DATA['ten']['deposits']:
+                address = deposit.get('address', '').lower()
+                if not address:
+                    continue
+                    
+                if address not in investor_sales_count:
+                    investor_sales_count[address] = set()
                 
-            if address not in investor_sales_count:
-                investor_sales_count[address] = set()
-            
-            investor_sales_count[address].add('ten')
+                investor_sales_count[address].add('ten')
     except Exception as e:
         print(f"Error processing TEN data for global stats: {e}")
     
@@ -1393,33 +1340,31 @@ def top_investors():
     except Exception as e:
         print(f"Error loading Session data for top investors: {str(e)}")
                 
-    # Add Ten Protocol data
+    # Add Ten Protocol data (static)
     try:
-        transfers = get_ten_usdc_deposits()
-        deposits_list = aggregate_ten_deposits(transfers)
-        
-        for deposit in deposits_list:
-            address = deposit['address'].lower()
-            amount = deposit['amount']
-            
-            if address not in investors:
-                investors[address] = {
-                    'address': address,
-                    'total_invested': 0,
-                    'sales_participated': 0,
-                    'sales': {}
-                }
-            
-            # If this is the first time we're seeing this address for ten
-            if 'ten' not in investors[address]['sales']:
-                investors[address]['sales_participated'] += 1
-                investors[address]['sales']['ten'] = amount
-            else:
-                # Add to existing amount for ten
-                investors[address]['sales']['ten'] += amount
-            
-            # Update total invested amount
-            investors[address]['total_invested'] += amount
+        if 'ten' in STATIC_DATA:
+            for deposit in STATIC_DATA['ten']['deposits']:
+                address = deposit['address'].lower()
+                amount = deposit['amount']
+                
+                if address not in investors:
+                    investors[address] = {
+                        'address': address,
+                        'total_invested': 0,
+                        'sales_participated': 0,
+                        'sales': {}
+                    }
+                
+                # If this is the first time we're seeing this address for ten
+                if 'ten' not in investors[address]['sales']:
+                    investors[address]['sales_participated'] += 1
+                    investors[address]['sales']['ten'] = amount
+                else:
+                    # Add to existing amount for ten
+                    investors[address]['sales']['ten'] += amount
+                
+                # Update total invested amount
+                investors[address]['total_invested'] += amount
     except Exception as e:
         print(f"Error loading Ten data for top investors: {str(e)}")
                 
@@ -1518,20 +1463,18 @@ def investor_detail(address):
     except Exception as e:
         print(f"Error loading Session data for investor detail: {str(e)}")
     
-    # Add Ten Protocol data
+    # Add Ten Protocol data (static)
     try:
-        transfers = get_ten_usdc_deposits()
-        deposits_list = aggregate_ten_deposits(transfers)
-        
-        for deposit in deposits_list:
-            if deposit['address'].lower() == address:
-                # Add to sales list
-                investor_data['sales'].append({
-                    'sale': 'ten',
-                    'amount': deposit['amount']
-                })
-                investor_data['total_invested'] += deposit['amount']
-                break  # Found the investor in Ten data, no need to continue
+        if 'ten' in STATIC_DATA:
+            for deposit in STATIC_DATA['ten']['deposits']:
+                if deposit['address'].lower() == address:
+                    # Add to sales list
+                    investor_data['sales'].append({
+                        'sale': 'ten',
+                        'amount': deposit['amount']
+                    })
+                    investor_data['total_invested'] += deposit['amount']
+                    break  # Found the investor in Ten data, no need to continue
     except Exception as e:
         print(f"Error loading Ten data for investor detail: {str(e)}")
     

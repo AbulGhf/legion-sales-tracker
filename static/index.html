@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#0f0f14">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -52,13 +54,77 @@
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
         
         /* Modern glass-morphism background with geometric patterns */
-        body {
-            background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%);
+        html, body {
+            background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%) !important;
             background-attachment: fixed;
-            color: white;
+            color: white !important;
             font-family: 'Rajdhani', sans-serif;
             overflow-x: hidden;
             position: relative;
+            min-height: 100vh;
+        }
+        
+        /* Force dark theme on mobile devices */
+        @media screen and (max-width: 768px) {
+            html, body {
+                background: linear-gradient(135deg, #0f0f14 0%, #151520 50%, #1a1a25 100%) !important;
+                background-color: #0f0f14 !important;
+                color: white !important;
+            }
+            
+            /* Override Tailwind/external CSS that might cause white backgrounds */
+            div, section, main, header, article, aside {
+                background-color: transparent !important;
+            }
+            
+            /* Ensure key containers maintain dark theme */
+            .dashboard-container {
+                background: rgba(20, 20, 30, 0.8) !important;
+                color: white !important;
+            }
+            
+            .stats-card {
+                background: rgba(21, 21, 31, 0.7) !important;
+                backdrop-filter: blur(15px) !important;
+                color: white !important;
+            }
+            
+            .chart-container {
+                background: rgba(15, 15, 25, 0.8) !important;
+                color: white !important;
+            }
+            
+            /* Ensure text remains white */
+            .stats-title, .stats-value, .stats-label, h1, h2, h3, h4, h5, h6, p, span {
+                color: white !important;
+            }
+            
+            /* Ensure animations and hover effects are visible */
+            .nav-button, .filter-button, .action-button {
+                color: white !important;
+                border-color: rgba(255, 87, 34, 0.3) !important;
+            }
+            
+            .nav-button:hover {
+                background: rgba(255, 87, 34, 0.15) !important;
+                color: white !important;
+            }
+            
+            /* Make sure charts background is dark */
+            canvas {
+                background: transparent !important;
+            }
+            
+            /* Ensure table remains visible */
+            .table-row {
+                background: rgba(20, 20, 30, 0.6) !important;
+                color: white !important;
+            }
+            
+            .table-header {
+                background: rgba(26, 26, 37, 0.9) !important;
+                color: white !important;
+            }
         }
 
         /* Add subtle geometric background pattern */
@@ -1268,142 +1334,6 @@
             color: #888;
         }
 
-        /* Live Feed Card Styles - Matching other panels on page */
-        .live-feed-card {
-            background: rgba(21, 21, 31, 0.6);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 16px;
-            padding: 1.5rem;
-            border: 1px solid rgba(255, 87, 34, 0.15);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            height: 400px;
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 1.5rem;
-        }
-
-        .live-feed-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 87, 34, 0.5), transparent);
-        }
-
-        .live-feed-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            border-color: rgba(255, 87, 34, 0.3);
-        }
-
-        .live-feed-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-
-        .live-feed-title h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: white;
-            margin: 0;
-        }
-
-        .live-feed-title i {
-            color: #ff6b35;
-        }
-
-        .live-feed-content {
-            flex: 1;
-            overflow-y: auto;
-            margin: -8px;
-            padding: 8px;
-            max-height: 320px;
-        }
-
-        .live-feed-content::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .live-feed-content::-webkit-scrollbar-track {
-            background: rgba(255, 87, 34, 0.05);
-            border-radius: 3px;
-        }
-
-        .live-feed-content::-webkit-scrollbar-thumb {
-            background: rgba(255, 87, 34, 0.3);
-            border-radius: 3px;
-        }
-
-        .live-feed-content::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 87, 34, 0.5);
-        }
-
-        /* Add smooth scrolling */
-        .live-feed-content {
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 87, 34, 0.3) rgba(255, 87, 34, 0.05);
-        }
-
-        .feed-item {
-            padding: 12px;
-            border-bottom: 1px solid rgba(255, 87, 34, 0.06);
-            transition: all 0.2s ease;
-            cursor: pointer;
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .feed-item:last-child {
-            border-bottom: none;
-        }
-
-        .feed-item:hover {
-            background: rgba(255, 87, 34, 0.1);
-            border-radius: 8px;
-        }
-
-        .feed-item-content {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .feed-item-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .feed-item-address {
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.875rem;
-            word-break: break-all;
-        }
-
-        .feed-item-time {
-            font-size: 0.75rem;
-            color: rgba(235, 235, 245, 0.6);
-        }
-
-        .feed-item-amount {
-            font-weight: bold;
-            color: #ff6b35;
-            font-size: 0.875rem;
-        }
-
-        .ten-logo {
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-        }
 
 
 
@@ -1479,14 +1409,7 @@
             }
             
             /* Fixed sizes for mobile cards to match desktop proportion */
-            .live-feed-card {
-                width: 100%;
-                max-width: 380px;
-                margin: 0 auto 1rem auto;
-                height: 400px;
-            }
-            
-            .stats-card:not(.live-feed-card) {
+            .stats-card {
                 width: 100%;
                 max-width: 380px;
                 margin: 0 auto 1rem auto;
@@ -1686,19 +1609,6 @@
                         <a href="/sales-roi" class="nav-button">
                             <i class="fas fa-chart-line"></i> Sales ROI
                         </a>
-                    </div>
-                    
-                    <!-- Live Feed - Exact TEN page structure -->
-                    <div class="stats-card live-feed-card">
-                        <div class="live-feed-title">
-                            <h3>Live Feed</h3>
-                            <i class="fas fa-bolt"></i>
-                        </div>
-                        <div class="live-feed-content" id="live-feed">
-                            <div class="text-center p-4">
-                                <div class="text-gray-400">Loading live transactions...</div>
-                            </div>
-                        </div>
                     </div>
                     
 
@@ -1969,7 +1879,6 @@ let marketPrices = {};
 let salesData = [];
 let investmentChart = null;
 let investorChart = null;
-let liveFeedLastUpdate = 0;
 let appInitialized = false;  // ADD THIS LINE HERE
 
 // Add global state for visibility and updates
@@ -2465,14 +2374,14 @@ function updateOverallStats() {
 function updateCharts() {
     if (salesData.length === 0) return;
     
-    // Include all sales that have investment data or are live (include live sales even with zero investment)
-    const activeAndCompletedSales = salesData.filter(sale => sale.invested > 0 || sale.isActive);
+    // Include only sales with data (exclude upcoming sales)
+    const salesWithData = salesData.filter(sale => !sale.upcoming);
     
     const ctx1 = document.getElementById('investment-chart').getContext('2d');
     const ctx2 = document.getElementById('investor-chart').getContext('2d');
     
     // Prepare chart data and sort by investment amount (highest to lowest)
-    const sortedByInvestment = activeAndCompletedSales
+    const sortedByInvestment = salesWithData
         .map(sale => ({
             name: sale.name,
             invested: sale.invested,
@@ -2482,7 +2391,7 @@ function updateCharts() {
         .sort((a, b) => b.invested - a.invested);
     
     // Prepare chart data and sort by investor count (highest to lowest)
-    const sortedByInvestors = activeAndCompletedSales
+    const sortedByInvestors = salesWithData
         .map(sale => ({
             name: sale.name,
             invested: sale.invested,
@@ -2784,105 +2693,8 @@ function getSaleDisplayName(saleId) {
     return saleNames[saleId] || saleId || 'Unknown';
 }
 
-// Function to fetch live transactions
-async function fetchLiveTransactions() {
-    // Skip if app isn't initialized
-    if (!appInitialized) return;
-    
-    // Skip if page is not visible
-    if (document.visibilityState !== 'visible') return;
-    
-    try {
-        const response = await fetch('/api/live-feed?limit=10');
-        if (!response.ok) {
-            throw new Error('Failed to fetch live transactions');
-        }
-        
-        const data = await response.json();
-        updateLiveFeed(data.transactions);
-        
-        // Update last fetch time
-        liveFeedLastUpdate = Date.now();
-    } catch (error) {
-        console.error('Error fetching live transactions:', error);
-    }
-}
 
-// Function to update the live feed (exact copy from TEN page structure)
-function updateLiveFeed(transactions) {
-    const liveFeed = document.getElementById('live-feed');
-    if (!liveFeed) return;
-    
-    // Clear existing content
-    liveFeed.innerHTML = '';
-    
-    if (!transactions || transactions.length === 0) {
-        liveFeed.innerHTML = `
-            <div class="text-center p-4">
-                <i class="fas fa-exclamation-circle text-yellow-500 text-lg mb-2"></i>
-                <p class="text-gray-400 mb-1">No recent transactions</p>
-                <p class="text-xs text-gray-500">TEN Protocol sale is live - be the first to participate!</p>
-            </div>
-        `;
-        return;
-    }
-    
-    // Create transactions list exactly like TEN page
-    transactions.forEach((tx, index) => {
-        const feedItem = document.createElement('div');
-        feedItem.className = 'feed-item';
-        feedItem.dataset.timestamp = tx.timestamp;
-        
-        // Make transaction clickable to open etherscan
-        if (tx.hash) {
-            feedItem.onclick = () => {
-                window.open(`https://etherscan.io/tx/${tx.hash}`, '_blank');
-            };
-        }
-        
-        const saleClass = tx.sale || 'other';
-        const saleDisplayName = getSaleDisplayName(tx.sale);
-        
-        feedItem.innerHTML = `
-            <div class="feed-item-content">
-                <div class="feed-item-left">
-                    ${tx.sale === 'ten' ? 
-                        `<img src="ten.png" alt="TEN" class="ten-logo" onerror="this.style.display='none'">` :
-                        `<span class="sale-badge ${saleClass}">${saleDisplayName}</span>`
-                    }
-                    <div>
-                        <div class="feed-item-address">
-                            ${tx.from ? `${tx.from.slice(0, 6)}...${tx.from.slice(-4)}` : 'Anonymous'}
-                        </div>
-                        <div class="feed-item-time">
-                            ${timeAgo(tx.timestamp)}
-                        </div>
-                    </div>
-                </div>
-                <div class="feed-item-amount">
-                    ${formatCurrency(tx.amount)}
-                </div>
-            </div>
-        `;
-        
-        liveFeed.appendChild(feedItem);
-    });
-}
 
-// Function to update times in the live feed
-function updateLiveFeedTimes() {
-    const liveFeed = document.getElementById('live-feed');
-    if (!liveFeed) return;
-    
-    const timeElements = liveFeed.querySelectorAll('.feed-time');
-    timeElements.forEach(el => {
-        // Extract the transaction timestamp from the data attribute
-        const txItem = el.closest('.feed-item');
-        if (txItem && txItem.dataset.timestamp) {
-            el.textContent = timeAgo(txItem.dataset.timestamp);
-        }
-    });
-}
 
 // Add debounce function at the top level
 function debounce(func, wait) {
@@ -2919,9 +2731,6 @@ async function fetchAllSalesData() {
     updateTable();
     updateOverallStats();
     updateCharts();
-    
-    // Initialize live feed
-    initLiveFeed();
     
     // Fetch token prices immediately
     await fetchTokenPrices();
@@ -3021,7 +2830,6 @@ async function refreshActiveData() {
         updateTable();
         updateOverallStats();
         updateCharts();
-        fetchLiveTransactions(); // Refresh the live feed
     } catch (error) {
         console.error('Error refreshing active sale data:', error);
     }
@@ -3100,63 +2908,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Function to initialize live feed with real data
-function initLiveFeed() {
-    // Initialize the live feed to fetch actual data
-    const liveFeed = document.getElementById('live-feed');
-    
-    // Fetch transactions immediately
-    fetchLiveTransactions();
-    
-    // Set up polling intervals for live updates
-    let updateInterval = null;
-    let timeUpdateInterval = null;
-    let lastFetchTime = 0;
-    const FETCH_COOLDOWN = 5000; // 5 seconds cooldown between fetches
-    
-    // Consolidated visibility change handler
-    const handleVisibilityChange = () => {
-        isPageVisible = document.visibilityState === 'visible';
-        
-        if (isPageVisible) {
-            // Page is visible, start polling with optimized intervals
-            if (Date.now() - lastFetchTime >= FETCH_COOLDOWN) {
-                fetchLiveTransactions();
-                lastFetchTime = Date.now();
-            }
-            updateInterval = setInterval(() => {
-                if (Date.now() - lastFetchTime >= FETCH_COOLDOWN) {
-                    fetchLiveTransactions();
-                    lastFetchTime = Date.now();
-                }
-            }, 10000); // Reduced from 30s to 10s for more responsive updates
-            timeUpdateInterval = setInterval(updateLiveFeedTimes, 30000); // Reduced from 60s to 30s
-        } else {
-            // Page is hidden, stop polling
-            if (updateInterval) {
-                clearInterval(updateInterval);
-                updateInterval = null;
-            }
-            if (timeUpdateInterval) {
-                clearInterval(timeUpdateInterval);
-                timeUpdateInterval = null;
-            }
-        }
-    };
-    
-    // Add visibility change listener
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    // Initial setup
-    handleVisibilityChange();
-    
-    // Clean up on page unload
-    window.addEventListener('beforeunload', () => {
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        if (updateInterval) clearInterval(updateInterval);
-        if (timeUpdateInterval) clearInterval(timeUpdateInterval);
-    });
-}
     </script>
     
     <!-- Branding Footer -->
