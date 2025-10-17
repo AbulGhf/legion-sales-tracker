@@ -18,6 +18,7 @@
 
         body {
             font-family: 'Rajdhani', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #0f0f14; /* Fallback for mobile */
             background: linear-gradient(135deg, #0f0f14 0%, #1a1a25 100%);
             color: #ffffff;
             min-height: 100vh;
@@ -46,6 +47,7 @@
 
         /* Header styling */
         .header {
+            background-color: rgba(15, 15, 20, 0.95); /* Fallback for mobile */
             background: linear-gradient(135deg, 
                 rgba(15, 15, 20, 0.95) 0%, 
                 rgba(26, 26, 37, 0.9) 50%, 
@@ -200,6 +202,7 @@
 
         /* Simple Mode Table Styles */
         .simple-table-container {
+            background-color: rgba(15, 15, 20, 0.8); /* Fallback for mobile */
             background: linear-gradient(135deg, 
                 rgba(255, 255, 255, 0.05) 0%, 
                 rgba(255, 255, 255, 0.02) 50%, 
@@ -231,6 +234,7 @@
 
         /* Filter controls styling */
         .filter-controls {
+            background-color: rgba(15, 15, 20, 0.9); /* Fallback for mobile */
             background: linear-gradient(135deg, 
                 rgba(255, 255, 255, 0.08) 0%, 
                 rgba(255, 255, 255, 0.03) 50%, 
@@ -662,6 +666,28 @@
             scrollbar-color: rgba(255, 87, 34, 0.6) rgba(21, 21, 31, 0.6);
         }
 
+        /* Mobile-first critical styles */
+        @media screen and (max-width: 768px) {
+            /* Ensure dark background on mobile */
+            html, body {
+                background-color: #0f0f14 !important;
+                background: #0f0f14 !important;
+                color: #ffffff !important;
+                min-height: 100vh !important;
+            }
+            
+            /* Disable backdrop-filter on mobile if not supported */
+            @supports not (backdrop-filter: blur(10px)) {
+                .header,
+                .simple-table-container,
+                .filter-controls,
+                .roi-card {
+                    backdrop-filter: none !important;
+                    -webkit-backdrop-filter: none !important;
+                }
+            }
+        }
+
         /* Mobile Responsive Styles */
         @media (max-width: 768px) {
             .header-content {
@@ -985,6 +1011,12 @@
         .fragmetric-card { border-color: rgba(0, 125, 58, 0.3); }
         .fragmetric-card::before { background: linear-gradient(90deg, transparent, rgba(0, 125, 58, 0.6), transparent); }
 
+        .yieldbasis-card { border-color: rgba(248, 250, 252, 0.3); }
+        .yieldbasis-card::before { background: linear-gradient(90deg, transparent, rgba(248, 250, 252, 0.6), transparent); }
+
+        .lab-card { border-color: rgba(34, 197, 94, 0.3); }
+        .lab-card::before { background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.6), transparent); }
+
         /* ROI Header */
         .roi-header {
             display: flex;
@@ -1016,6 +1048,8 @@
         .skate-color { color: #c5ff33; }
         .resolv-color { color: #6696ae; }
         .fragmetric-color { color: #007d3a; }
+        .yieldbasis-color { color: #f8fafc; }
+        .lab-color { color: #22c55e; }
 
         /* Stats Grid */
         .stats-grid {
@@ -1194,6 +1228,30 @@
             transform: translateY(-1px);
         }
 
+        .yieldbasis-button {
+            background: rgba(248, 250, 252, 0.15);
+            color: #f8fafc;
+            border: 1px solid rgba(248, 250, 252, 0.3);
+        }
+
+        .yieldbasis-button:hover {
+            background: rgba(248, 250, 252, 0.25);
+            border-color: rgba(248, 250, 252, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .lab-button {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .lab-button:hover {
+            background: rgba(34, 197, 94, 0.25);
+            border-color: rgba(34, 197, 94, 0.5);
+            transform: translateY(-1px);
+        }
+
         /* Result Card */
         .result-card {
             background: rgba(255, 255, 255, 0.05);
@@ -1258,6 +1316,32 @@
         /* Hidden class */
         .hidden {
             display: none;
+        }
+
+        /* Additional mobile fixes */
+        @media screen and (max-width: 480px) {
+            /* Force dark theme on very small screens */
+            * {
+                background-color: inherit !important;
+            }
+            
+            body {
+                background-color: #0f0f14 !important;
+                background-image: none !important;
+            }
+            
+            /* Ensure text is visible */
+            body, body * {
+                color: #ffffff !important;
+            }
+            
+            /* Override any white backgrounds */
+            .roi-table tbody tr,
+            .roi-card,
+            .filter-controls,
+            .simple-table-container {
+                background-color: rgba(15, 15, 20, 0.9) !important;
+            }
         }
     </style>
 </head>
@@ -1658,6 +1742,94 @@
                     <div id="fragmetric-result" class="result-card"></div>
                 </div>
             </div>
+
+            <!-- Yield Basis Card -->
+            <div class="roi-card yieldbasis-card">
+                <div class="roi-header">
+                    <img src="/static/yieldbasis.png" alt="Yield Basis Logo" class="roi-logo">
+                    <h2 class="roi-title yieldbasis-color">YIELD BASIS</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value yieldbasis-color">$0.20</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="yieldbasis-current">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="yieldbasis-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="yieldbasis-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="yieldbasis-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="yieldbasis-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="yieldbasis-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="calculator-title">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="yieldbasis-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button yieldbasis-button" onclick="calculateYieldbasisROI()">Calculate</button>
+                    <div id="yieldbasis-result" class="result-card"></div>
+                </div>
+            </div>
+
+            <!-- LAB Card -->
+            <div class="roi-card lab-card">
+                <div class="roi-header">
+                    <img src="/static/lab.png" alt="LAB Logo" class="roi-logo">
+                    <h2 class="roi-title lab-color">LAB</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value lab-color">$0.025</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="lab-current">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="lab-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="lab-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="lab-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="lab-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="lab-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="calculator-title">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="lab-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button lab-button" onclick="calculateLabROI()">Calculate</button>
+                    <div id="lab-result" class="result-card"></div>
+                </div>
+            </div>
                     </div>
         </div>
         
@@ -1709,6 +1881,16 @@
                 salePrice: 0.2,
                 tokenId: 'fragmetric',
                 color: '#007d3a'
+            },
+            yieldbasis: {
+                salePrice: 0.2,
+                tokenId: 'yield-basis',
+                color: '#f8fafc'
+            },
+            lab: {
+                salePrice: 0.025,
+                tokenId: 'lab',
+                color: '#22c55e'
             }
         };
 
@@ -1721,7 +1903,9 @@
             session: { current: 0, ath: 0, atl: 0 },
             skate: { current: 0, ath: 0, atl: 0 },
             resolv: { current: 0, ath: 0, atl: 0 },
-            fragmetric: { current: 0, ath: 0, atl: 0 }
+            fragmetric: { current: 0, ath: 0, atl: 0 },
+            yieldbasis: { current: 0, ath: 0, atl: 0 },
+            lab: { current: 0, ath: 0, atl: 0 }
         };
 
         // Current view mode and sorting
@@ -1800,7 +1984,9 @@
                 session: '/static/session.png',
                 skate: '/static/skate.jpg',
                 resolv: '/static/resolv.svg',
-                fragmetric: '/static/fragmetric.png'
+                fragmetric: '/static/fragmetric.png',
+                yieldbasis: '/static/yieldbasis.png',
+                lab: '/static/lab.png'
             };
             return logoMap[saleId] || '';
         }
@@ -2132,6 +2318,40 @@
             
             const result = calculateROI('fragmetric', amount);
             updateCalculationUI('fragmetric', result);
+        }
+
+        function calculateYieldbasisROI() {
+            const amount = parseFloat(document.getElementById('yieldbasis-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            // Check if price data is loaded
+            if (!priceData.yieldbasis || priceData.yieldbasis.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
+            const result = calculateROI('yieldbasis', amount);
+            updateCalculationUI('yieldbasis', result);
+        }
+
+        function calculateLabROI() {
+            const amount = parseFloat(document.getElementById('lab-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            // Check if price data is loaded
+            if (!priceData.lab || priceData.lab.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
+            const result = calculateROI('lab', amount);
+            updateCalculationUI('lab', result);
         }
 
         // Update price displays
