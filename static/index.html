@@ -1849,7 +1849,8 @@ const tokenSalePrices = {
     session: "0.2",
     resolv: "0.1",  // Added Resolv sale price
     fragmetric: "0.2",  // Added Fragmetric sale price
-    ten: "0.08"  // Added Ten (Nozomi) sale price
+    ten: "0.08",  // Added Ten (Nozomi) sale price
+    lit: "0.10"  // Added Lit Protocol sale price (base price)
 };
 
 // Token CoinGecko IDs
@@ -1907,6 +1908,14 @@ function formatAddress(address) {
 
 // Function to get token sale price
 function getTokenSalePrice(saleId) {
+    // Special case for LIT - show all 3 prices
+    if (saleId === 'lit') {
+        return `<div style="display: flex; flex-direction: column; gap: 2px; font-size: 0.85em;">
+            <span>$0.10 (12mo lock)</span>
+            <span>$0.15 (linear)</span>
+            <span>$0.25 (TGE)</span>
+        </div>`;
+    }
     return tokenSalePrices[saleId] ? `$${tokenSalePrices[saleId]}` : 'N/A';
 }
 

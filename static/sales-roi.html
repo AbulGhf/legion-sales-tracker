@@ -393,6 +393,15 @@
             display: none;
         }
 
+        .roi-table tbody tr.sub-row {
+            background: rgba(253, 114, 68, 0.03);
+            border-left: 3px solid rgba(253, 114, 68, 0.3);
+        }
+
+        .roi-table tbody tr.sub-row:hover {
+            background: rgba(253, 114, 68, 0.06);
+        }
+
         .project-info {
             display: flex;
             align-items: center;
@@ -1017,6 +1026,9 @@
         .lab-card { border-color: rgba(34, 197, 94, 0.3); }
         .lab-card::before { background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.6), transparent); }
 
+        .lit-card { border-color: rgba(253, 114, 68, 0.3); }
+        .lit-card::before { background: linear-gradient(90deg, transparent, rgba(253, 114, 68, 0.6), transparent); }
+
         /* ROI Header */
         .roi-header {
             display: flex;
@@ -1050,6 +1062,7 @@
         .fragmetric-color { color: #007d3a; }
         .yieldbasis-color { color: #f8fafc; }
         .lab-color { color: #22c55e; }
+        .lit-color { color: #fd7244; }
 
         /* Stats Grid */
         .stats-grid {
@@ -1249,6 +1262,18 @@
         .lab-button:hover {
             background: rgba(34, 197, 94, 0.25);
             border-color: rgba(34, 197, 94, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .lit-button {
+            background: rgba(253, 114, 68, 0.15);
+            color: #fd7244;
+            border: 1px solid rgba(253, 114, 68, 0.3);
+        }
+
+        .lit-button:hover {
+            background: rgba(253, 114, 68, 0.25);
+            border-color: rgba(253, 114, 68, 0.5);
             transform: translateY(-1px);
         }
 
@@ -1830,6 +1855,150 @@
                     <div id="lab-result" class="result-card"></div>
                 </div>
             </div>
+
+            <!-- LIT Card - FDV $100M -->
+            <div class="roi-card lit-card">
+                <div class="roi-header">
+                    <img src="/static/lit.jpg" alt="LIT Logo" class="roi-logo">
+                    <h2 class="roi-title lit-color">LIT - FDV $100M</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value lit-color">$0.10</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Vesting</div>
+                        <div class="stat-value" style="font-size: 0.9rem;">12mo lockup</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="lit_100m-current">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="lit_100m-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="lit_100m-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="lit_100m-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="lit_100m-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="lit_100m-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="calculator-title">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="lit-100m-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button lit-button" onclick="calculateLit100mROI()">Calculate</button>
+                    <div id="lit-100m-result" class="result-card"></div>
+                </div>
+            </div>
+
+            <!-- LIT Card - FDV $150M -->
+            <div class="roi-card lit-card">
+                <div class="roi-header">
+                    <img src="/static/lit.jpg" alt="LIT Logo" class="roi-logo">
+                    <h2 class="roi-title lit-color">LIT - FDV $150M</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value lit-color">$0.15</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Vesting</div>
+                        <div class="stat-value" style="font-size: 0.9rem;">12mo linear</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="lit_150m-current">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="lit_150m-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="lit_150m-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="lit_150m-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="lit_150m-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="lit_150m-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="calculator-title">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="lit-150m-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button lit-button" onclick="calculateLit150mROI()">Calculate</button>
+                    <div id="lit-150m-result" class="result-card"></div>
+                </div>
+            </div>
+
+            <!-- LIT Card - FDV $250M -->
+            <div class="roi-card lit-card">
+                <div class="roi-header">
+                    <img src="/static/lit.jpg" alt="LIT Logo" class="roi-logo">
+                    <h2 class="roi-title lit-color">LIT - FDV $250M</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value lit-color">$0.25</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Vesting</div>
+                        <div class="stat-value" style="font-size: 0.9rem;">TGE unlock</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="lit_250m-current">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="lit_250m-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="lit_250m-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="lit_250m-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="lit_250m-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="lit_250m-atl-roi">Loading...</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="calculator-title">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="lit-250m-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button lit-button" onclick="calculateLit250mROI()">Calculate</button>
+                    <div id="lit-250m-result" class="result-card"></div>
+                </div>
+            </div>
                     </div>
         </div>
         
@@ -1890,7 +2059,32 @@
             lab: {
                 salePrice: 0.025,
                 tokenId: 'lab',
-                color: '#22c55e'
+                color: '#22c55e',
+                tag: 'Nozomi curated'
+            },
+            lit_100m: {
+                salePrice: 0.10,
+                tokenId: 'lit-protocol',
+                color: '#fd7244',
+                displayName: 'LIT (FDV $100M)',
+                parentGroup: 'lit',
+                vestingInfo: '12mo lockup'
+            },
+            lit_150m: {
+                salePrice: 0.15,
+                tokenId: 'lit-protocol',
+                color: '#fd7244',
+                displayName: 'LIT (FDV $150M)',
+                parentGroup: 'lit',
+                vestingInfo: '12mo linear'
+            },
+            lit_250m: {
+                salePrice: 0.25,
+                tokenId: 'lit-protocol',
+                color: '#fd7244',
+                displayName: 'LIT (FDV $250M)',
+                parentGroup: 'lit',
+                vestingInfo: 'TGE unlock'
             }
         };
 
@@ -1905,7 +2099,10 @@
             resolv: { current: 0, ath: 0, atl: 0 },
             fragmetric: { current: 0, ath: 0, atl: 0 },
             yieldbasis: { current: 0, ath: 0, atl: 0 },
-            lab: { current: 0, ath: 0, atl: 0 }
+            lab: { current: 0, ath: 0, atl: 0 },
+            lit_100m: { current: 0, ath: 0, atl: 0 },
+            lit_150m: { current: 0, ath: 0, atl: 0 },
+            lit_250m: { current: 0, ath: 0, atl: 0 }
         };
 
         // Current view mode and sorting
@@ -1948,14 +2145,17 @@
                 
                 return {
                     id: saleId,
-                    project: saleId.toUpperCase(),
+                    project: config.displayName || saleId.toUpperCase(),
                     salePrice: config.salePrice,
                     currentPrice: prices.current,
                     currentRoi: currentRoi,
                     athPrice: prices.ath,
                     athRoi: athRoi,
                     color: config.color,
-                    logo: getProjectLogo(saleId)
+                    logo: getProjectLogo(saleId),
+                    parentGroup: config.parentGroup,
+                    vestingInfo: config.vestingInfo,
+                    tag: config.tag
                 };
             });
             
@@ -1986,7 +2186,10 @@
                 resolv: '/static/resolv.svg',
                 fragmetric: '/static/fragmetric.png',
                 yieldbasis: '/static/yieldbasis.png',
-                lab: '/static/lab.png'
+                lab: '/static/lab.png',
+                lit_100m: '/static/lit.jpg',
+                lit_150m: '/static/lit.jpg',
+                lit_250m: '/static/lit.jpg'
             };
             return logoMap[saleId] || '';
         }
@@ -1998,11 +2201,19 @@
             
             filteredData.forEach(row => {
                 const tr = document.createElement('tr');
+                const isSubRow = row.parentGroup !== undefined;
+                
+                if (isSubRow) {
+                    tr.classList.add('sub-row');
+                }
+                
                 tr.innerHTML = `
                     <td data-label="Project">
-                        <div class="project-info">
+                        <div class="project-info" style="${isSubRow ? 'padding-left: 1rem;' : ''}">
                             <img src="${row.logo}" alt="${row.project} Logo" class="project-logo">
-                            <span class="project-name" style="color: ${row.color}">${row.project}</span>
+                            <span class="project-name" style="color: ${row.color}; ${isSubRow ? 'font-size: 0.9rem;' : ''}">${row.project}</span>
+                            ${row.vestingInfo ? `<span style="color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; margin-left: 0.5rem;">(${row.vestingInfo})</span>` : ''}
+                            ${row.tag ? `<span style="display: inline-block; background: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; margin-left: 0.5rem; border: 1px solid rgba(34, 197, 94, 0.3);">${row.tag}</span>` : ''}
                         </div>
                     </td>
                     <td data-label="Sale Price" class="price-value">${formatCurrency(row.salePrice)}</td>
@@ -2352,6 +2563,57 @@
             
             const result = calculateROI('lab', amount);
             updateCalculationUI('lab', result);
+        }
+
+        function calculateLit100mROI() {
+            const amount = parseFloat(document.getElementById('lit-100m-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            // Check if price data is loaded
+            if (!priceData.lit_100m || priceData.lit_100m.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
+            const result = calculateROI('lit_100m', amount);
+            updateCalculationUI('lit-100m', result);
+        }
+
+        function calculateLit150mROI() {
+            const amount = parseFloat(document.getElementById('lit-150m-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            // Check if price data is loaded
+            if (!priceData.lit_150m || priceData.lit_150m.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
+            const result = calculateROI('lit_150m', amount);
+            updateCalculationUI('lit-150m', result);
+        }
+
+        function calculateLit250mROI() {
+            const amount = parseFloat(document.getElementById('lit-250m-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            // Check if price data is loaded
+            if (!priceData.lit_250m || priceData.lit_250m.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
+            const result = calculateROI('lit_250m', amount);
+            updateCalculationUI('lit-250m', result);
         }
 
         // Update price displays

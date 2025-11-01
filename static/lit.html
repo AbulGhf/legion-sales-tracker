@@ -463,6 +463,102 @@
             border: 1px solid rgba(253, 114, 68, 0.1);
             border-radius: 12px;
         }
+
+        .progress-container {
+            background: rgba(253, 114, 68, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(253, 114, 68, 0.2);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(253, 114, 68, 0.15);
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 12px 0;
+            position: relative;
+        }
+
+        .progress-base {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: rgba(253, 114, 68, 0.4);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 6px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .countdown-item {
+            text-align: center;
+            background: rgba(44, 44, 46, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 12px 8px;
+            border: 1px solid rgba(253, 114, 68, 0.1);
+        }
+
+        .countdown-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .countdown-label {
+            font-size: 0.75rem;
+            color: rgba(235, 235, 245, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 768px) {
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            
+            .countdown-number {
+                font-size: 1.25rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -499,6 +595,15 @@
                 tokens: "Enter Token Amount",
                 address: "Enter Wallet Address",
             },
+            // TGE occurred on October 30, 2025
+            tgeDate: new Date('2025-10-30T00:00:00Z'),
+            // Vesting options - we'll track the longest one (12 months lockup)
+            fullUnlockDate: new Date('2026-10-30T00:00:00Z'),
+            vestingOptions: [
+                { name: 'FDV $100M', price: 0.10, terms: '12mo lockup', tgeUnlock: 0, duration: 12, type: 'lockup' },
+                { name: 'FDV $150M', price: 0.15, terms: '12mo linear', tgeUnlock: 0, duration: 12, type: 'linear' },
+                { name: 'FDV $250M', price: 0.25, terms: 'TGE unlock', tgeUnlock: 100, duration: 0, type: 'immediate' }
+            ],
         };
 
         // Set page title and favicon dynamically
@@ -510,104 +615,229 @@
             document.head.appendChild(favicon);
         }
 
-        function PriceStats({ priceData, formatAmount }) {
+        function VestingProgress() {
+            const [timeLeft, setTimeLeft] = React.useState({});
+            const [vestingData, setVestingData] = React.useState({});
+
+            React.useEffect(() => {
+                const updateProgress = () => {
+                    const now = new Date();
+                    const tgeDate = CONFIG.tgeDate;
+                    const fullUnlockDate = CONFIG.fullUnlockDate;
+                    
+                    if (now < tgeDate) {
+                        // Before TGE
+                        const difference = tgeDate.getTime() - now.getTime();
+                        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                        setTimeLeft({ days, hours, minutes, seconds });
+                        
+                        // Calculate progress for each vesting option
+                        const vestingProgress = CONFIG.vestingOptions.map(option => ({
+                            name: option.name,
+                            progress: 0,
+                            unlocked: 0
+                        }));
+                        setVestingData({ isBeforeTGE: true, vestingProgress });
+                    } else if (now >= fullUnlockDate) {
+                        // After full unlock (all are fully unlocked)
+                        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                        const vestingProgress = CONFIG.vestingOptions.map(option => ({
+                            name: option.name,
+                            progress: 100,
+                            unlocked: 100
+                        }));
+                        setVestingData({ isBeforeTGE: false, isFullyUnlocked: true, vestingProgress });
+                    } else {
+                        // During vesting period
+                        const totalDuration = fullUnlockDate.getTime() - tgeDate.getTime();
+                        const elapsed = now.getTime() - tgeDate.getTime();
+                        
+                        // Calculate progress for each vesting option
+                        const vestingProgress = CONFIG.vestingOptions.map(option => {
+                            if (option.type === 'immediate') {
+                                // FDV $250M: 100% at TGE
+                                return { name: option.name, progress: 100, unlocked: 100 };
+                            } else if (option.type === 'linear') {
+                                // FDV $150M: Linear over 12 months
+                                const linearProgress = (elapsed / totalDuration) * 100;
+                                return { name: option.name, progress: linearProgress, unlocked: linearProgress };
+                            } else {
+                                // FDV $100M: Lockup (0% until 12 months, then 100%)
+                                const linearProgress = (elapsed / totalDuration) * 100;
+                                const isUnlocked = now >= fullUnlockDate;
+                                return { name: option.name, progress: linearProgress, unlocked: isUnlocked ? 100 : 0 };
+                            }
+                        });
+                        
+                        // Calculate time until full unlock
+                        const difference = fullUnlockDate.getTime() - now.getTime();
+                        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+                        setTimeLeft({ days, hours, minutes, seconds });
+                        setVestingData({ isBeforeTGE: false, isFullyUnlocked: false, vestingProgress });
+                    }
+                };
+
+                updateProgress();
+                const interval = setInterval(updateProgress, 1000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const isBeforeTGE = vestingData.isBeforeTGE;
+            const isFullyUnlocked = vestingData.isFullyUnlocked;
+            const vestingProgress = vestingData.vestingProgress || [];
+
             return (
-                <div className="card p-4 mb-4">
-                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
-                        <div className="flex items-center mb-4 md:mb-0">
-                            <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="w-8 h-8 mr-3" onError={(e) => e.target.src = CONFIG.logoSrc.replace('.jpg', '.png')} />
-                            <span className="text-lg font-semibold">{CONFIG.projectName} Price Stats</span>
+                <div className="progress-container">
+                    <div className="flex items-center justify-between mb-3">
+                        <div>
+                            <h3 className="text-lg font-semibold" style={{color: '#fd7244'}}>
+                                {isBeforeTGE ? '⏳ Time Until TGE' : 
+                                 isFullyUnlocked ? '🎉 All Vesting Options Unlocked!' : 
+                                 '📈 Vesting in Progress'}
+                            </h3>
+                            <p className="text-sm text-gray-400">
+                                {isBeforeTGE ? 'TGE on October 30, 2025' :
+                                 isFullyUnlocked ? 'All tokens have been unlocked' :
+                                 'Different vesting schedules for each price tier'}
+                            </p>
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-6 gap-4 w-full md:w-auto">
-                            <div className="text-center">
-                                <div className="text-gray-400 text-sm">Sale Price</div>
-                                <div className="font-bold">{formatAmount(CONFIG.salePrice, true)}</div>
+                    </div>
+                    
+                    {!isFullyUnlocked && (
+                        <div className="countdown-grid">
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.days || 0}</div>
+                                <div className="countdown-label">Days</div>
                             </div>
-                            <div className="text-center">
-                                <div className="text-gray-400 text-sm">Current Price</div>
-                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.currentPrice, true)}</div>
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.hours || 0}</div>
+                                <div className="countdown-label">Hours</div>
                             </div>
-                            <div className="text-center">
-                                <div className="text-gray-400 text-sm">All-Time High</div>
-                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.athPrice, true)}</div>
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.minutes || 0}</div>
+                                <div className="countdown-label">Minutes</div>
                             </div>
-                            <div className="text-center">
-                                <div className="text-gray-400 text-sm">All-Time Low</div>
-                                <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.lowestPrice, true)}</div>
+                            <div className="countdown-item">
+                                <div className="countdown-number">{timeLeft.seconds || 0}</div>
+                                <div className="countdown-label">Seconds</div>
                             </div>
-                            <div className="text-center">
-                                <div className="text-gray-400 text-sm">Current ROI</div>
-                                <div className={`font-bold ${priceData.currentRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                    {priceData.loading ? "Loading..." : priceData.error ? "N/A" : `${priceData.currentRoi.toFixed(2)}%`}
-                                </div>
-                            </div>
-                            <div className="text-center">
-                                <div className="text-gray-400 text-sm">ATH ROI</div>
-                                <div className={`font-bold ${priceData.athRoi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                    {priceData.loading ? "Loading..." : priceData.error ? "N/A" : `${priceData.athRoi.toFixed(2)}%`}
-                                </div>
-                            </div>
+                        </div>
+                    )}
+
+                    <div className="mt-4 p-4 rounded-lg border" style={{backgroundColor: 'rgba(253, 114, 68, 0.1)', borderColor: 'rgba(253, 114, 68, 0.2)'}}>
+                        <div className="text-sm font-semibold mb-3" style={{color: '#fd7244'}}>Vesting Options Status</div>
+                        <div className="space-y-3">
+                            {CONFIG.vestingOptions.map((option, idx) => {
+                                const progress = vestingProgress.find(v => v.name === option.name) || { progress: 0, unlocked: 0 };
+                                return (
+                                    <div key={idx}>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="font-medium">{option.name} (${option.price})</span>
+                                            <span className="font-bold" style={{color: '#fd7244'}}>{progress.unlocked.toFixed(1)}% Unlocked</span>
+                                        </div>
+                                        <div className="progress-bar" style={{height: '8px'}}>
+                                            <div 
+                                                className="progress-fill" 
+                                                style={{ width: `${progress.unlocked}%` }}
+                                            ></div>
+                                        </div>
+                                        <div className="text-xs text-gray-400 mt-1">{option.terms}</div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="mt-4 text-center">
+                        <div className="text-sm text-gray-400">
+                            TGE: October 30, 2025 • Multiple vesting options available
                         </div>
                     </div>
                 </div>
             );
         }
 
-        function VestingCalculator({ calculatorMode, setCalculatorMode, inputValue, setInputValue, formatAmount }) {
-            const [calculationResult, setCalculationResult] = React.useState(null);
+        function PriceStats({ priceData, formatAmount }) {
+            const calculateROI = (salePrice) => {
+                if (priceData.loading || priceData.error) return { current: 0, ath: 0 };
+                const currentRoi = ((priceData.currentPrice - salePrice) / salePrice) * 100;
+                const athRoi = ((priceData.athPrice - salePrice) / salePrice) * 100;
+                return { current: currentRoi, ath: athRoi };
+            };
+
+            return (
+                <div className="card p-4 mb-4">
+                    <div className="flex items-center mb-4">
+                        <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="w-8 h-8 mr-3" onError={(e) => e.target.src = CONFIG.logoSrc.replace('.jpg', '.png')} />
+                        <span className="text-lg font-semibold">{CONFIG.projectName} Price & ROI Stats</span>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div className="text-center">
+                            <div className="text-gray-400 text-sm">Current Price</div>
+                            <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.currentPrice, true)}</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-gray-400 text-sm">All-Time High</div>
+                            <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.athPrice, true)}</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-gray-400 text-sm">All-Time Low</div>
+                            <div className="font-bold">{priceData.loading ? "Loading..." : priceData.error ? "N/A" : formatAmount(priceData.lowestPrice, true)}</div>
+                        </div>
+                    </div>
+
+                    <div className="border-t border-gray-700 pt-4">
+                        <div className="text-sm font-semibold mb-3" style={{color: '#fd7244'}}>Sale Price ROI</div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {CONFIG.vestingOptions.map((option, idx) => {
+                                const roi = calculateROI(option.price);
+                                return (
+                                    <div key={idx} className="p-3 rounded-lg" style={{backgroundColor: 'rgba(253, 114, 68, 0.05)', border: '1px solid rgba(253, 114, 68, 0.2)'}}>
+                                        <div className="text-sm font-medium mb-1">{option.name}</div>
+                                        <div className="text-xs text-gray-400 mb-2">Sale: {formatAmount(option.price, true)}</div>
+                                        <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div>
+                                                <div className="text-gray-400">Current ROI</div>
+                                                <div className={`font-bold ${roi.current >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                                    {priceData.loading ? "..." : priceData.error ? "N/A" : `${roi.current.toFixed(1)}%`}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div className="text-gray-400">ATH ROI</div>
+                                                <div className={`font-bold ${roi.ath >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                                    {priceData.loading ? "..." : priceData.error ? "N/A" : `${roi.ath.toFixed(1)}%`}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function ROICalculator({ calculatorMode, setCalculatorMode, inputValue, setInputValue, handleCalculate, calculatorLoading, calculationResult, priceData, formatAmount }) {
             const [selectedVesting, setSelectedVesting] = React.useState('fdv100');
 
             const vestingOptions = {
-                fdv100: { fdv: 100000000, price: 0.10, terms: '100% after 12 months lockup' },
-                fdv150: { fdv: 150000000, price: 0.15, terms: '100% linearly unlocked over 12 months' },
-                fdv250: { fdv: 250000000, price: 0.25, terms: '100% at TGE' }
-            };
-
-            const handleCalculate = () => {
-                try {
-                    setCalculationResult(null);
-                    const vesting = vestingOptions[selectedVesting];
-                    
-                    if (calculatorMode === 'amount') {
-                        const amount = parseFloat(inputValue);
-                        if (isNaN(amount) || amount <= 0) {
-                            setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
-                            return;
-                        }
-                        const tokens = amount / vesting.price;
-                        setCalculationResult({ 
-                            type: 'amount', 
-                            investmentAmount: amount, 
-                            tokensReceived: tokens,
-                            price: vesting.price,
-                            terms: vesting.terms,
-                            fdv: vesting.fdv
-                        });
-                    } else if (calculatorMode === 'tokens') {
-                        const tokens = parseFloat(inputValue);
-                        if (isNaN(tokens) || tokens <= 0) {
-                            setCalculationResult({ error: 'Please enter a valid token amount greater than 0.' });
-                            return;
-                        }
-                        const usdcAmount = tokens * vesting.price;
-                        setCalculationResult({ 
-                            type: 'tokens', 
-                            investmentAmount: usdcAmount, 
-                            tokensReceived: tokens,
-                            price: vesting.price,
-                            terms: vesting.terms,
-                            fdv: vesting.fdv
-                        });
-                    }
-                } catch (error) {
-                    setCalculationResult({ error: error.message });
-                }
+                fdv100: { fdv: 100000000, price: 0.10, terms: '12mo lockup', name: 'FDV $100M' },
+                fdv150: { fdv: 150000000, price: 0.15, terms: '12mo linear', name: 'FDV $150M' },
+                fdv250: { fdv: 250000000, price: 0.25, terms: 'TGE unlock', name: 'FDV $250M' }
             };
 
             return (
                 <div className="card p-4 mt-4">
-                    <div className="stats-title mb-4">Vesting Calculator</div>
-                    <div className="card-subtitle mb-4">Calculate allocation based on vesting terms</div>
+                    <div className="stats-title mb-4">ROI Calculator</div>
+                    <div className="card-subtitle mb-4">Calculate your investment performance</div>
                     
                     {/* Vesting Option Selector */}
                     <div className="mb-4">
@@ -620,10 +850,9 @@
                                     onClick={() => setSelectedVesting(key)}
                                 >
                                     <div className="flex justify-between items-center">
-                                        <span className="font-medium">${option.price} per LIT</span>
-                                        <span className="text-sm text-gray-400">FDV ${option.fdv.toLocaleString()}</span>
+                                        <span className="font-medium">{option.name} - ${option.price}</span>
+                                        <span className="text-xs text-gray-400">{option.terms}</span>
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-1">{option.terms}</div>
                                 </button>
                             ))}
                         </div>
@@ -631,7 +860,7 @@
 
                     {/* Calculator Mode Tabs */}
                     <div className="flex mb-4">
-                        {['amount', 'tokens'].map(mode => (
+                        {CONFIG.calculatorModes.map(mode => (
                             <button
                                 key={mode}
                                 className={`tab-button ${calculatorMode === mode ? 'active' : ''}`}
@@ -644,27 +873,25 @@
 
                     <div className="bg-opacity-30 bg-black p-4 rounded">
                         <div>
-                            <label className="block text-sm mb-1">
-                                {calculatorMode === 'amount' ? 'Investment Amount (USDC)' : 'Token Amount (LIT)'}
-                            </label>
+                            <label className="block text-sm mb-1">{CONFIG.calculatorLabels[calculatorMode]}</label>
                             <input
-                                type="number"
+                                type={calculatorMode === 'address' ? 'text' : 'number'}
                                 className="calculator-input"
-                                placeholder={calculatorMode === 'amount' ? 'Enter USDC amount' : 'Enter LIT tokens'}
+                                placeholder={CONFIG.calculatorPlaceholders[calculatorMode]}
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                             />
                         </div>
                         <button
                             className="pagination-button w-full mt-4"
-                            onClick={handleCalculate}
-                            disabled={!inputValue}
+                            onClick={() => handleCalculate(selectedVesting)}
+                            disabled={calculatorLoading || !inputValue || priceData.loading}
                         >
-                            Calculate
+                            {calculatorLoading ? 'Calculating...' : 'Calculate'}
                         </button>
                         {calculationResult && !calculationResult.error && (
                             <div className="result-card mt-4">
-                                <div className="text-sm text-gray-400 mb-2">Calculation Results</div>
+                                <div className="text-sm text-gray-400 mb-2">Investment Results</div>
                                 <div className="flex justify-between mb-2">
                                     <span>Investment:</span>
                                     <span className="font-medium">{formatAmount(calculationResult.investmentAmount)}</span>
@@ -674,15 +901,41 @@
                                     <span className="font-medium">{calculationResult.tokensReceived.toLocaleString()} LIT</span>
                                 </div>
                                 <div className="flex justify-between mb-2">
-                                    <span>Price per Token:</span>
-                                    <span className="font-medium">${calculationResult.price}</span>
+                                    <span>Sale Price:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.salePrice)}</span>
                                 </div>
                                 <div className="border-t border-gray-700 my-2"></div>
-                                <div className="text-sm text-gray-400 mb-1">
-                                    <strong>Vesting Terms:</strong> {calculationResult.terms}
+                                <div className="flex justify-between mb-2">
+                                    <span>Current Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.currentValue)}</span>
                                 </div>
-                                <div className="text-sm text-gray-400">
-                                    <strong>FDV:</strong> ${calculationResult.fdv.toLocaleString()}
+                                <div className="flex justify-between mb-2">
+                                    <span>Current P&L:</span>
+                                    <span className={`font-medium ${calculationResult.currentPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.currentPnL)} ({calculationResult.currentPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>ATH Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.athValue)}</span>
+                                </div>
+                                <div className="flex justify-between mb-2">
+                                    <span>ATH P&L:</span>
+                                    <span className={`font-medium ${calculationResult.athPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.athPnL)} ({calculationResult.athPnLPercent.toFixed(2)}%)
+                                    </span>
+                                </div>
+                                <div className="border-t border-gray-700 my-2"></div>
+                                <div className="flex justify-between mb-2">
+                                    <span>Lowest Value:</span>
+                                    <span className="font-medium">{formatAmount(calculationResult.lowestValue)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Lowest P&L:</span>
+                                    <span className={`font-medium ${calculationResult.lowestPnL >= 0 ? 'profit-positive' : 'profit-negative'}`}>
+                                        {formatAmount(calculationResult.lowestPnL)} ({calculationResult.lowestPnLPercent.toFixed(2)}%)
+                                    </span>
                                 </div>
                             </div>
                         )}
@@ -770,15 +1023,58 @@
             const [sortOrder, setSortOrder] = React.useState('desc');
             const [currentPage, setCurrentPage] = React.useState(1);
             const [stats, setStats] = React.useState({ average: 0, median: 0, highest: 0, lowest: 0 });
+            const [priceData, setPriceData] = React.useState({
+                salePrice: CONFIG.salePrice,
+                currentPrice: 0,
+                athPrice: 0,
+                lowestPrice: 0,
+                volume24h: 0,
+                currentRoi: 0,
+                athRoi: 0,
+                loading: true,
+                error: null,
+            });
             const [showModal, setShowModal] = React.useState(false);
             const [selectedInvestor, setSelectedInvestor] = React.useState(null);
             const [investorLoading, setInvestorLoading] = React.useState(false);
             const [calculatorMode, setCalculatorMode] = React.useState('amount');
             const [inputValue, setInputValue] = React.useState('');
+            const [calculatorLoading, setCalculatorLoading] = React.useState(false);
+            const [calculationResult, setCalculationResult] = React.useState(null);
 
             React.useEffect(() => {
                 fetchData();
+                fetchTokenPriceData();
             }, []);
+
+            const fetchTokenPriceData = async () => {
+                try {
+                    setPriceData(prev => ({ ...prev, loading: true, error: null }));
+                    const apiUrl = CONFIG.apiEndpoints.price.replace(':tokenId', CONFIG.coingecko.tokenId);
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error(`Failed to fetch token price data: ${response.status}`);
+                    const data = await response.json();
+                    const currentPrice = data.current_price || 0;
+                    const athPrice = data.ath || 0;
+                    const lowestPrice = data.atl || 0;
+                    const volume24h = data.total_volume || 0;
+                    const currentRoi = currentPrice > 0 ? ((currentPrice - CONFIG.salePrice) / CONFIG.salePrice) * 100 : 0;
+                    const athRoi = athPrice > 0 ? ((athPrice - CONFIG.salePrice) / CONFIG.salePrice) * 100 : 0;
+                    setPriceData({
+                        salePrice: CONFIG.salePrice,
+                        currentPrice,
+                        athPrice,
+                        lowestPrice,
+                        volume24h,
+                        currentRoi,
+                        athRoi,
+                        loading: false,
+                        error: null,
+                    });
+                } catch (err) {
+                    setPriceData(prev => ({ ...prev, loading: false, error: err.message }));
+                }
+            };
 
             const fetchData = async () => {
                 try {
@@ -864,7 +1160,80 @@
                 }
             };
 
+            const calculatePnL = (investmentAmount, salePrice) => {
+                const tokensReceived = investmentAmount / salePrice;
+                const currentValue = tokensReceived * priceData.currentPrice;
+                const athValue = tokensReceived * priceData.athPrice;
+                const lowestValue = tokensReceived * priceData.lowestPrice;
+                const currentPnL = currentValue - investmentAmount;
+                const currentPnLPercent = (currentPnL / investmentAmount) * 100;
+                const athPnL = athValue - investmentAmount;
+                const athPnLPercent = (athPnL / investmentAmount) * 100;
+                const lowestPnL = lowestValue - investmentAmount;
+                const lowestPnLPercent = (lowestPnL / investmentAmount) * 100;
+                return {
+                    tokensReceived,
+                    currentValue,
+                    currentPnL,
+                    currentPnLPercent,
+                    athValue,
+                    athPnL,
+                    athPnLPercent,
+                    lowestValue,
+                    lowestPnL,
+                    lowestPnLPercent,
+                };
+            };
 
+            const handleCalculate = async (selectedVesting) => {
+                try {
+                    setCalculatorLoading(true);
+                    setCalculationResult(null);
+
+                    const vestingOptions = {
+                        fdv100: { price: 0.10, terms: '12mo lockup', name: 'FDV $100M' },
+                        fdv150: { price: 0.15, terms: '12mo linear', name: 'FDV $150M' },
+                        fdv250: { price: 0.25, terms: 'TGE unlock', name: 'FDV $250M' }
+                    };
+
+                    const vesting = vestingOptions[selectedVesting];
+
+                    if (calculatorMode === 'address') {
+                        const response = await fetch(CONFIG.apiEndpoints.investor.replace(':address', inputValue.trim()));
+                        if (!response.ok) throw new Error('Address not found or invalid');
+                        const data = await response.json();
+                        const litSales = data.sales.filter(sale => sale.sale.toLowerCase().includes('lit'));
+                        const litTotal = litSales.reduce((sum, sale) => sum + sale.amount, 0);
+                        if (litTotal === 0) {
+                            setCalculationResult({ error: `This address did not participate in the ${CONFIG.projectName} sale.` });
+                            return;
+                        }
+                        const pnlData = calculatePnL(litTotal, vesting.price);
+                        setCalculationResult({ type: 'address', investmentAmount: litTotal, salePrice: vesting.price, ...pnlData });
+                    } else if (calculatorMode === 'amount') {
+                        const amount = parseFloat(inputValue);
+                        if (isNaN(amount) || amount <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid amount greater than 0.' });
+                            return;
+                        }
+                        const pnlData = calculatePnL(amount, vesting.price);
+                        setCalculationResult({ type: 'amount', investmentAmount: amount, salePrice: vesting.price, ...pnlData });
+                    } else {
+                        const tokens = parseFloat(inputValue);
+                        if (isNaN(tokens) || tokens <= 0) {
+                            setCalculationResult({ error: 'Please enter a valid token amount greater than 0.' });
+                            return;
+                        }
+                        const usdcAmount = tokens * vesting.price;
+                        const pnlData = calculatePnL(usdcAmount, vesting.price);
+                        setCalculationResult({ type: 'tokens', investmentAmount: usdcAmount, tokensReceived: tokens, salePrice: vesting.price, ...pnlData });
+                    }
+                } catch (error) {
+                    setCalculationResult({ error: error.message });
+                } finally {
+                    setCalculatorLoading(false);
+                }
+            };
 
             if (loading) {
                 return (
@@ -899,28 +1268,10 @@
                         <div className="header-title">{CONFIG.projectName}</div>
                         <img src={CONFIG.logoSrc} alt={CONFIG.logoAlt} className="h-16" />
                     </div>
-                    <div className="price-stats-grid">
-                        <div className="card p-4">
-                            <div className="stats-title mb-4">Vesting Options</div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="vesting-option">
-                                    <div className="vesting-fdv">FDV $100,000,000</div>
-                                    <div className="vesting-price">$0.10 per LIT</div>
-                                    <div className="vesting-terms">100% after 12 months lockup</div>
-                                </div>
-                                <div className="vesting-option">
-                                    <div className="vesting-fdv">FDV $150,000,000</div>
-                                    <div className="vesting-price">$0.15 per LIT</div>
-                                    <div className="vesting-terms">100% linearly unlocked over 12 months</div>
-                                </div>
-                                <div className="vesting-option">
-                                    <div className="vesting-fdv">FDV $250,000,000</div>
-                                    <div className="vesting-price">$0.25 per LIT</div>
-                                    <div className="vesting-terms">100% at TGE</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
+                    <VestingProgress />
+                    <PriceStats priceData={priceData} formatAmount={formatAmount} />
+                    
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="md:col-span-1">
                             <div className="card p-6 text-center">
@@ -947,11 +1298,15 @@
                                     <div className="stats-value">{formatAmount(stats.lowest)}</div>
                                 </div>
                             </div>
-                            <VestingCalculator
+                            <ROICalculator
                                 calculatorMode={calculatorMode}
                                 setCalculatorMode={setCalculatorMode}
                                 inputValue={inputValue}
                                 setInputValue={setInputValue}
+                                handleCalculate={handleCalculate}
+                                calculatorLoading={calculatorLoading}
+                                calculationResult={calculationResult}
+                                priceData={priceData}
                                 formatAmount={formatAmount}
                             />
                         </div>
