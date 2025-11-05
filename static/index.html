@@ -1850,7 +1850,8 @@ const tokenSalePrices = {
     resolv: "0.1",  // Added Resolv sale price
     fragmetric: "0.2",  // Added Fragmetric sale price
     ten: "0.08",  // Added Ten (Nozomi) sale price
-    lit: "0.10"  // Added Lit Protocol sale price (base price)
+    lit: "0.10",  // Added Lit Protocol sale price (base price)
+    intuition: "0.08"  // Added Intuition sale price
 };
 
 // Token CoinGecko IDs
@@ -1863,7 +1864,8 @@ const coinGeckoIds = {
     session: "session-token",
     skate: "skate", // Skate token CoinGecko ID
     resolv: "resolv", // Added Resolv CoinGecko ID
-    fragmetric: "fragmetric" // Added Fragmetric CoinGecko ID
+    fragmetric: "fragmetric", // Added Fragmetric CoinGecko ID
+    intuition: "intuition" // Added Intuition CoinGecko ID
 };
 
 // Store fetched market prices
@@ -1914,6 +1916,13 @@ function getTokenSalePrice(saleId) {
             <span>$0.10 (12mo lock)</span>
             <span>$0.15 (linear)</span>
             <span>$0.25 (TGE)</span>
+        </div>`;
+    }
+    // Special case for INTUITION - show both prices
+    if (saleId === 'intuition') {
+        return `<div style="display: flex; flex-direction: column; gap: 2px; font-size: 0.85em;">
+            <span>$0.05 (FDV $50M)</span>
+            <span>$0.075 (FDV $75M)</span>
         </div>`;
     }
     return tokenSalePrices[saleId] ? `$${tokenSalePrices[saleId]}` : 'N/A';

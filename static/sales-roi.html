@@ -393,15 +393,6 @@
             display: none;
         }
 
-        .roi-table tbody tr.sub-row {
-            background: rgba(253, 114, 68, 0.03);
-            border-left: 3px solid rgba(253, 114, 68, 0.3);
-        }
-
-        .roi-table tbody tr.sub-row:hover {
-            background: rgba(253, 114, 68, 0.06);
-        }
-
         .project-info {
             display: flex;
             align-items: center;
@@ -425,13 +416,13 @@
 
         .roi-positive {
             color: #22c55e;
-            font-weight: 600;
+            font-weight: 700;
             font-family: 'JetBrains Mono', monospace;
         }
 
         .roi-negative {
             color: #ef4444;
-            font-weight: 600;
+            font-weight: 700;
             font-family: 'JetBrains Mono', monospace;
         }
 
@@ -1026,9 +1017,6 @@
         .lab-card { border-color: rgba(34, 197, 94, 0.3); }
         .lab-card::before { background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.6), transparent); }
 
-        .lit-card { border-color: rgba(253, 114, 68, 0.3); }
-        .lit-card::before { background: linear-gradient(90deg, transparent, rgba(253, 114, 68, 0.6), transparent); }
-
         /* ROI Header */
         .roi-header {
             display: flex;
@@ -1062,7 +1050,11 @@
         .fragmetric-color { color: #007d3a; }
         .yieldbasis-color { color: #f8fafc; }
         .lab-color { color: #22c55e; }
-        .lit-color { color: #fd7244; }
+        .lit_100m-color { color: #fd7244; }
+        .lit_150m-color { color: #fd7244; }
+        .lit_250m-color { color: #fd7244; }
+        .intuition_50m-color { color: #8b5cf6; }
+        .intuition_75m-color { color: #8b5cf6; }
 
         /* Stats Grid */
         .stats-grid {
@@ -1265,13 +1257,37 @@
             transform: translateY(-1px);
         }
 
-        .lit-button {
+        .lit_100m-button {
             background: rgba(253, 114, 68, 0.15);
             color: #fd7244;
             border: 1px solid rgba(253, 114, 68, 0.3);
         }
 
-        .lit-button:hover {
+        .lit_100m-button:hover {
+            background: rgba(253, 114, 68, 0.25);
+            border-color: rgba(253, 114, 68, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .lit_150m-button {
+            background: rgba(253, 114, 68, 0.15);
+            color: #fd7244;
+            border: 1px solid rgba(253, 114, 68, 0.3);
+        }
+
+        .lit_150m-button:hover {
+            background: rgba(253, 114, 68, 0.25);
+            border-color: rgba(253, 114, 68, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .lit_250m-button {
+            background: rgba(253, 114, 68, 0.15);
+            color: #fd7244;
+            border: 1px solid rgba(253, 114, 68, 0.3);
+        }
+
+        .lit_250m-button:hover {
             background: rgba(253, 114, 68, 0.25);
             border-color: rgba(253, 114, 68, 0.5);
             transform: translateY(-1px);
@@ -1296,8 +1312,14 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .profit-positive { color: #22c55e; }
-        .profit-negative { color: #ef4444; }
+        .profit-positive { 
+            color: #22c55e !important; 
+            font-weight: 700 !important;
+        }
+        .profit-negative { 
+            color: #ef4444 !important; 
+            font-weight: 700 !important;
+        }
 
         /* Responsive design */
         @media (max-width: 768px) {
@@ -1324,6 +1346,31 @@
 
             .roi-title {
                 font-size: 1.25rem;
+            }
+
+            /* Enhanced ROI colors for mobile visibility */
+            .roi-positive,
+            .profit-positive {
+                color: #10b981 !important;
+                font-weight: 700 !important;
+                font-size: 1rem !important;
+            }
+
+            .roi-negative,
+            .profit-negative {
+                color: #f87171 !important;
+                font-weight: 700 !important;
+                font-size: 1rem !important;
+            }
+
+            .stat-value.profit-positive {
+                color: #10b981 !important;
+                font-weight: 700 !important;
+            }
+
+            .stat-value.profit-negative {
+                color: #f87171 !important;
+                font-weight: 700 !important;
             }
         }
 
@@ -1816,7 +1863,10 @@
             <div class="roi-card lab-card">
                 <div class="roi-header">
                     <img src="/static/lab.png" alt="LAB Logo" class="roi-logo">
-                    <h2 class="roi-title lab-color">LAB</h2>
+                    <div>
+                        <h2 class="roi-title lab-color">LAB</h2>
+                        <span style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.6);">Nozomi curated</span>
+                    </div>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-pair">
@@ -1856,20 +1906,16 @@
                 </div>
             </div>
 
-            <!-- LIT Card - FDV $100M -->
-            <div class="roi-card lit-card">
+            <!-- LIT Protocol Card - $0.10 (FDV $100M) -->
+            <div class="roi-card lit_100m-card">
                 <div class="roi-header">
                     <img src="/static/lit.jpg" alt="LIT Logo" class="roi-logo">
-                    <h2 class="roi-title lit-color">LIT - FDV $100M</h2>
+                    <h2 class="roi-title lit_100m-color">LIT - $0.10 (12 Month Lock)</h2>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-pair">
                         <div class="stat-label">Sale Price</div>
-                        <div class="stat-value lit-color">$0.10</div>
-                    </div>
-                    <div class="stat-pair">
-                        <div class="stat-label">Vesting</div>
-                        <div class="stat-value" style="font-size: 0.9rem;">12mo lockup</div>
+                        <div class="stat-value lit_100m-color">$0.10</div>
                     </div>
                     <div class="stat-pair">
                         <div class="stat-label">Current Price</div>
@@ -1895,29 +1941,33 @@
                         <div class="stat-label">All-Time Low ROI</div>
                         <div class="stat-value" id="lit_100m-atl-roi">Loading...</div>
                     </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Vesting Terms</div>
+                        <div class="stat-value" style="font-size: 0.85rem;">100% after 12 months lockup</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">FDV</div>
+                        <div class="stat-value">$100,000,000</div>
+                    </div>
                 </div>
                 <div class="calculator-section">
                     <h3 class="calculator-title">ROI Calculator</h3>
-                    <input type="number" class="calculator-input" id="lit-100m-input" placeholder="Enter USDC amount">
-                    <button class="calculator-button lit-button" onclick="calculateLit100mROI()">Calculate</button>
-                    <div id="lit-100m-result" class="result-card"></div>
+                    <input type="number" class="calculator-input" id="lit_100m-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button lit_100m-button" onclick="calculateLit100mROI()">Calculate</button>
+                    <div id="lit_100m-result" class="result-card"></div>
                 </div>
             </div>
 
-            <!-- LIT Card - FDV $150M -->
-            <div class="roi-card lit-card">
+            <!-- LIT Protocol Card - $0.15 (FDV $150M) -->
+            <div class="roi-card lit_150m-card">
                 <div class="roi-header">
                     <img src="/static/lit.jpg" alt="LIT Logo" class="roi-logo">
-                    <h2 class="roi-title lit-color">LIT - FDV $150M</h2>
+                    <h2 class="roi-title lit_150m-color">LIT - $0.15 (Linear Vesting)</h2>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-pair">
                         <div class="stat-label">Sale Price</div>
-                        <div class="stat-value lit-color">$0.15</div>
-                    </div>
-                    <div class="stat-pair">
-                        <div class="stat-label">Vesting</div>
-                        <div class="stat-value" style="font-size: 0.9rem;">12mo linear</div>
+                        <div class="stat-value lit_150m-color">$0.15</div>
                     </div>
                     <div class="stat-pair">
                         <div class="stat-label">Current Price</div>
@@ -1943,29 +1993,33 @@
                         <div class="stat-label">All-Time Low ROI</div>
                         <div class="stat-value" id="lit_150m-atl-roi">Loading...</div>
                     </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Vesting Terms</div>
+                        <div class="stat-value" style="font-size: 0.85rem;">100% linearly over 12 months</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">FDV</div>
+                        <div class="stat-value">$150,000,000</div>
+                    </div>
                 </div>
                 <div class="calculator-section">
                     <h3 class="calculator-title">ROI Calculator</h3>
-                    <input type="number" class="calculator-input" id="lit-150m-input" placeholder="Enter USDC amount">
-                    <button class="calculator-button lit-button" onclick="calculateLit150mROI()">Calculate</button>
-                    <div id="lit-150m-result" class="result-card"></div>
+                    <input type="number" class="calculator-input" id="lit_150m-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button lit_150m-button" onclick="calculateLit150mROI()">Calculate</button>
+                    <div id="lit_150m-result" class="result-card"></div>
                 </div>
             </div>
 
-            <!-- LIT Card - FDV $250M -->
-            <div class="roi-card lit-card">
+            <!-- LIT Protocol Card - $0.25 (FDV $250M) -->
+            <div class="roi-card lit_250m-card">
                 <div class="roi-header">
                     <img src="/static/lit.jpg" alt="LIT Logo" class="roi-logo">
-                    <h2 class="roi-title lit-color">LIT - FDV $250M</h2>
+                    <h2 class="roi-title lit_250m-color">LIT - $0.25 (Immediate TGE)</h2>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-pair">
                         <div class="stat-label">Sale Price</div>
-                        <div class="stat-value lit-color">$0.25</div>
-                    </div>
-                    <div class="stat-pair">
-                        <div class="stat-label">Vesting</div>
-                        <div class="stat-value" style="font-size: 0.9rem;">TGE unlock</div>
+                        <div class="stat-value lit_250m-color">$0.25</div>
                     </div>
                     <div class="stat-pair">
                         <div class="stat-label">Current Price</div>
@@ -1991,12 +2045,124 @@
                         <div class="stat-label">All-Time Low ROI</div>
                         <div class="stat-value" id="lit_250m-atl-roi">Loading...</div>
                     </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Vesting Terms</div>
+                        <div class="stat-value" style="font-size: 0.85rem;">100% at TGE</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">FDV</div>
+                        <div class="stat-value">$250,000,000</div>
+                    </div>
                 </div>
                 <div class="calculator-section">
                     <h3 class="calculator-title">ROI Calculator</h3>
-                    <input type="number" class="calculator-input" id="lit-250m-input" placeholder="Enter USDC amount">
-                    <button class="calculator-button lit-button" onclick="calculateLit250mROI()">Calculate</button>
-                    <div id="lit-250m-result" class="result-card"></div>
+                    <input type="number" class="calculator-input" id="lit_250m-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button lit_250m-button" onclick="calculateLit250mROI()">Calculate</button>
+                    <div id="lit_250m-result" class="result-card"></div>
+                </div>
+            </div>
+
+            <!-- Intuition Card - $0.05 (FDV $50M) -->
+            <div class="roi-card intuition_50m-card">
+                <div class="roi-header">
+                    <img src="/static/intuition.jpg" alt="Intuition Logo" class="roi-logo">
+                    <h2 class="roi-title intuition_50m-color">INTUITION - $0.05 (FDV $50M)</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value intuition_50m-color">$0.05</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="intuition_50m-current">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="intuition_50m-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="intuition_50m-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="intuition_50m-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="intuition_50m-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="intuition_50m-atl-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Vesting Terms</div>
+                        <div class="stat-value" style="font-size: 0.85rem;">5% unlock at 1-year cliff, remaining 95% monthly linear for 12 months</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">FDV</div>
+                        <div class="stat-value">$50,000,000</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="calculator-title">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="intuition_50m-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button intuition_50m-button" onclick="calculateIntuition50mROI()">Calculate</button>
+                    <div id="intuition_50m-result" class="result-card"></div>
+                </div>
+            </div>
+
+            <!-- Intuition Card - $0.075 (FDV $75M) -->
+            <div class="roi-card intuition_75m-card">
+                <div class="roi-header">
+                    <img src="/static/intuition.jpg" alt="Intuition Logo" class="roi-logo">
+                    <h2 class="roi-title intuition_75m-color">INTUITION - $0.075 (FDV $75M)</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-pair">
+                        <div class="stat-label">Sale Price</div>
+                        <div class="stat-value intuition_75m-color">$0.075</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current Price</div>
+                        <div class="stat-value" id="intuition_75m-current">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Current ROI</div>
+                        <div class="stat-value" id="intuition_75m-current-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High</div>
+                        <div class="stat-value" id="intuition_75m-ath">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time High ROI</div>
+                        <div class="stat-value" id="intuition_75m-ath-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low</div>
+                        <div class="stat-value" id="intuition_75m-atl">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">All-Time Low ROI</div>
+                        <div class="stat-value" id="intuition_75m-atl-roi">Loading...</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">Vesting Terms</div>
+                        <div class="stat-value" style="font-size: 0.85rem;">100% unlock at TGE</div>
+                    </div>
+                    <div class="stat-pair">
+                        <div class="stat-label">FDV</div>
+                        <div class="stat-value">$75,000,000</div>
+                    </div>
+                </div>
+                <div class="calculator-section">
+                    <h3 class="calculator-title">ROI Calculator</h3>
+                    <input type="number" class="calculator-input" id="intuition_75m-input" placeholder="Enter USDC amount">
+                    <button class="calculator-button intuition_75m-button" onclick="calculateIntuition75mROI()">Calculate</button>
+                    <div id="intuition_75m-result" class="result-card"></div>
                 </div>
             </div>
                     </div>
@@ -2059,32 +2225,32 @@
             lab: {
                 salePrice: 0.025,
                 tokenId: 'lab',
-                color: '#22c55e',
-                tag: 'Nozomi curated'
+                color: '#22c55e'
             },
             lit_100m: {
                 salePrice: 0.10,
                 tokenId: 'lit-protocol',
-                color: '#fd7244',
-                displayName: 'LIT (FDV $100M)',
-                parentGroup: 'lit',
-                vestingInfo: '12mo lockup'
+                color: '#fd7244'
             },
             lit_150m: {
                 salePrice: 0.15,
                 tokenId: 'lit-protocol',
-                color: '#fd7244',
-                displayName: 'LIT (FDV $150M)',
-                parentGroup: 'lit',
-                vestingInfo: '12mo linear'
+                color: '#fd7244'
             },
             lit_250m: {
                 salePrice: 0.25,
                 tokenId: 'lit-protocol',
-                color: '#fd7244',
-                displayName: 'LIT (FDV $250M)',
-                parentGroup: 'lit',
-                vestingInfo: 'TGE unlock'
+                color: '#fd7244'
+            },
+            intuition_50m: {
+                salePrice: 0.05,
+                tokenId: 'intuition',
+                color: '#8b5cf6'
+            },
+            intuition_75m: {
+                salePrice: 0.075,
+                tokenId: 'intuition',
+                color: '#8b5cf6'
             }
         };
 
@@ -2102,7 +2268,9 @@
             lab: { current: 0, ath: 0, atl: 0 },
             lit_100m: { current: 0, ath: 0, atl: 0 },
             lit_150m: { current: 0, ath: 0, atl: 0 },
-            lit_250m: { current: 0, ath: 0, atl: 0 }
+            lit_250m: { current: 0, ath: 0, atl: 0 },
+            intuition_50m: { current: 0, ath: 0, atl: 0 },
+            intuition_75m: { current: 0, ath: 0, atl: 0 }
         };
 
         // Current view mode and sorting
@@ -2137,26 +2305,52 @@
             const tbody = document.getElementById('roi-table-body');
             tbody.innerHTML = '';
             
-            filteredData = Object.keys(SALES_CONFIG).map(saleId => {
+            filteredData = [];
+            
+            Object.keys(SALES_CONFIG).forEach(saleId => {
                 const config = SALES_CONFIG[saleId];
                 const prices = priceData[saleId];
                 const currentRoi = ((prices.current - config.salePrice) / config.salePrice) * 100;
                 const athRoi = ((prices.ath - config.salePrice) / config.salePrice) * 100;
                 
-                return {
+                // Create display name and suffix info
+                let displayName = saleId.toUpperCase();
+                let suffix = '';
+                
+                if (saleId === 'lit_100m') {
+                    displayName = 'LIT';
+                    suffix = '(FDV $100M)';
+                } else if (saleId === 'lit_150m') {
+                    displayName = 'LIT';
+                    suffix = '(FDV $150M)';
+                } else if (saleId === 'lit_250m') {
+                    displayName = 'LIT';
+                    suffix = '(FDV $250M)';
+                } else if (saleId === 'intuition_50m') {
+                    displayName = 'INTUITION';
+                    suffix = '(FDV $50M)';
+                } else if (saleId === 'intuition_75m') {
+                    displayName = 'INTUITION';
+                    suffix = '(FDV $75M)';
+                } else if (saleId === 'lab') {
+                    displayName = 'LAB';
+                    suffix = '(Nozomi Curated)';
+                }
+                
+                const rowData = {
                     id: saleId,
-                    project: config.displayName || saleId.toUpperCase(),
+                    project: displayName,
+                    suffix: suffix,
                     salePrice: config.salePrice,
                     currentPrice: prices.current,
                     currentRoi: currentRoi,
                     athPrice: prices.ath,
                     athRoi: athRoi,
                     color: config.color,
-                    logo: getProjectLogo(saleId),
-                    parentGroup: config.parentGroup,
-                    vestingInfo: config.vestingInfo,
-                    tag: config.tag
+                    logo: getProjectLogo(saleId)
                 };
+                
+                filteredData.push(rowData);
             });
             
             // Apply default sorting by highest ROI
@@ -2189,7 +2383,9 @@
                 lab: '/static/lab.png',
                 lit_100m: '/static/lit.jpg',
                 lit_150m: '/static/lit.jpg',
-                lit_250m: '/static/lit.jpg'
+                lit_250m: '/static/lit.jpg',
+                intuition_50m: '/static/intuition.jpg',
+                intuition_75m: '/static/intuition.jpg'
             };
             return logoMap[saleId] || '';
         }
@@ -2201,19 +2397,13 @@
             
             filteredData.forEach(row => {
                 const tr = document.createElement('tr');
-                const isSubRow = row.parentGroup !== undefined;
-                
-                if (isSubRow) {
-                    tr.classList.add('sub-row');
-                }
                 
                 tr.innerHTML = `
                     <td data-label="Project">
-                        <div class="project-info" style="${isSubRow ? 'padding-left: 1rem;' : ''}">
+                        <div class="project-info">
                             <img src="${row.logo}" alt="${row.project} Logo" class="project-logo">
-                            <span class="project-name" style="color: ${row.color}; ${isSubRow ? 'font-size: 0.9rem;' : ''}">${row.project}</span>
-                            ${row.vestingInfo ? `<span style="color: rgba(255, 255, 255, 0.5); font-size: 0.75rem; margin-left: 0.5rem;">(${row.vestingInfo})</span>` : ''}
-                            ${row.tag ? `<span style="display: inline-block; background: rgba(34, 197, 94, 0.15); color: #22c55e; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; margin-left: 0.5rem; border: 1px solid rgba(34, 197, 94, 0.3);">${row.tag}</span>` : ''}
+                            <span class="project-name" style="color: ${row.color}">${row.project}</span>
+                            ${row.suffix ? `<span style="font-size: 0.75rem; color: rgba(255, 255, 255, 0.6); font-weight: normal; margin-left: 0.25rem;">${row.suffix}</span>` : ''}
                         </div>
                     </td>
                     <td data-label="Sale Price" class="price-value">${formatCurrency(row.salePrice)}</td>
@@ -2257,8 +2447,11 @@
                 let bVal = b[currentSort.column];
                 
                 if (currentSort.column === 'project') {
-                    aVal = aVal.toLowerCase();
-                    bVal = bVal.toLowerCase();
+                    // For project sorting, include suffix to differentiate
+                    const aFull = a.suffix ? `${a.project} ${a.suffix}` : a.project;
+                    const bFull = b.suffix ? `${b.project} ${b.suffix}` : b.project;
+                    aVal = aFull.toLowerCase();
+                    bVal = bFull.toLowerCase();
                 }
                 
                 if (typeof aVal === 'string') {
@@ -2276,29 +2469,16 @@
                 const searchTerm = e.target.value.toLowerCase();
                 
                 if (searchTerm === '') {
-                    filteredData = Object.keys(SALES_CONFIG).map(saleId => {
-                        const config = SALES_CONFIG[saleId];
-                        const prices = priceData[saleId];
-                        const currentRoi = ((prices.current - config.salePrice) / config.salePrice) * 100;
-                        const athRoi = ((prices.ath - config.salePrice) / config.salePrice) * 100;
-                        
-                        return {
-                            id: saleId,
-                            project: saleId.toUpperCase(),
-                            salePrice: config.salePrice,
-                            currentPrice: prices.current,
-                            currentRoi: currentRoi,
-                            athPrice: prices.ath,
-                            athRoi: athRoi,
-                            color: config.color,
-                            logo: getProjectLogo(saleId)
-                        };
-                    });
-                } else {
-                    filteredData = filteredData.filter(row => 
-                        row.project.toLowerCase().includes(searchTerm)
-                    );
+                    populateSimpleTable();
+                    return;
                 }
+                
+                // Filter rows - check both project name and suffix
+                filteredData = filteredData.filter(row => {
+                    const projectMatch = row.project.toLowerCase().includes(searchTerm);
+                    const suffixMatch = row.suffix && row.suffix.toLowerCase().includes(searchTerm);
+                    return projectMatch || suffixMatch;
+                });
                 
                 if (currentSort.column) {
                     applySorting();
@@ -2566,7 +2746,7 @@
         }
 
         function calculateLit100mROI() {
-            const amount = parseFloat(document.getElementById('lit-100m-input').value);
+            const amount = parseFloat(document.getElementById('lit_100m-input').value);
             if (isNaN(amount) || amount <= 0) {
                 alert('Please enter a valid amount');
                 return;
@@ -2579,11 +2759,11 @@
             }
             
             const result = calculateROI('lit_100m', amount);
-            updateCalculationUI('lit-100m', result);
+            updateCalculationUI('lit_100m', result);
         }
 
         function calculateLit150mROI() {
-            const amount = parseFloat(document.getElementById('lit-150m-input').value);
+            const amount = parseFloat(document.getElementById('lit_150m-input').value);
             if (isNaN(amount) || amount <= 0) {
                 alert('Please enter a valid amount');
                 return;
@@ -2596,11 +2776,11 @@
             }
             
             const result = calculateROI('lit_150m', amount);
-            updateCalculationUI('lit-150m', result);
+            updateCalculationUI('lit_150m', result);
         }
 
         function calculateLit250mROI() {
-            const amount = parseFloat(document.getElementById('lit-250m-input').value);
+            const amount = parseFloat(document.getElementById('lit_250m-input').value);
             if (isNaN(amount) || amount <= 0) {
                 alert('Please enter a valid amount');
                 return;
@@ -2613,7 +2793,41 @@
             }
             
             const result = calculateROI('lit_250m', amount);
-            updateCalculationUI('lit-250m', result);
+            updateCalculationUI('lit_250m', result);
+        }
+
+        function calculateIntuition50mROI() {
+            const amount = parseFloat(document.getElementById('intuition_50m-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            // Check if price data is loaded
+            if (!priceData.intuition_50m || priceData.intuition_50m.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
+            const result = calculateROI('intuition_50m', amount);
+            updateCalculationUI('intuition_50m', result);
+        }
+
+        function calculateIntuition75mROI() {
+            const amount = parseFloat(document.getElementById('intuition_75m-input').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            
+            // Check if price data is loaded
+            if (!priceData.intuition_75m || priceData.intuition_75m.current === 0) {
+                alert('Price data is still loading. Please wait a moment and try again.');
+                return;
+            }
+            
+            const result = calculateROI('intuition_75m', amount);
+            updateCalculationUI('intuition_75m', result);
         }
 
         // Update price displays
@@ -2622,28 +2836,58 @@
                 const prices = priceData[saleId];
                 const config = SALES_CONFIG[saleId];
                 
+                if (!prices || prices.current === undefined) return;
+                
                 // Calculate ROIs
                 const currentRoi = ((prices.current - config.salePrice) / config.salePrice) * 100;
                 const athRoi = ((prices.ath - config.salePrice) / config.salePrice) * 100;
                 const atlRoi = ((prices.atl - config.salePrice) / config.salePrice) * 100;
                 
                 // Update price displays
-                document.getElementById(`${saleId}-current`).textContent = formatCurrency(prices.current, 6);
-                document.getElementById(`${saleId}-ath`).textContent = formatCurrency(prices.ath, 6);
-                document.getElementById(`${saleId}-atl`).textContent = formatCurrency(prices.atl, 6);
+                const currentElement = document.getElementById(`${saleId}-current`);
+                const athElement = document.getElementById(`${saleId}-ath`);
+                const atlElement = document.getElementById(`${saleId}-atl`);
                 
-                // Update ROI displays
+                if (currentElement) currentElement.textContent = formatCurrency(prices.current, 6);
+                if (athElement) athElement.textContent = formatCurrency(prices.ath, 6);
+                if (atlElement) atlElement.textContent = formatCurrency(prices.atl, 6);
+                
+                // Update ROI displays - only update if element exists and value changed
                 const currentRoiElement = document.getElementById(`${saleId}-current-roi`);
-                currentRoiElement.textContent = `${currentRoi.toFixed(2)}%`;
-                currentRoiElement.className = `stat-value ${currentRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                if (currentRoiElement) {
+                    const newText = `${currentRoi.toFixed(2)}%`;
+                    const newClass = `stat-value ${currentRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                    if (currentRoiElement.textContent !== newText) {
+                        currentRoiElement.textContent = newText;
+                    }
+                    if (currentRoiElement.className !== newClass) {
+                        currentRoiElement.className = newClass;
+                    }
+                }
                 
                 const athRoiElement = document.getElementById(`${saleId}-ath-roi`);
-                athRoiElement.textContent = `${athRoi.toFixed(2)}%`;
-                athRoiElement.className = `stat-value ${athRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                if (athRoiElement) {
+                    const newText = `${athRoi.toFixed(2)}%`;
+                    const newClass = `stat-value ${athRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                    if (athRoiElement.textContent !== newText) {
+                        athRoiElement.textContent = newText;
+                    }
+                    if (athRoiElement.className !== newClass) {
+                        athRoiElement.className = newClass;
+                    }
+                }
                 
                 const atlRoiElement = document.getElementById(`${saleId}-atl-roi`);
-                atlRoiElement.textContent = `${atlRoi.toFixed(2)}%`;
-                atlRoiElement.className = `stat-value ${atlRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                if (atlRoiElement) {
+                    const newText = `${atlRoi.toFixed(2)}%`;
+                    const newClass = `stat-value ${atlRoi >= 0 ? 'profit-positive' : 'profit-negative'}`;
+                    if (atlRoiElement.textContent !== newText) {
+                        atlRoiElement.textContent = newText;
+                    }
+                    if (atlRoiElement.className !== newClass) {
+                        atlRoiElement.className = newClass;
+                    }
+                }
             });
         }
 
@@ -2651,15 +2895,23 @@
         async function fetchPrices() {
             try {
                 for (const [saleId, config] of Object.entries(SALES_CONFIG)) {
-                    const response = await fetch(`/api/proxy/coingecko/price/${config.tokenId}`);
-                    if (!response.ok) throw new Error(`Failed to fetch ${saleId} price`);
-                    
-                    const data = await response.json();
-                    priceData[saleId] = {
-                        current: data.current_price || 0,
-                        ath: data.ath || 0,
-                        atl: data.atl || 0
-                    };
+                    try {
+                        const response = await fetch(`/api/proxy/coingecko/price/${config.tokenId}`);
+                        if (!response.ok) continue; // Skip failed requests instead of throwing
+                        
+                        const data = await response.json();
+                        if (data && (data.current_price !== undefined || data.ath !== undefined || data.atl !== undefined)) {
+                            priceData[saleId] = {
+                                current: data.current_price || 0,
+                                ath: data.ath || 0,
+                                atl: data.atl || 0
+                            };
+                        }
+                    } catch (err) {
+                        // Skip individual failures, continue with other tokens
+                        console.warn(`Failed to fetch ${saleId} price:`, err);
+                        continue;
+                    }
                 }
                 updatePriceDisplays();
                 
