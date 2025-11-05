@@ -560,7 +560,7 @@
                 address: "Enter Wallet Address",
             },
             // TGE has occurred
-            tgeDate: new Date('2025-01-01T00:00:00Z'), // TGE date - update with actual date
+            tgeDate: new Date(), // TGE date - today's date
             supply: 1000000000, // 1B token supply
             vestingOptions: [
                 { name: 'FDV $50M', price: 0.05, terms: '5% unlock at 1-year cliff, remaining 95% monthly linear for 12 months', tgeUnlock: 0, duration: 12, type: 'cliff' },
@@ -647,10 +647,10 @@
                     <div className="flex items-center justify-between mb-3">
                         <div>
                             <h3 className="text-lg font-semibold" style={{color: '#8b5cf6'}}>
-                                ✅ TGE Has Occurred • Vesting in Progress
+                                📈 Vesting in Progress
                             </h3>
                             <p className="text-sm text-gray-400">
-                                📈 Vesting in Progress
+                                Different vesting schedules for each price tier
                             </p>
                         </div>
                     </div>
