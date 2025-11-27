@@ -941,6 +941,22 @@
             background: rgba(255, 87, 34, 0.8);
         }
 
+        /* Loading Spinner */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 87, 34, 0.2);
+            border-top-color: #ff5722;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
         /* ROI Grid */
         .roi-grid {
             display: grid;
@@ -2266,6 +2282,7 @@
         let currentMode = 'simple';
         let currentSort = { column: 'currentRoi', direction: 'desc' };
         let filteredData = [];
+        let pricesLoaded = false;
 
         // Switch between modes
         function switchMode(mode) {
@@ -2289,9 +2306,31 @@
             }
         }
 
+        // Show loading state in table
+        function showTableLoading() {
+            const tbody = document.getElementById('roi-table-body');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                            <div class="loading-spinner"></div>
+                            <span style="color: rgba(255, 255, 255, 0.7); font-size: 1rem;">Loading prices...</span>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
         // Populate simple table
         function populateSimpleTable() {
             const tbody = document.getElementById('roi-table-body');
+            
+            // Show loading if prices haven't loaded yet
+            if (!pricesLoaded) {
+                showTableLoading();
+                return;
+            }
+            
             tbody.innerHTML = '';
             
             filteredData = [];
@@ -2902,6 +2941,9 @@
                         continue;
                     }
                 }
+                // Mark prices as loaded
+                pricesLoaded = true;
+                
                 updatePriceDisplays();
                 
                 // Update simple table if we're in simple mode
@@ -2916,9 +2958,9 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setupSearch();
-            // Populate simple table immediately (will show with loading/zero values initially)
-            populateSimpleTable();
-            // Fetch prices which will update the table when loaded
+            // Show loading state initially
+            showTableLoading();
+            // Fetch prices which will populate the table when loaded
             fetchPrices();
             // Refresh prices every 5 minutes
             setInterval(fetchPrices, 300000);
