@@ -202,22 +202,15 @@
 
         /* Simple Mode Table Styles */
         .simple-table-container {
-            background-color: rgba(15, 15, 20, 0.8); /* Fallback for mobile */
-            background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.05) 0%, 
-                rgba(255, 255, 255, 0.02) 50%, 
-                rgba(255, 87, 34, 0.02) 100%
-            );
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: #14141c;
             border: 1px solid rgba(255, 87, 34, 0.2);
             border-radius: 0 0 16px 16px;
             border-top: none;
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: calc(100vh - 250px);
             display: none;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
         }
 
         .simple-table-container.active {
@@ -320,36 +313,34 @@
             border-bottom: 1px solid rgba(255, 87, 34, 0.1);
         }
 
+        .roi-table thead {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
         .roi-table th {
-            background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.05) 0%, 
-                rgba(255, 87, 34, 0.03) 100%
-            );
+            background: #1a1a25;
             font-weight: 700;
             font-family: 'Orbitron', monospace;
             color: rgba(255, 255, 255, 0.9);
             cursor: pointer;
             user-select: none;
-            transition: all 0.3s ease;
+            transition: background 0.3s ease, color 0.3s ease;
             position: relative;
             font-size: 0.9rem;
             letter-spacing: 0.05em;
             text-transform: uppercase;
+            border-bottom: 1px solid rgba(255, 87, 34, 0.3);
         }
 
         .roi-table th:hover {
-            background: linear-gradient(135deg, 
-                rgba(255, 87, 34, 0.15) 0%, 
-                rgba(255, 87, 34, 0.08) 100%
-            );
+            background: #252530;
             color: #ff5722;
         }
 
         .roi-table th.sorted {
-            background: linear-gradient(135deg, 
-                rgba(255, 87, 34, 0.2) 0%, 
-                rgba(255, 87, 34, 0.1) 100%
-            );
+            background: #2a2535;
             color: #ff5722;
         }
 
@@ -378,15 +369,12 @@
         }
 
         .roi-table tbody tr {
-            transition: all 0.3s ease;
+            background: #14141c;
             font-weight: 500;
         }
 
-        .roi-table tbody tr:hover {
-            background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.03) 0%, 
-                rgba(255, 87, 34, 0.02) 100%
-            );
+        .roi-table tbody tr:nth-child(even) {
+            background: #18181f;
         }
 
         .roi-table tbody tr.hidden {
@@ -758,16 +746,17 @@
                 min-width: 120px;
                 position: sticky;
                 left: 0;
-                background: rgba(10, 10, 10, 0.95);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                z-index: 1;
-                border-right: 1px solid rgba(255, 255, 255, 0.1);
+                z-index: 2;
             }
-
+            
             .roi-table th:first-child {
-                background: rgba(10, 10, 10, 0.98);
-                border-right: 1px solid rgba(255, 87, 34, 0.3);
+                background: #1a1a25;
+                z-index: 11;
+            }
+            
+            .roi-table td:first-child {
+                background: #0f0f14;
+                border-right: 1px solid rgba(255, 255, 255, 0.1);
             }
 
             .project-info {
